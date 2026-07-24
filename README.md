@@ -45,6 +45,21 @@ So this store ships as a zip — a plain GitHub source archive of this repositor
 the same shape the BigBear store uses. `store-config.json` and
 `supported-languages.json` are already here for the day a ZimaOS release reads v2.
 
+## What is verified, and what is not
+
+Measured on 2026-07-24 against ZimaOS v1.7.0-beta1:
+
+* Registering the zip URL works — the source shows up in `GET /appstore` within
+  ~10 seconds, ZimaOS unpacks it and drops a `.casaos-appstore` marker next to
+  the files.
+* The app arrives in the catalog with its own metadata: `GET /apps` returns it
+  with `author: Lintuxer`, its own tagline, `version: 5.13.26`, `category: Finance`.
+* ⚠️ **The App Store UI does not yet render this store as a group.** The sidebar
+  under "community stores" still lists only the one that was there before, even
+  though the catalog serves our app. The data is there; something the interface
+  needs for grouping is not. Being looked into — until then, the reliable route
+  is installing the compose directly (see the app folder).
+
 ## Layout
 
 ```text
