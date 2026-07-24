@@ -1,4 +1,4 @@
-# Lintuxer App Store — a third-party app store for ZimaOS
+# Lintuxer Apps — a third-party app store for ZimaOS
 
 Apps that were installed on a real ZimaOS machine, started, and logged into
 before they were listed here. Each app says what was measured and when.
@@ -54,11 +54,22 @@ Measured on 2026-07-24 against ZimaOS v1.7.0-beta1:
   the files.
 * The app arrives in the catalog with its own metadata: `GET /apps` returns it
   with `author: Lintuxer`, its own tagline, `version: 5.13.26`, `category: Finance`.
+* Removing the source again leaves nothing behind — measured after
+  `DELETE /appstore/{id}`: gone from the source list, gone from `GET /apps`, and
+  the unpacked directory under `/var/lib/casaos/appstore/github.com/` is deleted.
 * ⚠️ **The App Store UI does not yet render this store as a group.** The sidebar
   under "community stores" still lists only the one that was there before, even
-  though the catalog serves our app. The data is there; something the interface
-  needs for grouping is not. Being looked into — until then, the reliable route
-  is installing the compose directly (see the app folder).
+  though the catalog serves our app. What was measured about that so far:
+  * The catalog is **flat**. Each entry in `GET /v2/app_management/apps` carries
+    `store_app_id`, `author`, `category` — and **no field naming the store** it
+    came from. So the grouping cannot be read off the app records.
+  * `store_app_id` is simply the **app folder name**. BigBear's 238 apps are all
+    called `big-bear-*` because their folders are.
+  * `category-list.json` is not the mechanism either: BigBear's declares exactly
+    one category, `BigBearCasaOS`, and **none of their own apps use it** — all
+    238 sit in the standard categories (`Others` 79, `Developer` 43, `Finance` 5, …).
+  Unresolved, and honestly labelled as such. Until then the reliable route is
+  installing the compose directly (see the app folder).
 
 ## Layout
 
