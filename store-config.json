@@ -1,0 +1,14 @@
+{
+  "version": 2,
+  "store_id": "io.github.chicohaager.zima-appstore",
+  "name": {
+    "en_US": "Lintuxer App Store",
+    "de_DE": "Lintuxer App Store"
+  },
+  "description": {
+    "en_US": "Self-hosted apps for ZimaOS, each one installed and logged into on a real machine before it is listed here.",
+    "de_DE": "Self-hosted-Apps für ZimaOS — jede vor der Aufnahme auf einer echten Maschine installiert und durchgeklickt."
+  },
+  "maintainer": "Lintuxer",
+  "url": "https://github.com/chicohaager/zima-appstore"
+}

@@ -1,0 +1,169 @@
+name: invoiceninja
+services:
+  mysql:
+    image: mysql:8
+    restart: unless-stopped
+    environment:
+    - MYSQL_DATABASE=ninja
+    - MYSQL_USER=ninja
+    - MYSQL_PASSWORD=9bEQqzjDAHyPXJDETnJE0zxh
+    - MYSQL_ROOT_PASSWORD=8pebPB8x7kIyARMlfkqGQbqF
+    volumes:
+    - type: bind
+      source: /DATA/AppData/invoiceninja/mysql
+      target: /var/lib/mysql
+    healthcheck:
+      test:
+      - CMD
+      - mysqladmin
+      - ping
+      - -h
+      - localhost
+      - -uninja
+      - -p9bEQqzjDAHyPXJDETnJE0zxh
+      interval: 10s
+      timeout: 5s
+      retries: 12
+    networks:
+    - invoiceninja-network
+  redis:
+    image: redis:alpine
+    restart: unless-stopped
+    volumes:
+    - type: bind
+      source: /DATA/AppData/invoiceninja/redis
+      target: /data
+    healthcheck:
+      test:
+      - CMD
+      - redis-cli
+      - ping
+      interval: 10s
+      timeout: 5s
+      retries: 12
+    networks:
+    - invoiceninja-network
+  app:
+    image: invoiceninja/invoiceninja-debian:5.13.26
+    restart: unless-stopped
+    environment:
+    - APP_URL=http://REPLACE-WITH-YOUR-ZIMAOS-IP:8012
+    - APP_KEY=base64:YJvro32quyjIYcyfMvqnirUS+g3nzkw6HtbpwwCaqZI=
+    - APP_ENV=production
+    - APP_DEBUG=false
+    - REQUIRE_HTTPS=false
+    - TRUSTED_PROXIES=*
+    - IS_DOCKER=true
+    - IN_USER_EMAIL=admin@example.com
+    - IN_PASSWORD=K51wwYLRE0mLSDWR
+    - DB_CONNECTION=mysql
+    - DB_HOST=mysql
+    - DB_PORT=3306
+    - DB_DATABASE=ninja
+    - DB_USERNAME=ninja
+    - DB_PASSWORD=9bEQqzjDAHyPXJDETnJE0zxh
+    - CACHE_DRIVER=redis
+    - QUEUE_CONNECTION=redis
+    - SESSION_DRIVER=redis
+    - REDIS_HOST=redis
+    - REDIS_PORT=6379
+    - REDIS_PASSWORD=null
+    - PDF_GENERATOR=snappdf
+    - PHANTOMJS_PDF_GENERATION=false
+    - FILESYSTEM_DISK=debian_docker
+    - SCOUT_DRIVER=null
+    - MAIL_MAILER=log
+    - MAIL_FROM_ADDRESS=user@example.com
+    - MAIL_FROM_NAME=Self Hosted User
+    volumes:
+    - type: bind
+      source: /DATA/AppData/invoiceninja/public
+      target: /var/www/html/public
+    - type: bind
+      source: /DATA/AppData/invoiceninja/storage
+      target: /var/www/html/storage
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 2GB
+          cpus: '2.00'
+    networks:
+    - invoiceninja-network
+  nginx:
+    image: nginx:alpine
+    restart: unless-stopped
+    command:
+    - /bin/sh
+    - -c
+    - "cat > /tmp/laravel.conf <<'NGINXCONF'\nserver {\n    listen 80 default_server;\n    server_name _;\n    root /var/www/html/public;\n\n    add_header X-Frame-Options \"SAMEORIGIN\";\n    add_header X-Content-Type-Options \"nosniff\";\n\n    index index.php;\n    charset utf-8;\n\n    location / {\n        try_files @uri @uri/ /index.php?@query_string;\n    }\n\n    location = /favicon.ico { access_log off; log_not_found off; }\n    location = /robots.txt  { access_log off; log_not_found off; }\n\n    error_page 404 /index.php;\n\n    location ~ \\.php@ {\n        fastcgi_pass app:9000;\n        fastcgi_param SCRIPT_FILENAME @realpath_root@fastcgi_script_name;\n        include fastcgi_params;\n    }\n\n    location ~ /\\.(?!well-known).* {\n        deny all;\n    }\n}\nNGINXCONF\ncat > /etc/nginx/conf.d/invoiceninja.conf <<'NGINXCONF'\nclient_max_body_size 10M;\nclient_body_buffer_size 10M;\nserver_tokens off;\nfastcgi_buffers 32 16K;\ngzip on;\ngzip_comp_level 2;\ngzip_min_length 1M;\ngzip_proxied any;\ngzip_types *;\nNGINXCONF\ntr '@' '\\044' < /tmp/laravel.conf > /etc/nginx/conf.d/default.conf\nexec nginx -g 'daemon off;'\n"
+    ports:
+    - mode: ingress
+      target: 80
+      published: '8012'
+      protocol: tcp
+    volumes:
+    - type: bind
+      source: /DATA/AppData/invoiceninja/public
+      target: /var/www/html/public
+      read_only: true
+    - type: bind
+      source: /DATA/AppData/invoiceninja/storage
+      target: /var/www/html/storage
+      read_only: true
+    depends_on:
+      app:
+        condition: service_started
+    networks:
+    - invoiceninja-network
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/invoice-ninja.png
+    x-casaos:
+      ports:
+      - container: '80'
+        description:
+          en_us: WebUI port
+      volumes:
+      - container: /var/www/html/public
+        description:
+          en_us: Public files (logos, generated assets)
+      - container: /var/www/html/storage
+        description:
+          en_us: Uploads, PDFs, backups and logs
+networks:
+  invoiceninja-network:
+    driver: bridge
+x-casaos:
+  architectures:
+  - amd64
+  - arm64
+  main: nginx
+  id: io.github.chicohaager.invoiceninja
+  scheme: http
+  author: Lintuxer
+  developer: Invoice Ninja
+  category: Finance
+  icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/invoice-ninja.png
+  title:
+    en_US: Invoice Ninja
+    custom: Invoice Ninja
+  tagline:
+    en_US: Invoices, quotes and payments, self-hosted
+  description:
+    en_US: Invoice Ninja 5 — invoicing, quotes, recurring billing, time tracking and online payments. MySQL and Redis are part of the same ZimaOS app; PDFs are rendered by the Chrome that ships inside the app image.
+  index: /
+  is_uncontrolled: false
+  port_map: '8012'
+  version: 5.13.26
+  update_at: '2026-07-24'
+  website: https://www.invoiceninja.com/
+  repo: https://github.com/invoiceninja/dockerfiles/tree/debian/debian
+  support: https://forum.invoiceninja.com/
+  docs: https://invoiceninja.github.io/
+  tips:
+    before_install:
+      en_US: Set APP_URL to the address you browse to (including the port), generate your own APP_KEY, and change IN_PASSWORD before the first start. The admin account is created once, on first start.
