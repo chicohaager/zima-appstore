@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "updated_at": "2026-07-26T16:20:24Z",
-  "app_count": 5,
+  "updated_at": "2026-07-26T16:57:00Z",
+  "app_count": 6,
   "base_url": "https://chicohaager.github.io/zima-appstore",
   "apps": [
     {
@@ -108,6 +108,26 @@
       "meta_url": "/apps/io.github.chicohaager.pterodactyl/meta.json",
       "content_hash": "ba401108",
       "version": "1.14.1"
+    },
+    {
+      "id": "io.github.chicohaager.superfile",
+      "title": "Superfile",
+      "tagline": "The keyboard-driven file manager, in a browser tab",
+      "category": "Productivity",
+      "categories": [
+        "productivity"
+      ],
+      "author": "Lintuxer",
+      "developer": "yorukot",
+      "architectures": [
+        "amd64"
+      ],
+      "icon": "/apps/io.github.chicohaager.superfile/assets/icon.png",
+      "thumbnail": "",
+      "compose_url": "/apps/io.github.chicohaager.superfile/docker-compose.yml",
+      "meta_url": "/apps/io.github.chicohaager.superfile/meta.json",
+      "content_hash": "aee6ff4f",
+      "version": "1.6.0"
     }
   ]
 }

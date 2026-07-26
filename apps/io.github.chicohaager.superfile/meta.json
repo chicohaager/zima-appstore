@@ -1,0 +1,24 @@
+{
+  "architectures": [
+    "amd64"
+  ],
+  "author": "Lintuxer",
+  "developer": "yorukot",
+  "category": "Productivity",
+  "tagline": "The keyboard-driven file manager, in a browser tab",
+  "description": "superfile is a terminal file manager built for the keyboard: multiple panels side by side, fuzzy search, batch rename, compress and extract, a metadata pane and previews for text, images, video and PDFs. This package ships the upstream release binary together with ttyd, so the whole thing runs in a browser tab against the shares you mount into it — no client to install, no separate terminal. Press \"?\" inside for the hotkeys. Access is protected by HTTP basic authentication; anyone who gets in can also run shell commands from superfile's command line, so treat the password as a password to the machine, not to an app.",
+  "tips": {
+    "before_install": "Change SPF_PASSWORD before installing — the value in this file is public, and it guards a terminal that can delete the files you mount. Keep the published port off 7681: ZimaOS runs its own web terminal there. The mounts under /files are exactly what the app will be able to reach."
+  },
+  "title": "Superfile",
+  "base_url": "https://chicohaager.github.io/zima-appstore",
+  "id": "io.github.chicohaager.superfile",
+  "version": "1.6.0",
+  "categories": [
+    "productivity"
+  ],
+  "min_memory": 0,
+  "min_image_size": {
+    "amd64": 109356721
+  }
+}
