@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updated_at": "2026-07-26T17:43:39Z",
+  "updated_at": "2026-07-26T17:50:00Z",
   "app_count": 6,
   "base_url": "https://chicohaager.github.io/zima-appstore",
   "apps": [
@@ -112,7 +112,7 @@
     {
       "id": "io.github.chicohaager.superfile",
       "title": "Superfile",
-      "tagline": "The keyboard-driven file manager, in a browser tab",
+      "tagline": "Keyboard-driven file manager in a browser tab — login admin / change-me-asap",
       "category": "Productivity",
       "categories": [
         "productivity"
@@ -126,7 +126,7 @@
       "thumbnail": "",
       "compose_url": "/apps/io.github.chicohaager.superfile/docker-compose.yml",
       "meta_url": "/apps/io.github.chicohaager.superfile/meta.json",
-      "content_hash": "5eb1d0ea",
+      "content_hash": "0055341d",
       "version": "1.6.0"
     }
   ]
