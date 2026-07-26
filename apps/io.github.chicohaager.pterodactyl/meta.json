@@ -1,0 +1,26 @@
+{
+  "architectures": [
+    "amd64",
+    "arm64"
+  ],
+  "author": "Lintuxer",
+  "developer": "Pterodactyl",
+  "category": "Others",
+  "tagline": "Game server panel and daemon, with the node already wired up",
+  "description": "Pterodactyl 1.14 — the game server panel together with its wings daemon in a single ZimaOS app. Panel, MariaDB, Redis and wings come up together, and a one-shot provision container creates the first administrator, a location and a node, then writes the daemon configuration itself. Elsewhere that node hand-shake is a manual copy-and-paste step; here the node is already there when you first log in. Game servers run as separate Docker containers next to the app, managed by wings through the host's Docker socket.",
+  "tips": {
+    "before_install": "Set APP_URL and NODE_FQDN to this machine's address before installing, and change ADMIN_PASSWORD. wings needs the Docker socket, which is root-equivalent access to the host. The first start takes about two minutes; wings restarts a few times until the provision container has written its configuration."
+  },
+  "title": "Pterodactyl",
+  "base_url": "https://chicohaager.github.io/zima-appstore",
+  "id": "io.github.chicohaager.pterodactyl",
+  "version": "1.14.1",
+  "categories": [
+    "others"
+  ],
+  "min_memory": 0,
+  "min_image_size": {
+    "amd64": 263504238,
+    "arm64": 260507703
+  }
+}

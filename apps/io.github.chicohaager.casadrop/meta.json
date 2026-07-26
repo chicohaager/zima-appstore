@@ -1,0 +1,27 @@
+{
+  "architectures": [
+    "amd64",
+    "arm64"
+  ],
+  "author": "Lintuxer",
+  "developer": "chicohaager",
+  "category": "Productivity",
+  "thumbnail": "",
+  "tagline": "Share files from your ZimaOS box with a link",
+  "description": "**CasaDrop** turns your ZimaOS box into a place you can send files to and\nshare files from, without handing anything to a cloud provider.\n\n- Drag and drop upload, with a link and an optional QR code\n- Browse the host folders you allow, and share a file or a whole folder\n- Receive links, so other people can send files *to* you\n- Optional password, expiry between one hour and 30 days, download limit\n- Video and audio stream in the browser instead of downloading first\n- Multiple users, optionally through OIDC single sign-on\n\nReachable over the LAN out of the box. Public access is a matter of\nputting a tunnel or a reverse proxy in front of it.\n",
+  "tips": {
+    "before_install": "**Port.** The app is published on 8086. Change it in the form below if\nthat port is taken; the container always listens on 8080 internally.\n\n**Which folders can be shared.** Only the five read-only mounts are\nreachable: Media, Documents, Downloads, Gallery, Backup. `/DATA/AppData`\nis left out on purpose — it holds other apps' databases and secrets.\nAdd a folder by adding both the bind mount and the entry in\n`SHARE_ALLOWED_PATHS`.\n\n**First start needs a token from the log.** CasaDrop prints a one-time\nsetup token when it starts and shows it *nowhere else*:\n\n```\ndocker logs casadrop | grep \"SETUP TOKEN\"\n```\n\nOpen the tile, paste the token, and choose an administrator password.\nDo that before the app is reachable from anywhere but your LAN.\n"
+  },
+  "title": "CasaDrop",
+  "base_url": "https://chicohaager.github.io/zima-appstore",
+  "id": "io.github.chicohaager.casadrop",
+  "version": "2.4.2",
+  "categories": [
+    "productivity"
+  ],
+  "min_memory": 0,
+  "min_image_size": {
+    "amd64": 16567737,
+    "arm64": 16381605
+  }
+}
