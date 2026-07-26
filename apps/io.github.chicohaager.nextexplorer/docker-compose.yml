@@ -1,0 +1,64 @@
+name: nextexplorer
+services:
+  app:
+    image: nxzai/explorer:latest
+    restart: unless-stopped
+    environment:
+    - NODE_ENV=production
+    - TZ=UTC
+    - PORT=3000
+    - PUBLIC_URL=http://REPLACE-WITH-YOUR-ZIMAOS-IP:3000
+    - VOLUME_ROOT=/mnt
+    - CONFIG_DIR=/config
+    - CACHE_DIR=/cache
+    - SESSION_SECRET=VNQLW08Lfxyiduv4a8eK10auYstbH4ZrHSPnTReiD7UqFifw
+    - AUTH_MODE=local
+    - AUTH_ADMIN_EMAIL=admin@example.com
+    - AUTH_ADMIN_PASSWORD=hxPh4REwEy4fRd1M
+    - PUID=999
+    - PGID=1000
+    volumes:
+    - type: bind
+      source: /DATA/AppData/nextexplorer/config
+      target: /config
+    - type: bind
+      source: /DATA/AppData/nextexplorer/cache
+      target: /cache
+    - type: bind
+      source: /DATA/Media
+      target: /mnt/Media
+    - type: bind
+      source: /DATA/Documents
+      target: /mnt/Documents
+    - type: bind
+      source: /DATA/Gallery
+      target: /mnt/Gallery
+    - type: bind
+      source: /DATA/Downloads
+      target: /mnt/Downloads
+    ports:
+    - mode: ingress
+      target: 3000
+      published: '3000'
+      protocol: tcp
+    deploy:
+      resources:
+        limits:
+          memory: 2GB
+          cpus: '2.00'
+    networks:
+    - nextexplorer-network
+networks:
+  nextexplorer-network:
+    driver: bridge
+x-casaos:
+  main: app
+  id: io.github.chicohaager.nextexplorer
+  version: 2.2.7
+  scheme: http
+  icon: https://chicohaager.github.io/zima-appstore/apps/io.github.chicohaager.nextexplorer/assets/icon.png
+  title:
+    en_US: NextExplorer
+    custom: NextExplorer
+  index: /
+  port_map: '3000'
