@@ -1,0 +1,32 @@
+{
+  "architectures": [
+    "amd64",
+    "arm64"
+  ],
+  "author": "Lintuxer",
+  "developer": "Invoice Ninja",
+  "category": "Finance",
+  "tagline": "Invoices, quotes and payments, self-hosted",
+  "description": "Invoice Ninja 5 — invoicing, quotes, recurring billing, time tracking and online payments. MySQL and Redis are part of the same ZimaOS app; PDFs are rendered by the Chrome that ships inside the app image.",
+  "is_uncontrolled": false,
+  "update_at": "2026-07-24",
+  "website": "https://www.invoiceninja.com/",
+  "repo": "https://github.com/invoiceninja/dockerfiles/tree/debian/debian",
+  "support": "https://forum.invoiceninja.com/",
+  "docs": "https://invoiceninja.github.io/",
+  "tips": {
+    "before_install": "Set APP_URL to the address you browse to (including the port), generate your own APP_KEY, and change IN_PASSWORD before the first start. The admin account is created once, on first start."
+  },
+  "title": "Invoice Ninja",
+  "base_url": "https://chicohaager.github.io/zima-appstore",
+  "id": "io.github.chicohaager.invoiceninja",
+  "version": "5.13.26",
+  "categories": [
+    "finance"
+  ],
+  "min_memory": 0,
+  "min_image_size": {
+    "amd64": 1339324843,
+    "arm64": 1278428140
+  }
+}

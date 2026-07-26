@@ -1,0 +1,29 @@
+{
+  "version": 2,
+  "updated_at": "2026-07-26T10:08:23Z",
+  "app_count": 1,
+  "base_url": "https://chicohaager.github.io/zima-appstore",
+  "apps": [
+    {
+      "id": "io.github.chicohaager.invoiceninja",
+      "title": "Invoice Ninja",
+      "tagline": "Invoices, quotes and payments, self-hosted",
+      "category": "Finance",
+      "categories": [
+        "finance"
+      ],
+      "author": "Lintuxer",
+      "developer": "Invoice Ninja",
+      "architectures": [
+        "amd64",
+        "arm64"
+      ],
+      "icon": "/apps/io.github.chicohaager.invoiceninja/assets/icon.png",
+      "thumbnail": "",
+      "compose_url": "/apps/io.github.chicohaager.invoiceninja/docker-compose.yml",
+      "meta_url": "/apps/io.github.chicohaager.invoiceninja/meta.json",
+      "content_hash": "d2a7d227",
+      "version": "5.13.26"
+    }
+  ]
+}
