@@ -126,14 +126,14 @@ services:
       ports:
       - container: '80'
         description:
-          en_us: WebUI port
+          en_US: WebUI port
       volumes:
       - container: /var/www/html/public
         description:
-          en_us: Public files (logos, generated assets)
+          en_US: Public files (logos, generated assets)
       - container: /var/www/html/storage
         description:
-          en_us: Uploads, PDFs, backups and logs
+          en_US: Uploads, PDFs, backups and logs
 networks:
   invoiceninja-network:
     driver: bridge

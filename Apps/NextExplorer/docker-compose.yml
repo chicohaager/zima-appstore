@@ -1,0 +1,165 @@
+# NextExplorer on ZimaOS — a self-hosted file explorer for the shares you already have.
+#
+# Install: ZimaOS App Store → "Install a customized app" → Import this file
+#          (or: python3 zimapp.py install docker-compose.yml --host <ip> …)
+#
+# Upstream: https://github.com/nxzai/NextExplorer — one image, no database service.
+# Everything the app keeps lives in two directories (/config, /cache); every
+# directory mounted under /mnt/<Label> shows up as a volume in the UI.
+#
+# ────────────────────────────────────────────────────────────────────────────
+# CHANGE BEFORE YOU INSTALL:
+#
+#   1. 🔴 PUBLIC_URL must be the address you actually type in the browser,
+#      including the port. It drives cookies, CORS and OIDC callbacks — with a
+#      wrong value the page loads and the LOGIN fails, which looks like a
+#      broken password rather than a broken setting. Leaving the placeholder in
+#      is the worst case: everything reports healthy and nothing works.
+#   2. SESSION_SECRET (32+ characters) — if it changes, everyone is logged out.
+#      AUTH_ADMIN_EMAIL / AUTH_ADMIN_PASSWORD create the first administrator and
+#      skip the setup wizard; change them, this file is public.
+#   3. The /mnt/<Label> mounts below are ZimaOS' own shares. Add or remove as you
+#      like — the label after /mnt/ is what the UI shows.
+#
+# WHAT THIS NEEDS FROM THE HOST:
+#   * Nothing privileged: no Docker socket, no host network, no capabilities.
+#   * PUID/PGID decide who owns newly created files. 999:1000 was the ZimaOS
+#     login user and the `samba` group on the machine this was measured on —
+#     🔴 CHECK IT ON YOURS: `id <your-zimaos-user>`. Wrong numbers do not break
+#     the app, they just hand the new files to the wrong owner.
+#     The entrypoint chowns ONLY /config and /cache (checked in the upstream
+#     entrypoint.sh) — your media keeps its ownership.
+#   * Read-only is a permission question, not a setting: a share owned by root
+#     with 0755 can be browsed but not written to. Measured: mkdir in such a
+#     share fails with `EACCES: permission denied`, while a 0777 share works.
+#     Fix on the host, not here — give the share the group and set setgid:
+#       chgrp -R <PGID> /DATA/<share> ; chmod -R 775 /DATA/<share>
+#       find /DATA/<share> -type d -exec chmod g+s {} \;
+
+name: nextexplorer
+
+services:
+  app:
+    # Bewusst ein bewegliches Tag: die ZimaOS-Oberfläche holt beim „Update" genau
+    # dieses Tag neu, ein gepinntes bekäme nie eine neue Version. Der Preis: der
+    # Versionsstring sagt nichts darüber, was läuft — wer es wissen muss, fragt den
+    # Digest (`docker image inspect --format '{{index .RepoDigests 0}}' nxzai/explorer:latest`)
+    # oder liest die Version in der App unter Einstellungen → Info.
+    image: nxzai/explorer:latest
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - TZ=UTC
+      - PORT=3000
+      # 1. CHANGE THIS — the address you browse to, with the port, no trailing slash.
+      - PUBLIC_URL=http://REPLACE-WITH-YOUR-ZIMAOS-IP:3000
+      - VOLUME_ROOT=/mnt
+      - CONFIG_DIR=/config
+      - CACHE_DIR=/cache
+      # 2. CHANGE THESE.
+      - SESSION_SECRET=VNQLW08Lfxyiduv4a8eK10auYstbH4ZrHSPnTReiD7UqFifw
+      - AUTH_MODE=local
+      - AUTH_ADMIN_EMAIL=admin@example.com
+      - AUTH_ADMIN_PASSWORD=hxPh4REwEy4fRd1M
+      # Owner of newly created files: ZimaOS user (999) and the samba group (1000).
+      - PUID=999
+      - PGID=1000
+    volumes:
+      # The app's own state. Lose /config and you lose users, shares and settings.
+      - type: bind
+        source: /DATA/AppData/nextexplorer/config
+        target: /config
+      - type: bind
+        source: /DATA/AppData/nextexplorer/cache
+        target: /cache
+      # Every directory under /mnt becomes a volume in the UI; the label is the name.
+      - type: bind
+        source: /DATA/Media
+        target: /mnt/Media
+      - type: bind
+        source: /DATA/Documents
+        target: /mnt/Documents
+      - type: bind
+        source: /DATA/Gallery
+        target: /mnt/Gallery
+      - type: bind
+        source: /DATA/Downloads
+        target: /mnt/Downloads
+    ports:
+      - mode: ingress
+        target: 3000
+        published: "3000"
+        protocol: tcp
+    deploy:
+      resources:
+        limits:
+          memory: 2GB
+          cpus: "2.00"
+    networks:
+      - nextexplorer-network
+    labels:
+      icon: https://raw.githubusercontent.com/nxzai/NextExplorer/main/docs/public/images/logo.png
+    x-casaos:
+      ports:
+        - container: "3000"
+          description:
+            en_US: Web interface
+      volumes:
+        - container: /config
+          description:
+            en_US: Database, settings, extensions — the app's own state
+        - container: /cache
+          description:
+            en_US: Thumbnails and search indexes, regenerated when deleted
+        - container: /mnt/Media
+          description:
+            en_US: Shown in the UI as the volume "Media"
+        - container: /mnt/Documents
+          description:
+            en_US: Shown in the UI as the volume "Documents"
+        - container: /mnt/Gallery
+          description:
+            en_US: Shown in the UI as the volume "Gallery"
+        - container: /mnt/Downloads
+          description:
+            en_US: Shown in the UI as the volume "Downloads"
+
+networks:
+  nextexplorer-network:
+    driver: bridge
+
+x-casaos:
+  architectures:
+    - amd64
+    - arm64
+  main: app
+  id: io.github.chicohaager.nextexplorer
+  version: 2.2.7
+  scheme: http
+  author: Lintuxer
+  developer: nxzai
+  category: Productivity
+  icon: https://raw.githubusercontent.com/nxzai/NextExplorer/main/docs/public/images/logo.png
+  title:
+    en_US: NextExplorer
+    custom: NextExplorer
+  tagline:
+    en_US: Browse, preview and share the files on this machine
+  description:
+    en_US: >-
+      NextExplorer is a self-hosted file explorer: it shows every directory you
+      mount under /mnt as a volume, previews images, video, audio, PDFs and
+      code, edits text files in the browser, and hands out share links with
+      expiry. Local accounts come with the image, OIDC is optional. It is a
+      single container with no database service — /config holds the SQLite
+      database and settings, /cache holds thumbnails and can be thrown away.
+  tips:
+    before_install:
+      en_US: >-
+        Set PUBLIC_URL to this machine's address including the port before
+        installing — a wrong value lets the page load but breaks the login.
+        Change SESSION_SECRET and the admin password as well. The mounts under
+        /mnt are the shares you will see in the app; PUID/PGID decide who owns
+        newly created files.
+  index: /
+  port_map: "3000"
