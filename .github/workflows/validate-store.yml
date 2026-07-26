@@ -1,0 +1,29 @@
+name: Validate Store
+
+# A pull request may not break the build. The store is only as good as the
+# dist/ it produces, so this runs the same build the release workflow runs —
+# it just throws the output away.
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build v2 dist
+        uses: IceWhaleTech/build-appstore-action@v1
+        with:
+          source: .
+          output: dist
+          base-url: https://chicohaager.github.io/zima-appstore
+          cache-file: .cache/build_appstore/image-size-cache.json
+          digest-cache-file: .cache/build_appstore/image-digest-cache.json
+
+      - name: Show what was built
+        run: |
+          find dist -type f | sort
+          cat dist/index.json
