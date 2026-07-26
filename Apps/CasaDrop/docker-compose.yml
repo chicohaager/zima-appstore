@@ -1,0 +1,167 @@
+# CasaDrop — self-hosted file sharing for ZimaOS.
+#
+# Before you install, two values are worth a look:
+#   TZ                    the timezone used for share expiry times
+#   SHARE_ALLOWED_PATHS   which host folders "share from host" may browse
+#
+# /DATA/AppData is deliberately NOT mounted. It holds every other app's
+# database and secrets, and CasaDrop is an app you may expose to the internet.
+#
+# No dollar sign appears in this file on purpose: ZimaOS reduces the compose
+# escape form when it saves, and docker compose then substitutes the empty
+# string. See ZIMAOS-KNOWLEDGE.md section 27.11.
+
+name: casadrop
+
+services:
+  casadrop:
+    image: chicohaager/casadrop:2.4.2
+    container_name: casadrop
+    hostname: casadrop
+    restart: unless-stopped
+    ports:
+      - mode: ingress
+        target: 8080
+        published: "8086"
+        protocol: tcp
+    environment:
+      PORT: "8080"
+      EXTERNAL_PORT: "8086"
+      DATA_DIR: /data
+      TZ: Europe/Berlin
+      # "Share from host" browses the container filesystem. Only the folders
+      # bind-mounted below are reachable, and this list gates them again.
+      SHARE_ALLOWED_PATHS: /DATA/Media,/DATA/Documents,/DATA/Downloads,/DATA/Gallery,/DATA/Backup
+      # Unset means forwarded headers are ignored, which is the safe default.
+      # Set to your reverse proxy's IP or CIDR to recover the real client IP.
+      TRUSTED_PROXY: ""
+      # Refuse webhook deliveries to private and loopback targets. Set to
+      # "false" only if your webhook receiver lives on the LAN.
+      WEBHOOK_STRICT_SSRF: "true"
+    volumes:
+      - /DATA/AppData/casadrop/data:/data
+      # Host content, read-only, for "share from host".
+      - /DATA/Media:/DATA/Media:ro
+      - /DATA/Documents:/DATA/Documents:ro
+      - /DATA/Downloads:/DATA/Downloads:ro
+      - /DATA/Gallery:/DATA/Gallery:ro
+      - /DATA/Backup:/DATA/Backup:ro
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      # The entrypoint chowns the data directory and drops to an unprivileged
+      # uid; these are the capabilities it needs to do that, and no more.
+      - CHOWN
+      - SETUID
+      - SETGID
+      - DAC_OVERRIDE
+      - FOWNER
+    read_only: true
+    tmpfs:
+      - /tmp
+    healthcheck:
+      # GET, not --spider: the runtime image ships GNU wget, whose --spider
+      # issues a HEAD request. Keep this a plain GET.
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8080/healthz >/dev/null 2>&1 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    labels:
+      icon: https://raw.githubusercontent.com/chicohaager/casadrop/main/logo.png
+
+x-casaos:
+  architectures:
+    - amd64
+    - arm64
+  main: casadrop
+  id: io.github.chicohaager.casadrop
+  version: 2.4.2
+  author: Lintuxer
+  developer: chicohaager
+  category: Productivity
+  icon: https://raw.githubusercontent.com/chicohaager/casadrop/main/logo.png
+  thumbnail: ""
+  index: /
+  port_map: "8086"
+  scheme: http
+  store_app_id: casadrop
+  title:
+    custom: CasaDrop
+    en_US: CasaDrop
+    de_DE: CasaDrop
+  tagline:
+    en_US: Share files from your ZimaOS box with a link
+    de_DE: Dateien von deiner ZimaOS-Box per Link teilen
+  description:
+    en_US: |
+      **CasaDrop** turns your ZimaOS box into a place you can send files to and
+      share files from, without handing anything to a cloud provider.
+
+      - Drag and drop upload, with a link and an optional QR code
+      - Browse the host folders you allow, and share a file or a whole folder
+      - Receive links, so other people can send files *to* you
+      - Optional password, expiry between one hour and 30 days, download limit
+      - Video and audio stream in the browser instead of downloading first
+      - Multiple users, optionally through OIDC single sign-on
+
+      Reachable over the LAN out of the box. Public access is a matter of
+      putting a tunnel or a reverse proxy in front of it.
+    de_DE: |
+      **CasaDrop** macht aus deiner ZimaOS-Box einen Ort, an den man Dateien
+      schicken und von dem man Dateien teilen kann — ohne dass etwas bei einem
+      Cloud-Anbieter landet.
+
+      - Hochladen per Drag and Drop, mit Link und wahlweise QR-Code
+      - Die Host-Ordner durchsehen, die du freigibst, und einzelne Dateien oder
+        ganze Ordner teilen
+      - Empfangs-Links, damit andere Dateien *an dich* schicken können
+      - Wahlweise Passwort, Gültigkeit von einer Stunde bis 30 Tage, Download-Limit
+      - Video und Audio laufen im Browser, statt erst geladen zu werden
+      - Mehrere Benutzer, auf Wunsch über OIDC-Anmeldung
+
+      Im LAN sofort erreichbar. Für den Zugriff von außen kommt ein Tunnel oder
+      ein Reverse-Proxy davor.
+  tips:
+    before_install:
+      en_US: |
+        **Port.** The app is published on 8086. Change it in the form below if
+        that port is taken; the container always listens on 8080 internally.
+
+        **Which folders can be shared.** Only the five read-only mounts are
+        reachable: Media, Documents, Downloads, Gallery, Backup. `/DATA/AppData`
+        is left out on purpose — it holds other apps' databases and secrets.
+        Add a folder by adding both the bind mount and the entry in
+        `SHARE_ALLOWED_PATHS`.
+
+        **First start needs a token from the log.** CasaDrop prints a one-time
+        setup token when it starts and shows it *nowhere else*:
+
+        ```
+        docker logs casadrop | grep "SETUP TOKEN"
+        ```
+
+        Open the tile, paste the token, and choose an administrator password.
+        Do that before the app is reachable from anywhere but your LAN.
+      de_DE: |
+        **Port.** Die App wird auf 8086 veröffentlicht. Ändere ihn unten, falls
+        der Port belegt ist; im Container hört sie immer auf 8080.
+
+        **Welche Ordner teilbar sind.** Erreichbar sind nur die fünf
+        schreibgeschützt eingehängten Ordner: Media, Documents, Downloads,
+        Gallery, Backup. `/DATA/AppData` fehlt mit Absicht — dort liegen
+        Datenbanken und Geheimnisse der anderen Apps. Ein weiterer Ordner
+        braucht **beides**: den Bind-Mount und den Eintrag in
+        `SHARE_ALLOWED_PATHS`.
+
+        **Der erste Start braucht einen Token aus dem Log.** CasaDrop schreibt
+        beim Start einen einmaligen Setup-Token — und zeigt ihn *sonst nirgends*:
+
+        ```
+        docker logs casadrop | grep "SETUP TOKEN"
+        ```
+
+        Kachel öffnen, Token einfügen, Administrator-Passwort setzen. Und zwar
+        bevor die App von irgendwo außerhalb des LAN erreichbar ist.
