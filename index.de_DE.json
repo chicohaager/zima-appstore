@@ -2,8 +2,23 @@
   "apps": [
     {
       "id": "io.github.chicohaager.casadrop",
-      "tagline": "Dateien von deiner ZimaOS-Box per Link teilen",
-      "title": "CasaDrop"
+      "title": "CasaDrop",
+      "tagline": "Dateien von deiner ZimaOS-Box per Link teilen"
+    },
+    {
+      "id": "io.github.chicohaager.gitea",
+      "title": "Gitea",
+      "tagline": "Git-Hosting mit Actions — der Runner ist registriert und abgeschottet"
+    },
+    {
+      "id": "io.github.chicohaager.invoiceninja",
+      "title": "Invoice Ninja",
+      "tagline": "Rechnungen, Angebote und Zahlungen — selbst gehostet"
+    },
+    {
+      "id": "io.github.chicohaager.pterodactyl",
+      "title": "Pterodactyl",
+      "tagline": "Game-Server-Panel und Daemon — der Node ist schon verdrahtet"
     }
   ]
 }

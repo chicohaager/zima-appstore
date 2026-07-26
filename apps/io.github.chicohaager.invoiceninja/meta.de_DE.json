@@ -1,0 +1,6 @@
+{
+  "id": "io.github.chicohaager.invoiceninja",
+  "title": "Invoice Ninja",
+  "description": "Invoice Ninja 5 — Rechnungen, Angebote, wiederkehrende Abrechnung, Zeiterfassung\nund Online-Zahlungen. MySQL und Redis gehören zur selben ZimaOS-App; die PDFs rendert\ndas Chrome, das im App-Image mitkommt.\n",
+  "tagline": "Rechnungen, Angebote und Zahlungen — selbst gehostet"
+}

@@ -1,0 +1,6 @@
+{
+  "id": "io.github.chicohaager.gitea",
+  "title": "Gitea",
+  "description": "Gitea 1.27 mit einem funktionierenden Actions-Runner als **eine** ZimaOS-App.\nGitea, PostgreSQL und act_runner starten zusammen, und ein Einmal-Container legt den\nersten Administrator an und mintet das Registrierungs-Token des Runners über Giteas\neigene CLI. Diese Variante gibt dem Runner einen **eigenen, rootless Docker-Daemon**\nstatt des Host-Sockets: ein Workflow kann Container starten, sieht vom Rest der\nMaschine aber nichts.\n",
+  "tagline": "Git-Hosting mit Actions — der Runner ist registriert und abgeschottet"
+}
