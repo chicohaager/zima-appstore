@@ -91,10 +91,8 @@ x-casaos:
   title:
     custom: CasaDrop
     en_US: CasaDrop
-    de_DE: CasaDrop
   tagline:
     en_US: Share files from your ZimaOS box with a link
-    de_DE: Dateien von deiner ZimaOS-Box per Link teilen
   description:
     en_US: |
       **CasaDrop** turns your ZimaOS box into a place you can send files to and
@@ -109,21 +107,6 @@ x-casaos:
 
       Reachable over the LAN out of the box. Public access is a matter of
       putting a tunnel or a reverse proxy in front of it.
-    de_DE: |
-      **CasaDrop** macht aus deiner ZimaOS-Box einen Ort, an den man Dateien
-      schicken und von dem man Dateien teilen kann — ohne dass etwas bei einem
-      Cloud-Anbieter landet.
-
-      - Hochladen per Drag and Drop, mit Link und wahlweise QR-Code
-      - Die Host-Ordner durchsehen, die du freigibst, und einzelne Dateien oder
-        ganze Ordner teilen
-      - Empfangs-Links, damit andere Dateien *an dich* schicken können
-      - Wahlweise Passwort, Gültigkeit von einer Stunde bis 30 Tage, Download-Limit
-      - Video und Audio laufen im Browser, statt erst geladen zu werden
-      - Mehrere Benutzer, auf Wunsch über OIDC-Anmeldung
-
-      Im LAN sofort erreichbar. Für den Zugriff von außen kommt ein Tunnel oder
-      ein Reverse-Proxy davor.
   tips:
     before_install:
       en_US: |
@@ -145,23 +128,3 @@ x-casaos:
 
         Open the tile, paste the token, and choose an administrator password.
         Do that before the app is reachable from anywhere but your LAN.
-      de_DE: |
-        **Port.** Die App wird auf 8086 veröffentlicht. Ändere ihn unten, falls
-        der Port belegt ist; im Container hört sie immer auf 8080.
-
-        **Welche Ordner teilbar sind.** Erreichbar sind nur die fünf
-        schreibgeschützt eingehängten Ordner: Media, Documents, Downloads,
-        Gallery, Backup. `/DATA/AppData` fehlt mit Absicht — dort liegen
-        Datenbanken und Geheimnisse der anderen Apps. Ein weiterer Ordner
-        braucht **beides**: den Bind-Mount und den Eintrag in
-        `SHARE_ALLOWED_PATHS`.
-
-        **Der erste Start braucht einen Token aus dem Log.** CasaDrop schreibt
-        beim Start einen einmaligen Setup-Token — und zeigt ihn *sonst nirgends*:
-
-        ```
-        docker logs casadrop | grep "SETUP TOKEN"
-        ```
-
-        Kachel öffnen, Token einfügen, Administrator-Passwort setzen. Und zwar
-        bevor die App von irgendwo außerhalb des LAN erreichbar ist.

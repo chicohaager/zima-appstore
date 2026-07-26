@@ -215,13 +215,6 @@ services:
           description:
             en_US: Runner state and job workspaces
 
-            de_DE: |
-              Gitea 1.27 mit einem funktionierenden Actions-Runner als **eine** ZimaOS-App.
-              Gitea, PostgreSQL und act_runner starten zusammen, und ein Einmal-Container legt den
-              ersten Administrator an und mintet das Registrierungs-Token des Runners über Giteas
-              eigene CLI. Diese Variante gibt dem Runner einen **eigenen, rootless Docker-Daemon**
-              statt des Host-Sockets: ein Workflow kann Container starten, sieht vom Rest der
-              Maschine aber nichts.
 networks:
   gitea-network:
     driver: bridge
@@ -241,10 +234,8 @@ x-casaos:
   title:
     en_US: Gitea
     custom: Gitea
-    de_DE: Gitea
   tagline:
     en_US: Git hosting with Actions, runner already registered and isolated
-    de_DE: Git-Hosting mit Actions — der Runner ist registriert und abgeschottet
   description:
     en_US: >-
       Gitea 1.27 with a working Actions runner in a single ZimaOS app. Gitea,
@@ -253,13 +244,6 @@ x-casaos:
       registration token over Gitea's own CLI. This variant runs the runner
       with its own rootless Docker daemon instead of the host's socket, so a
       workflow can start containers without seeing the rest of the machine.
-    de_DE: |
-      Gitea 1.27 mit einem funktionierenden Actions-Runner als **eine** ZimaOS-App.
-      Gitea, PostgreSQL und act_runner starten zusammen, und ein Einmal-Container legt den
-      ersten Administrator an und mintet das Registrierungs-Token des Runners über Giteas
-      eigene CLI. Diese Variante gibt dem Runner einen **eigenen, rootless Docker-Daemon**
-      statt des Host-Sockets: ein Workflow kann Container starten, sieht vom Rest der
-      Maschine aber nichts.
   tips:
     before_install:
       en_US: >-
