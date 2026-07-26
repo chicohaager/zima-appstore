@@ -94,7 +94,8 @@ Measured on 2026-07-26 against ZimaOS v1.7.0-beta1, on a ZimaCube (amd64):
 ```text
 Apps/<AppName>/
     docker-compose.yml   the app, with its x-casaos block — the only source of truth
-    config.json          id, version and image; a leftover of the zip era
+    config.json          id, version and image; a leftover of the zip era,
+                         only Invoice Ninja still carries one
 category-list.json       the categories, taken from the official store
 store-config.json        store identity: store_id, localized name and description
 supported-languages.json locales the build may emit
@@ -116,9 +117,36 @@ cp .env.example .env
 
 | App | Version | Port | Verified |
 | --- | --- | ---: | --- |
+| [CasaDrop](Apps/CasaDrop/) | 2.4.2 | 8086 | 2026-07-26 on ZimaOS v1.7.0-beta1: installed from this exact file on a machine that had never run it, `healthy` after 14 s, `/healthz` returning `ok`, the setup page rendered in the browser, tile in the grid with the right logo. Mounts checked one by one: five host folders read-only, `/DATA/AppData` not among them. Removed again afterwards — container, data directory and port all gone |
+| [Gitea](Apps/Gitea/) | 1.27.0 | 3020 | 2026-07-25 on ZimaOS v1.7.0-beta1: four containers, runner registers itself, a real Actions run green *and* one deliberately red (`conclusion: failure`), `actions/checkout@v4` and `actions/setup-node@v4` from the marketplace green. Isolation measured, not assumed: inside a job `docker ps -a` shows only the job's own container, and `docker version` reports the inner daemon |
 | [Invoice Ninja](Apps/InvoiceNinja/) | 5.13.26 | 8012 | 2026-07-24 on ZimaOS v1.7.0-beta1: four containers up, app container `healthy`, `/health` returning `{"status":"ok"}`, tile in the grid, admin login through the browser to the dashboard |
+| [Pterodactyl](Apps/Pterodactyl/) | 1.14.1 | 8080 | 2026-07-24 on ZimaOS v1.7.0-beta1: panel and wings as one app, the node wires itself up, a Minecraft server actually started (`Done (5.404s)!`, confirmed from outside over the game protocol), then removed without trace |
 
-**Before you install Invoice Ninja**, change three values in the compose — the
+Gitea ships here as the **isolated** variant: the runner has its own Docker
+daemon, not the host's socket. The socket variant is a little simpler and was
+measured just as thoroughly — but in it a `docker ps` inside a job listed all 21
+containers of the host, and any workflow could stop or read them. That is a fine
+trade to make on your own machine and a poor one to hand to strangers through a
+store. Both files live in `~/dev/Appstore-Pakete/Gitea/`.
+
+### Before you install
+
+Every app's install form carries its own notes; these are the ones worth knowing
+before you click.
+
+**CasaDrop** prints a one-time setup token to its log and shows it nowhere else.
+Without it you cannot create the administrator account:
+`docker logs casadrop | grep "SETUP TOKEN"`.
+
+**Gitea** needs `ROOT_URL`, `SSH_DOMAIN`, `DOMAIN` and the runner's
+`GITEA_INSTANCE_URL` pointed at this machine's address. `GITEA_INSTANCE_URL` must
+**not** stay `http://server:3000` — the runner hands that value to every job
+container, and those run in a network where `server` does not resolve.
+
+**Pterodactyl** wants its `APP_URL` and the wings token values reviewed; the
+panel builds every link from them.
+
+**Invoice Ninja** needs three values changed — the
 app's install form exposes them:
 
 * `APP_URL` — the address you browse to, including the port. Invoice Ninja builds
@@ -129,6 +157,21 @@ app's install form exposes them:
 
 First start takes about 90 seconds *after* ZimaOS reports `running`: the app runs
 its database migrations before it serves anything, and answers `502` until then.
+
+## What is not here, and why
+
+**ZFW** and **VM-Extras** cannot be app store apps. Both are **systemd-sysext
+modules**: `zfw.raw` and `zima_vm_extras.raw` under `/var/lib/extensions`, merged
+into `/usr` by `systemd-sysext`, running as host services (`zfw-ui.service`,
+`zfw.service`, `zima-vm-extras.service`). Checked on a live host, not inferred
+from the file names.
+
+That is not a packaging gap, it is what they are. ZFW's own Dockerfile says so in
+as many words: the image is a delivery vehicle, not a runtime — a ZFW inside a
+container has no host systemd to arm its Safe-Apply dead-man with, so the one
+promise the whole design rests on would silently not exist. VM-Extras drives
+libvirt on the host for the same reason. Both install with their own
+`install.sh`, and that is the honest way to ship them.
 
 ## Adding an app
 
