@@ -11,12 +11,14 @@
 # ────────────────────────────────────────────────────────────────────────────
 # CHANGE BEFORE YOU INSTALL:
 #
-#   1. 🔴 SPF_PASSWORD. The value below stands in a public file, so everyone has
-#      it. This is not a password on a document — it is the password on a
-#      terminal that can read, move and delete everything mounted below, and
-#      superfile can run shell commands. Change it, or do not install this.
-#      The container refuses to start with an empty SPF_PASSWORD and prints a
-#      warning on every start while this example value is still in place.
+#   1. 🔴 SPF_PASSWORD. The login is admin / change-me-asap — named openly here
+#      and in the install dialog, because a credential nobody can find is a
+#      credential nobody changes. It stands in a public file, so everyone has it.
+#      This is not a password on a document — it is the password on a terminal
+#      that can read, move and delete everything mounted below, and superfile can
+#      run shell commands. Change it, or do not install this. The container
+#      refuses to start with an empty SPF_PASSWORD and prints a warning on every
+#      start while this example value is still in place.
 #   2. The mounts under /files are the shares you will be able to browse. Add or
 #      remove as you like — the name after /files/ is what superfile shows.
 #      Nothing outside these paths is reachable from the app.
@@ -55,17 +57,19 @@ services:
     # Pinned to an immutable tag. 1.6.0 is superfile's version; -rN counts the
     # packaging revisions on top of it, so the tag cannot quietly change under
     # an installed app the way `1.6.0` or `latest` can.
-    image: chicohaager/superfile-web:1.6.0-r4
+    image: chicohaager/superfile-web:1.6.0-r5
     container_name: superfile
     restart: unless-stopped
     ports:
       # host:container — 7681 inside is ttyd's own default and stays as it is.
       - "7682:7681"
     environment:
-      # Basic authentication for the terminal. Both are required; an empty
-      # password stops the container instead of publishing an open shell.
+      # The login for the browser terminal: admin / change-me-asap.
+      # Both are required; an empty password stops the container instead of
+      # publishing an open shell. The password is named in the install dialog on
+      # purpose — a credential nobody can find is a credential nobody changes.
       - SPF_USER=admin
-      - SPF_PASSWORD=Zx7mQ2vK9rTn4Lbd
+      - SPF_PASSWORD=change-me-asap
       # Where superfile opens. It can walk anywhere below the mounts, so this is
       # the roof over all shares rather than one of them.
       - SPF_START_DIR=/files
@@ -141,16 +145,21 @@ x-casaos:
       package ships the upstream release binary together with ttyd, so the
       whole thing runs in a browser tab against the shares you mount into it —
       no client to install, no separate terminal. Press "?" inside for the
-      hotkeys. Access is protected by HTTP basic authentication; anyone who
-      gets in can also run shell commands from superfile's command line, so
-      treat the password as a password to the machine, not to an app.
+      hotkeys. The browser asks for a login on first open: user "admin",
+      password "change-me-asap" — change it in the app settings, because anyone
+      who gets in can also run shell commands from superfile's command line.
+      Treat it as a password to the machine, not to an app.
   tips:
     before_install:
       en_us: >-
-        Change SPF_PASSWORD before installing — the value in this file is
-        public, and it guards a terminal that can delete the files you mount.
-        Keep the published port off 7681: ZimaOS runs its own web terminal
-        there. The mounts under /files are exactly what the app will be able
-        to reach.
+        LOGIN: user "admin", password "change-me-asap" — this is what the browser
+        will ask for the first time you open the tile. CHANGE THE PASSWORD: it is
+        printed in a public file, and it does not guard a document, it guards a
+        terminal that can read, move and delete every folder mounted below. Edit
+        SPF_PASSWORD right here before you press install. An empty password is
+        refused and the app will not start. Two more things: the mounts under
+        /files are exactly what the app will be able to reach, nothing else, and
+        the published port must stay off 7681 because ZimaOS runs its own web
+        terminal there.
   index: /
   port_map: "7682"
