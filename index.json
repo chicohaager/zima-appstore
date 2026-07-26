@@ -1,9 +1,51 @@
 {
   "version": 2,
-  "updated_at": "2026-07-26T10:14:40Z",
-  "app_count": 1,
+  "updated_at": "2026-07-26T10:40:54Z",
+  "app_count": 4,
   "base_url": "https://chicohaager.github.io/zima-appstore",
   "apps": [
+    {
+      "id": "io.github.chicohaager.casadrop",
+      "title": "CasaDrop",
+      "tagline": "Share files from your ZimaOS box with a link",
+      "category": "Productivity",
+      "categories": [
+        "productivity"
+      ],
+      "author": "Lintuxer",
+      "developer": "chicohaager",
+      "architectures": [
+        "amd64",
+        "arm64"
+      ],
+      "icon": "/apps/io.github.chicohaager.casadrop/assets/icon.png",
+      "thumbnail": "",
+      "compose_url": "/apps/io.github.chicohaager.casadrop/docker-compose.yml",
+      "meta_url": "/apps/io.github.chicohaager.casadrop/meta.json",
+      "content_hash": "fc4d2f6d",
+      "version": "2.4.2"
+    },
+    {
+      "id": "io.github.chicohaager.gitea",
+      "title": "Gitea",
+      "tagline": "Git hosting with Actions, runner already registered and isolated",
+      "category": "Developer",
+      "categories": [
+        "developer"
+      ],
+      "author": "Lintuxer",
+      "developer": "Gitea",
+      "architectures": [
+        "amd64",
+        "arm64"
+      ],
+      "icon": "/apps/io.github.chicohaager.gitea/assets/icon.png",
+      "thumbnail": "",
+      "compose_url": "/apps/io.github.chicohaager.gitea/docker-compose.yml",
+      "meta_url": "/apps/io.github.chicohaager.gitea/meta.json",
+      "content_hash": "65bc4e82",
+      "version": "1.27.0"
+    },
     {
       "id": "io.github.chicohaager.invoiceninja",
       "title": "Invoice Ninja",
@@ -24,6 +66,27 @@
       "meta_url": "/apps/io.github.chicohaager.invoiceninja/meta.json",
       "content_hash": "d2a7d227",
       "version": "5.13.26"
+    },
+    {
+      "id": "io.github.chicohaager.pterodactyl",
+      "title": "Pterodactyl",
+      "tagline": "Game server panel and daemon, with the node already wired up",
+      "category": "Others",
+      "categories": [
+        "others"
+      ],
+      "author": "Lintuxer",
+      "developer": "Pterodactyl",
+      "architectures": [
+        "amd64",
+        "arm64"
+      ],
+      "icon": "/apps/io.github.chicohaager.pterodactyl/assets/icon.png",
+      "thumbnail": "",
+      "compose_url": "/apps/io.github.chicohaager.pterodactyl/docker-compose.yml",
+      "meta_url": "/apps/io.github.chicohaager.pterodactyl/meta.json",
+      "content_hash": "ba401108",
+      "version": "1.14.1"
     }
   ]
 }

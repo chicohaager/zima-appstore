@@ -1,0 +1,152 @@
+name: gitea
+services:
+  db:
+    image: postgres:17-alpine@sha256:b797483593b82cbea9a7ee41c88f324a90d10d9c2504d40e755d91c75456366d
+    restart: unless-stopped
+    environment:
+    - POSTGRES_DB=gitea
+    - POSTGRES_USER=gitea
+    - POSTGRES_PASSWORD=jx86OvHPSol2Ssgn4lxT2I9V
+    - TZ=UTC
+    volumes:
+    - type: bind
+      source: /DATA/AppData/gitea/postgres
+      target: /var/lib/postgresql/data
+    healthcheck:
+      test:
+      - CMD-SHELL
+      - pg_isready -U gitea -d gitea
+      interval: 10s
+      timeout: 5s
+      retries: 18
+    networks:
+    - gitea-network
+  server:
+    image: gitea/gitea:1.27.0@sha256:8cbb17621b79e49db127040744e5f4743b606f9b11e55ff356a42ca562a0070d
+    restart: unless-stopped
+    environment:
+    - USER_UID=1000
+    - USER_GID=1000
+    - TZ=UTC
+    - GITEA__server__ROOT_URL=http://REPLACE-WITH-YOUR-ZIMAOS-IP:3020/
+    - GITEA__server__SSH_DOMAIN=REPLACE-WITH-YOUR-ZIMAOS-IP
+    - GITEA__server__DOMAIN=REPLACE-WITH-YOUR-ZIMAOS-IP
+    - GITEA__server__HTTP_PORT=3000
+    - GITEA__server__SSH_PORT=2226
+    - GITEA__server__SSH_LISTEN_PORT=22
+    - GITEA__security__INSTALL_LOCK=true
+    - GITEA__actions__ENABLED=true
+    - GITEA__server__LOCAL_ROOT_URL=http://server:3000/
+    - GITEA__service__DISABLE_REGISTRATION=true
+    - GITEA__database__DB_TYPE=postgres
+    - GITEA__database__HOST=db:5432
+    - GITEA__database__NAME=gitea
+    - GITEA__database__USER=gitea
+    - GITEA__database__PASSWD=jx86OvHPSol2Ssgn4lxT2I9V
+    volumes:
+    - type: bind
+      source: /DATA/AppData/gitea/data
+      target: /data
+    ports:
+    - mode: ingress
+      target: 3000
+      published: '3020'
+      protocol: tcp
+    - mode: ingress
+      target: 22
+      published: '2226'
+      protocol: tcp
+    depends_on:
+      db:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 2GB
+          cpus: '2.00'
+    networks:
+    - gitea-network
+  provision:
+    image: gitea/gitea:1.27.0@sha256:8cbb17621b79e49db127040744e5f4743b606f9b11e55ff356a42ca562a0070d
+    restart: on-failure
+    user: 1000:1000
+    environment:
+    - ADMIN_USERNAME=gitadmin
+    - ADMIN_EMAIL=admin@example.com
+    - ADMIN_PASSWORD=pSidNE59pOWgrVCW
+    - GITEA_WORK_DIR=/data/gitea
+    entrypoint:
+    - /bin/bash
+    - -c
+    command:
+    - "cat > /tmp/provision.at <<'PROVISION'\necho \"[provision] waiting for Gitea\
+      \ to answer its health check\"\nuntil wget -q -O /dev/null http://server:3000/api/healthz;\
+      \ do sleep 3; done\n\nif [ ! -f /data/gitea/.zima-admin-created ]; then\n  echo\
+      \ \"[provision] creating the administrator\"\n  /app/gitea/gitea admin user\
+      \ create --admin \\\n    --username \"@ADMIN_USERNAME\" --email \"@ADMIN_EMAIL\"\
+      \ \\\n    --password \"@ADMIN_PASSWORD\" --must-change-password=false\n  touch\
+      \ /data/gitea/.zima-admin-created\nelse\n  echo \"[provision] administrator\
+      \ already exists, leaving it alone\"\nfi\n\nif [ ! -s /token/token.txt ]; then\n\
+      \  echo \"[provision] minting a runner registration token\"\n  /app/gitea/gitea\
+      \ actions generate-runner-token > /tmp/token.txt 2>&1\n  # \"not empty\" is\
+      \ NOT \"is a token\": when the CLI cannot reach the\n  # running instance it\
+      \ prints \"Internal Server Connection Error\" to\n  # stdout and exits 0. Check\
+      \ the shape instead: 40 alphanumerics.\n  if ! grep -qE '^[A-Za-z0-9]{40}@'\
+      \ /tmp/token.txt; then\n    echo \"[provision] FAILED: that is not a token:\"\
+      \n    cat /tmp/token.txt\n    exit 1\n  fi\n  cp /tmp/token.txt /token/token.txt\n\
+      \  echo \"[provision] wrote the token for the runner\"\nelse\n  echo \"[provision]\
+      \ token already present, leaving it alone\"\nfi\necho \"[provision] done\"\n\
+      PROVISION\ntr '@' '\\044' < /tmp/provision.at > /tmp/provision.sh\nexec /bin/bash\
+      \ /tmp/provision.sh\n"
+    volumes:
+    - type: bind
+      source: /DATA/AppData/gitea/data
+      target: /data
+    - type: bind
+      source: /DATA/AppData/gitea/token
+      target: /token
+    depends_on:
+      server:
+        condition: service_started
+    networks:
+    - gitea-network
+  runner:
+    image: gitea/act_runner:0.6.1-dind-rootless@sha256:a51bb7b2ea230f853df4b0264fece37fac518220a1a69230568c758b7bdddec4
+    restart: unless-stopped
+    privileged: true
+    environment:
+    - TZ=UTC
+    - GITEA_INSTANCE_URL=http://REPLACE-WITH-YOUR-ZIMAOS-IP:3020
+    - GITEA_RUNNER_REGISTRATION_TOKEN_FILE=/token/token.txt
+    - GITEA_RUNNER_NAME=zimaos-isolated
+    - GITEA_MAX_REG_ATTEMPTS=3
+    - GITEA_RUNNER_LABELS=ubuntu-latest:docker://gitea/runner-images:ubuntu-latest,alpine:docker://alpine:3.21
+    volumes:
+    - type: bind
+      source: /DATA/AppData/gitea/runner
+      target: /data
+    - type: bind
+      source: /DATA/AppData/gitea/token
+      target: /token
+      read_only: true
+    depends_on:
+      server:
+        condition: service_started
+      provision:
+        condition: service_completed_successfully
+    networks:
+    - gitea-network
+networks:
+  gitea-network:
+    driver: bridge
+x-casaos:
+  main: server
+  id: io.github.chicohaager.gitea
+  version: 1.27.0
+  scheme: http
+  icon: https://chicohaager.github.io/zima-appstore/apps/io.github.chicohaager.gitea/assets/icon.png
+  title:
+    en_US: Gitea
+    custom: Gitea
+  index: /
+  port_map: '3020'

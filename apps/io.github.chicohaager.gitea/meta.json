@@ -1,0 +1,26 @@
+{
+  "architectures": [
+    "amd64",
+    "arm64"
+  ],
+  "author": "Lintuxer",
+  "developer": "Gitea",
+  "category": "Developer",
+  "tagline": "Git hosting with Actions, runner already registered and isolated",
+  "description": "Gitea 1.27 with a working Actions runner in a single ZimaOS app. Gitea, PostgreSQL and act_runner come up together, and a one-shot provision container creates the first administrator and mints the runner's registration token over Gitea's own CLI. This variant runs the runner with its own rootless Docker daemon instead of the host's socket, so a workflow can start containers without seeing the rest of the machine.",
+  "tips": {
+    "before_install": "Set ROOT_URL, SSH_DOMAIN, DOMAIN and the runner's GITEA_INSTANCE_URL to this machine's address before installing, and change ADMIN_PASSWORD. The runner runs privileged because it carries its own Docker daemon; it does not get the host's Docker socket. Sign-ups are disabled by default."
+  },
+  "title": "Gitea",
+  "base_url": "https://chicohaager.github.io/zima-appstore",
+  "id": "io.github.chicohaager.gitea",
+  "version": "1.27.0",
+  "categories": [
+    "developer"
+  ],
+  "min_memory": 0,
+  "min_image_size": {
+    "amd64": 361452162,
+    "arm64": 346149481
+  }
+}

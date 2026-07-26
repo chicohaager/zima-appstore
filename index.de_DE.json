@@ -1,0 +1,9 @@
+{
+  "apps": [
+    {
+      "id": "io.github.chicohaager.casadrop",
+      "tagline": "Dateien von deiner ZimaOS-Box per Link teilen",
+      "title": "CasaDrop"
+    }
+  ]
+}

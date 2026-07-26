@@ -1,0 +1,60 @@
+name: casadrop
+services:
+  casadrop:
+    image: chicohaager/casadrop:2.4.2@sha256:6b2baa7c172aabff1495c3f7bb9f8322f2219792fffb9281a5e8705f54dcbc72
+    container_name: casadrop
+    hostname: casadrop
+    restart: unless-stopped
+    ports:
+    - mode: ingress
+      target: 8080
+      published: '8086'
+      protocol: tcp
+    environment:
+      PORT: '8080'
+      EXTERNAL_PORT: '8086'
+      DATA_DIR: /data
+      TZ: Europe/Berlin
+      SHARE_ALLOWED_PATHS: /DATA/Media,/DATA/Documents,/DATA/Downloads,/DATA/Gallery,/DATA/Backup
+      TRUSTED_PROXY: ''
+      WEBHOOK_STRICT_SSRF: 'true'
+    volumes:
+    - /DATA/AppData/casadrop/data:/data
+    - /DATA/Media:/DATA/Media:ro
+    - /DATA/Documents:/DATA/Documents:ro
+    - /DATA/Downloads:/DATA/Downloads:ro
+    - /DATA/Gallery:/DATA/Gallery:ro
+    - /DATA/Backup:/DATA/Backup:ro
+    security_opt:
+    - no-new-privileges:true
+    cap_drop:
+    - ALL
+    cap_add:
+    - CHOWN
+    - SETUID
+    - SETGID
+    - DAC_OVERRIDE
+    - FOWNER
+    read_only: true
+    tmpfs:
+    - /tmp
+    healthcheck:
+      test:
+      - CMD-SHELL
+      - wget -qO- http://localhost:8080/healthz >/dev/null 2>&1 || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+x-casaos:
+  main: casadrop
+  id: io.github.chicohaager.casadrop
+  version: 2.4.2
+  icon: https://chicohaager.github.io/zima-appstore/apps/io.github.chicohaager.casadrop/assets/icon.png
+  index: /
+  port_map: '8086'
+  scheme: http
+  title:
+    custom: CasaDrop
+    en_US: CasaDrop
+    de_DE: CasaDrop

@@ -1,0 +1,240 @@
+name: pterodactyl
+services:
+  database:
+    image: mariadb:11@sha256:09336a8c0cff9f363e133d8a245cca5ad3eeb326e0ffaedf74d49214c4571486
+    restart: unless-stopped
+    command:
+    - --default-authentication-plugin=mysql_native_password
+    environment:
+    - MYSQL_DATABASE=panel
+    - MYSQL_USER=pterodactyl
+    - MYSQL_PASSWORD=GARZkEHwv3h1P7vw6a98YLgV
+    - MYSQL_ROOT_PASSWORD=Ba1GmTFgc8Mv0YSA7zUFizpj
+    - TZ=UTC
+    volumes:
+    - type: bind
+      source: /DATA/AppData/pterodactyl/database
+      target: /var/lib/mysql
+    healthcheck:
+      test:
+      - CMD
+      - healthcheck.sh
+      - --connect
+      - --innodb_initialized
+      interval: 10s
+      timeout: 5s
+      retries: 18
+    networks:
+    - pterodactyl-network
+  cache:
+    image: redis:alpine@sha256:465aff338d817971674ff1ec3c0d59182e2b687018e87bf94b6e1491d0bb79e2
+    restart: unless-stopped
+    environment:
+    - TZ=UTC
+    volumes:
+    - type: bind
+      source: /DATA/AppData/pterodactyl/cache
+      target: /data
+    healthcheck:
+      test:
+      - CMD
+      - redis-cli
+      - ping
+      interval: 10s
+      timeout: 5s
+      retries: 12
+    networks:
+    - pterodactyl-network
+  panel:
+    image: ghcr.io/pterodactyl/panel:v1.14.1@sha256:6a576b07a34d442fd0f1dd98efccbc08330b81668b2a9f7eef4d5261fd8a32f6
+    restart: unless-stopped
+    environment:
+    - APP_URL=http://REPLACE-WITH-YOUR-ZIMAOS-IP:8080
+    - APP_ENV=production
+    - APP_ENVIRONMENT_ONLY=false
+    - APP_DEBUG=false
+    - APP_TIMEZONE=UTC
+    - APP_SERVICE_AUTHOR=noreply@example.com
+    - TRUSTED_PROXIES=*
+    - HASHIDS_LENGTH=8
+    - RECAPTCHA_ENABLED=false
+    - DB_HOST=database
+    - DB_PORT=3306
+    - DB_DATABASE=panel
+    - DB_USERNAME=pterodactyl
+    - DB_PASSWORD=GARZkEHwv3h1P7vw6a98YLgV
+    - CACHE_DRIVER=redis
+    - SESSION_DRIVER=redis
+    - QUEUE_DRIVER=redis
+    - REDIS_HOST=cache
+    - REDIS_PORT=6379
+    - MAIL_MAILER=log
+    - MAIL_FROM=noreply@example.com
+    - MAIL_FROM_NAME=Pterodactyl Panel
+    volumes:
+    - type: bind
+      source: /DATA/AppData/pterodactyl/var
+      target: /app/var
+    - type: bind
+      source: /DATA/AppData/pterodactyl/logs
+      target: /app/storage/logs
+    ports:
+    - mode: ingress
+      target: 80
+      published: '8080'
+      protocol: tcp
+    depends_on:
+      database:
+        condition: service_healthy
+      cache:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 2GB
+          cpus: '2.00'
+    networks:
+    - pterodactyl-network
+  provision:
+    image: ghcr.io/pterodactyl/panel:v1.14.1@sha256:6a576b07a34d442fd0f1dd98efccbc08330b81668b2a9f7eef4d5261fd8a32f6
+    restart: on-failure
+    environment:
+    - ADMIN_EMAIL=admin@example.com
+    - ADMIN_USERNAME=admin
+    - ADMIN_FIRST=Server
+    - ADMIN_LAST=Admin
+    - ADMIN_PASSWORD=kQSlMd3rYtj5aR9g
+    - NODE_FQDN=REPLACE-WITH-YOUR-ZIMAOS-IP
+    - NODE_NAME=zimaos
+    - NODE_MEMORY=8192
+    - NODE_DISK=51200
+    - APP_URL=http://REPLACE-WITH-YOUR-ZIMAOS-IP:8080
+    - APP_ENV=production
+    - APP_TIMEZONE=UTC
+    - DB_HOST=database
+    - DB_PORT=3306
+    - DB_DATABASE=panel
+    - DB_USERNAME=pterodactyl
+    - DB_PASSWORD=GARZkEHwv3h1P7vw6a98YLgV
+    - CACHE_DRIVER=redis
+    - SESSION_DRIVER=redis
+    - QUEUE_DRIVER=redis
+    - REDIS_HOST=cache
+    - REDIS_PORT=6379
+    entrypoint:
+    - /bin/ash
+    - -c
+    command:
+    - "cat > /tmp/provision.at <<'PROVISION'\n# The panel's entrypoint creates /app/.env\
+      \ as a symlink into /app/var,\n# and this container replaces that entrypoint\
+      \ — so it has to make the\n# link itself. Without it every artisan call dies\
+      \ with \"No application\n# encryption key has been specified\", because Laravel\
+      \ reads /app/.env.\necho \"[provision] waiting for the panel to write its .env\"\
+      \nuntil [ -s /app/var/.env ]; do sleep 3; done\nln -sf /app/var/.env /app/.env\n\
+      \necho \"[provision] waiting for the panel to finish its migrations\"\nuntil\
+      \ php artisan p:node:list --no-ansi >/dev/null 2>&1; do sleep 5; done\n\nif\
+      \ [ ! -f /app/var/.zima-admin-created ]; then\n  echo \"[provision] creating\
+      \ the administrator\"\n  php artisan p:user:make --no-interaction --no-ansi\
+      \ \\\n    --email=\"@ADMIN_EMAIL\" --username=\"@ADMIN_USERNAME\" \\\n    --name-first=\"\
+      @ADMIN_FIRST\" --name-last=\"@ADMIN_LAST\" \\\n    --password=\"@ADMIN_PASSWORD\"\
+      \ --admin=1\n  touch /app/var/.zima-admin-created\nelse\n  echo \"[provision]\
+      \ administrator already exists, leaving it alone\"\nfi\n\nif [ ! -s /etc/pterodactyl/config.yml\
+      \ ]; then\n  echo \"[provision] creating location and node\"\n  php artisan\
+      \ p:location:make --no-interaction --no-ansi \\\n    --short=zimaos --long=\"\
+      ZimaOS host\" || true\n  php artisan p:node:make --no-interaction --no-ansi\
+      \ \\\n    --name=\"@NODE_NAME\" --description=\"ZimaOS\" --locationId=1 \\\n\
+      \    --fqdn=\"@NODE_FQDN\" --public=1 --scheme=http --proxy=0 --maintenance=0\
+      \ \\\n    --maxMemory=\"@NODE_MEMORY\" --overallocateMemory=0 \\\n    --maxDisk=\"\
+      @NODE_DISK\" --overallocateDisk=0 --uploadSize=100 \\\n    --daemonListeningPort=8443\
+      \ --daemonSFTPPort=2022 \\\n    --daemonBase=/DATA/AppData/pterodactyl/servers\n\
+      \  php artisan p:node:configuration 1 --no-ansi > /tmp/node.yml\n  if [ ! -s\
+      \ /tmp/node.yml ]; then\n    echo \"[provision] FAILED: the node configuration\
+      \ came back empty\"\n    exit 1\n  fi\n  # The panel only emits a minimal configuration;\
+      \ wings fills in the rest\n  # with defaults on first start. Three of those\
+      \ defaults point at paths\n  # inside the wings container (/run/wings/...) that\
+      \ wings then hands to\n  # the HOST's docker daemon when it builds a game container\
+      \ — the host\n  # does not have them, and creating a server dies with \"bind\
+      \ source path\n  # does not exist\". So they are moved under /DATA, where the\
+      \ same path\n  # exists on both sides.\n  awk '{print}\n       /^system:/ {print\
+      \ \"  tmp_directory: /DATA/AppData/pterodactyl/tmp\"\n                   print\
+      \ \"  passwd:\"\n                   print \"    directory: /DATA/AppData/pterodactyl/run/etc\"\
+      \n                   print \"  machine_id:\"\n                   print \"  \
+      \  directory: /DATA/AppData/pterodactyl/run/machine-id\"}' \\\n    /tmp/node.yml\
+      \ > /etc/pterodactyl/config.yml\n  echo \"[provision] wrote /etc/pterodactyl/config.yml\
+      \ for wings\"\nelse\n  echo \"[provision] wings config already present, leaving\
+      \ it alone\"\nfi\necho \"[provision] done\"\nPROVISION\ntr '@' '\\044' < /tmp/provision.at\
+      \ > /tmp/provision.sh\nexec /bin/ash /tmp/provision.sh\n"
+    volumes:
+    - type: bind
+      source: /DATA/AppData/pterodactyl/var
+      target: /app/var
+    - type: bind
+      source: /DATA/AppData/pterodactyl/wings
+      target: /etc/pterodactyl
+    depends_on:
+      panel:
+        condition: service_started
+    networks:
+    - pterodactyl-network
+  wings:
+    image: ghcr.io/pterodactyl/wings:v1.13.1@sha256:860dbf16929982ae9fbeaf5e999cdc3a8ea7552b9989ec79bd01218ba7e1f8b7
+    restart: unless-stopped
+    tty: true
+    environment:
+    - TZ=UTC
+    - WINGS_UID=988
+    - WINGS_GID=988
+    - WINGS_USERNAME=pterodactyl
+    ports:
+    - mode: ingress
+      target: 8443
+      published: '8443'
+      protocol: tcp
+    - mode: ingress
+      target: 2022
+      published: '2022'
+      protocol: tcp
+    volumes:
+    - type: bind
+      source: /var/run/docker.sock
+      target: /var/run/docker.sock
+    - type: bind
+      source: /var/lib/docker/containers
+      target: /var/lib/docker/containers
+    - type: bind
+      source: /DATA/AppData/pterodactyl/wings
+      target: /etc/pterodactyl
+    - type: bind
+      source: /DATA/AppData/pterodactyl/wings-logs
+      target: /var/log/pterodactyl
+    - type: bind
+      source: /DATA/AppData/pterodactyl/backups
+      target: /var/lib/pterodactyl
+    - type: bind
+      source: /DATA/AppData/pterodactyl/servers
+      target: /DATA/AppData/pterodactyl/servers
+    - type: bind
+      source: /DATA/AppData/pterodactyl/tmp
+      target: /DATA/AppData/pterodactyl/tmp
+    - type: bind
+      source: /DATA/AppData/pterodactyl/run
+      target: /DATA/AppData/pterodactyl/run
+    depends_on:
+      panel:
+        condition: service_started
+    networks:
+    - pterodactyl-network
+networks:
+  pterodactyl-network:
+    driver: bridge
+x-casaos:
+  main: panel
+  id: io.github.chicohaager.pterodactyl
+  version: 1.14.1
+  scheme: http
+  icon: https://chicohaager.github.io/zima-appstore/apps/io.github.chicohaager.pterodactyl/assets/icon.png
+  title:
+    en_US: Pterodactyl
+    custom: Pterodactyl
+  index: /
+  port_map: '8080'
