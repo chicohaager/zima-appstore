@@ -8,78 +8,108 @@ before they were listed here. Each app says what was measured and when.
 ZimaOS → **App Store** → add a source, and paste:
 
 ```
-https://github.com/chicohaager/zima-appstore/archive/refs/heads/main.zip
+https://chicohaager.github.io/zima-appstore/store.json
 ```
 
 Or over the API, which is what the UI does underneath:
 
 ```bash
-ZIMA=192.168.1.100
+ZIMA=<zimaos-ip>
 TOKEN=$(curl -s -X POST http://$ZIMA/v1/users/login \
   -H 'Content-Type: application/json' \
   -d '{"username":"YOURUSER","password":"YOURPASSWORD"}' \
   | python3 -c 'import json,sys; print(json.load(sys.stdin)["data"]["token"]["access_token"])')
 
-curl -s -X POST -H "Authorization: $TOKEN" \
-  "http://$ZIMA/v2/app_management/appstore?url=https%3A%2F%2Fgithub.com%2Fchicohaager%2Fzima-appstore%2Farchive%2Frefs%2Fheads%2Fmain.zip"
+curl -s -X POST -H "Authorization: $TOKEN" -H 'Content-Type: application/json' \
+  -d '{"url":"https://chicohaager.github.io/zima-appstore/store.json"}' \
+  "http://$ZIMA/v3/app_store/repo"
 ```
 
 The token goes in **raw**, without `Bearer` — that is not a typo, ZimaOS answers
 `401 invalid or expired jwt` if you prefix it.
 
-Removing it again: `GET /v2/app_management/appstore` lists the sources with their
-ids, `DELETE /v2/app_management/appstore/{id}` removes one.
+Removing it again: `GET /v3/app_store/repo` lists the stores with their ids,
+`DELETE /v3/app_store/repo/{id}` removes one. Our id is
+`io.github.chicohaager.lintuxer-apps`.
 
-## Why a zip and not a `store.json`
+## Why a `store.json` and not a zip
 
-The app store protocol has a v2 form where a store is a set of static files with
-a `store.json` at the front. **ZimaOS v1.7.0-beta1 does not consume it.**
-Measured on 2026-07-24: registering a valid v2 `store.json` answers `HTTP 200`,
-the source never appears in the list, and the service journal says
+Until 2026-07-26 this store shipped as a zip — a plain GitHub source archive,
+the shape the BigBear store uses. **That route is closed for new sources.**
+
+Measured on 2026-07-26 against ZimaOS v1.7.0-beta1: the App Store UI adds a
+source through `POST /v3/app_store/repo`, and with a zip URL it answers
 
 ```
-failed to update appstore catalog   "error": "zip: not a valid zip file"
+HTTP 400   {"message":"Unsupported import method."}
 ```
 
-So this store ships as a zip — a plain GitHub source archive of this repository,
-the same shape the BigBear store uses. `store-config.json` and
-`supported-languages.json` are already here for the day a ZimaOS release reads v2.
+The same endpoint with a v2 `store.json` URL answers `HTTP 200` and registers the
+store with `version: v2`, `transport: http`.
+
+The old `POST /v2/app_management/appstore?url=<zip>` still works and still puts
+the app into `GET /v2/app_management/apps` — but the source does **not** appear in
+`GET /v3/app_store/repo`, so the new App Store UI never lists it. Those are two
+separate registries; the zip sources that are still visible in the UI (BigBear)
+were carried over once, they are not something a new store can join.
+
+So this store is now built to the v2 protocol and published as static files.
+`.github/workflows/release-store.yml` runs the official
+`IceWhaleTech/build-appstore-action` on every push to `main` and deploys the
+generated `dist/` to the `gh-pages` branch, which GitHub Pages serves.
 
 ## What is verified, and what is not
 
-Measured on 2026-07-24 against ZimaOS v1.7.0-beta1:
+Measured on 2026-07-26 against ZimaOS v1.7.0-beta1, on a ZimaCube (amd64):
 
-* Registering the zip URL works — the source shows up in `GET /appstore` within
-  ~10 seconds, ZimaOS unpacks it and drops a `.casaos-appstore` marker next to
-  the files.
-* The app arrives in the catalog with its own metadata: `GET /apps` returns it
-  with `author: Lintuxer`, its own tagline, `version: 5.13.26`, `category: Finance`.
-* Removing the source again leaves nothing behind — measured after
-  `DELETE /appstore/{id}`: gone from the source list, gone from `GET /apps`, and
-  the unpacked directory under `/var/lib/casaos/appstore/github.com/` is deleted.
-* ⚠️ **The App Store UI does not yet render this store as a group.** The sidebar
-  under "community stores" still lists only the one that was there before, even
-  though the catalog serves our app. What was measured about that so far:
-  * The catalog is **flat**. Each entry in `GET /v2/app_management/apps` carries
-    `store_app_id`, `author`, `category` — and **no field naming the store** it
-    came from. So the grouping cannot be read off the app records.
-  * `store_app_id` is simply the **app folder name**. BigBear's 238 apps are all
-    called `big-bear-*` because their folders are.
-  * `category-list.json` is not the mechanism either: BigBear's declares exactly
-    one category, `BigBearCasaOS`, and **none of their own apps use it** — all
-    238 sit in the standard categories (`Others` 79, `Developer` 43, `Finance` 5, …).
-  Unresolved, and honestly labelled as such. Until then the reliable route is
-  installing the compose directly (see the app folder).
+* The published files are the ones clients read: `store.json` and `index.json`
+  answer `200` from GitHub Pages, and so do the app's `docker-compose.yml`,
+  `meta.json` and `assets/icon.png` — fetched cache-busted, not from a browser
+  that might have held an older copy.
+* `POST /v3/app_store/repo` with the `store.json` URL answers `200` and the
+  store lands in `GET /v3/app_store/repo` as
+  `io.github.chicohaager.lintuxer-apps`, `version: v2`, `transport: http`.
+* The sync is clean: the service journal reports `indexed_docs: 1` and no failed
+  resource. (Registering a large foreign v2 store on the same machine reported
+  `required_failed=300` — so the counter does say something.)
+* Each app record now names its store. `GET /v3/app_store/hub/app/search?keyword=ninja`
+  returns Invoice Ninja with `repo_id: io.github.chicohaager.lintuxer-apps`.
+  That is the field the flat v2 catalog never had, and the reason the grouping
+  works now.
+* ✅ **The App Store UI renders the store as its own group** — clicked through in
+  the browser, German locale: under "Gemeinschaftsläden" the sidebar lists
+  `bigbeartechworld` and `Lintuxer Apps`, the group page shows the German store
+  description from `store-config.json`, and Invoice Ninja appears with its icon,
+  version `5.13.26` and an install button. This was the open question in the zip
+  era; it is answered, and the answer was the protocol, not the metadata.
+* Not verified: installing Invoice Ninja **from the store tile** on this machine.
+  The app itself was installed and logged into on 2026-07-24, but through the
+  compose, not through this store entry.
+* Known rough edge: the app's tagline stays English in a German UI, because the
+  compose defines only an `en_US` tagline. The store name and description are
+  localized, the app text is not yet.
 
 ## Layout
 
 ```text
 Apps/<AppName>/
-    docker-compose.yml   the app, with its x-casaos block
-    config.json          id, version and image, for the store listing
+    docker-compose.yml   the app, with its x-casaos block — the only source of truth
+    config.json          id, version and image; a leftover of the zip era
 category-list.json       the categories, taken from the official store
-store-config.json        store identity (v2)
-supported-languages.json locales (v2)
+store-config.json        store identity: store_id, localized name and description
+supported-languages.json locales the build may emit
+scripts/build_dist.sh    the same build the CI runs, for local checking
+.github/workflows/       validate on pull requests, publish to gh-pages on main
+```
+
+`dist/` is generated, never committed. What ZimaOS reads lives on the `gh-pages`
+branch and is served at `https://chicohaager.github.io/zima-appstore`.
+
+Build it yourself before pushing:
+
+```bash
+cp .env.example .env
+./scripts/build_dist.sh          # writes ./dist
 ```
 
 ## Apps
@@ -113,6 +143,10 @@ python3 zimapp.py validate Apps/MyApp/docker-compose.yml
 A listing needs `x-casaos.id` (reverse-domain), `version`, `title`, `icon`,
 `category`, `main`, `index` and a string `port_map`. The official store's own
 apps write the English locale key as `en_US`; both spellings work on install.
+
+Push to `main` and the release workflow rebuilds `dist/` and pushes it to
+`gh-pages`; ZimaOS picks the change up on its next sync of the store. Watch it
+with `gh run list -R chicohaager/zima-appstore`.
 
 Nothing goes into this store that was not installed and opened once. If the entry
 does not say what was verified and on which version, it is not ready.
