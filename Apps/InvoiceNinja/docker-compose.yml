@@ -127,13 +127,25 @@ services:
       - container: '80'
         description:
           en_us: WebUI port
+          de_DE: |
+            Invoice Ninja 5 — Rechnungen, Angebote, wiederkehrende Abrechnung, Zeiterfassung
+            und Online-Zahlungen. MySQL und Redis gehören zur selben ZimaOS-App; die PDFs rendert
+            das Chrome, das im App-Image mitkommt.
       volumes:
       - container: /var/www/html/public
         description:
           en_us: Public files (logos, generated assets)
+          de_DE: |
+            Invoice Ninja 5 — Rechnungen, Angebote, wiederkehrende Abrechnung, Zeiterfassung
+            und Online-Zahlungen. MySQL und Redis gehören zur selben ZimaOS-App; die PDFs rendert
+            das Chrome, das im App-Image mitkommt.
       - container: /var/www/html/storage
         description:
           en_us: Uploads, PDFs, backups and logs
+          de_DE: |
+            Invoice Ninja 5 — Rechnungen, Angebote, wiederkehrende Abrechnung, Zeiterfassung
+            und Online-Zahlungen. MySQL und Redis gehören zur selben ZimaOS-App; die PDFs rendert
+            das Chrome, das im App-Image mitkommt.
 networks:
   invoiceninja-network:
     driver: bridge
@@ -151,10 +163,16 @@ x-casaos:
   title:
     en_US: Invoice Ninja
     custom: Invoice Ninja
+    de_DE: Invoice Ninja
   tagline:
     en_US: Invoices, quotes and payments, self-hosted
+    de_DE: Rechnungen, Angebote und Zahlungen — selbst gehostet
   description:
     en_US: Invoice Ninja 5 — invoicing, quotes, recurring billing, time tracking and online payments. MySQL and Redis are part of the same ZimaOS app; PDFs are rendered by the Chrome that ships inside the app image.
+    de_DE: |
+      Invoice Ninja 5 — Rechnungen, Angebote, wiederkehrende Abrechnung, Zeiterfassung
+      und Online-Zahlungen. MySQL und Redis gehören zur selben ZimaOS-App; die PDFs rendert
+      das Chrome, das im App-Image mitkommt.
   index: /
   is_uncontrolled: false
   port_map: '8012'
