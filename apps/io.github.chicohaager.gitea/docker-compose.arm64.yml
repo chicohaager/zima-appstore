@@ -148,5 +148,6 @@ x-casaos:
   title:
     en_US: Gitea
     custom: Gitea
+    de_DE: Gitea
   index: /
   port_map: '3020'
