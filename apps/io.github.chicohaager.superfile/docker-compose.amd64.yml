@@ -1,0 +1,39 @@
+name: superfile
+services:
+  app:
+    image: chicohaager/superfile-web:1.6.0-r4@sha256:8f6e724d47fcde84a9b78371c10071a22ef698c01d46c5984ed8d441cee25638
+    container_name: superfile
+    restart: unless-stopped
+    ports:
+    - 7682:7681
+    environment:
+    - SPF_USER=admin
+    - SPF_PASSWORD=Zx7mQ2vK9rTn4Lbd
+    - SPF_START_DIR=/files
+    - SPF_READONLY=false
+    - SPF_MAX_CLIENTS=0
+    - SPF_FONT_SIZE=15
+    - TZ=Europe/Berlin
+    volumes:
+    - /DATA/AppData/superfile/config:/config
+    - /DATA/Documents:/files/Documents
+    - /DATA/Downloads:/files/Downloads
+    - /DATA/Gallery:/files/Gallery
+    - /DATA/Media:/files/Media
+    - /DATA/Backup:/files/Backup
+    networks:
+    - superfile-network
+networks:
+  superfile-network:
+    driver: bridge
+x-casaos:
+  main: app
+  id: io.github.chicohaager.superfile
+  version: 1.6.0
+  scheme: http
+  icon: https://chicohaager.github.io/zima-appstore/apps/io.github.chicohaager.superfile/assets/icon.png
+  title:
+    en_US: Superfile
+    custom: Superfile
+  index: /
+  port_map: '7682'
