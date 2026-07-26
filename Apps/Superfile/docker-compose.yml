@@ -1,0 +1,156 @@
+# superfile on ZimaOS — the terminal file manager, in a browser tab.
+#
+# Install: ZimaOS App Store → "Install a customized app" → Import this file
+#          (or: python3 zimapp.py install docker-compose.yml --host <ip> …)
+#
+# Upstream: https://github.com/yorukot/superfile — a TUI, not a web app. It has
+# no web interface of its own, so the image pairs the upstream release binary
+# with ttyd, which puts a real terminal in the browser. What you see in the tab
+# is superfile itself, not a reimplementation of it.
+#
+# ────────────────────────────────────────────────────────────────────────────
+# CHANGE BEFORE YOU INSTALL:
+#
+#   1. 🔴 SPF_PASSWORD. The value below stands in a public file, so everyone has
+#      it. This is not a password on a document — it is the password on a
+#      terminal that can read, move and delete everything mounted below, and
+#      superfile can run shell commands. Change it, or do not install this.
+#      The container refuses to start with an empty SPF_PASSWORD and prints a
+#      warning on every start while this example value is still in place.
+#   2. The mounts under /files are the shares you will be able to browse. Add or
+#      remove as you like — the name after /files/ is what superfile shows.
+#      Nothing outside these paths is reachable from the app.
+#   3. Port 7682. 🔴 Do NOT move it to 7681: ZimaOS runs its own web terminal
+#      there (`ttyd.service`, enabled by default), and the app would never bind.
+#
+# WHAT THIS NEEDS FROM THE HOST:
+#   * Nothing privileged: no Docker socket, no host network, no capabilities.
+#   * The container runs as root, which is what lets it write to shares owned by
+#     other users. It sees exactly the paths bound below and nothing else.
+#   * About 274 MB of image, a few MB of RAM per open browser tab.
+#
+# ABOUT THE ICONS: superfile draws its interface with Nerd Font glyphs, which no
+# browser has — without help every icon is an empty box. The image bakes the
+# upstream Nerd Fonts symbol set into the page ttyd serves, so the icons render
+# without installing anything. Nothing to configure, and nothing is fetched from
+# the internet at runtime.
+#
+# WHAT IT CANNOT DO, MEASURED RATHER THAN GUESSED:
+#   * No copy to the system clipboard: superfile shells out to xclip/wl-copy,
+#     which need an X or Wayland session. Selecting text in the browser works.
+#   * "Open with the default application" (xdg-open) has nothing to open into.
+#     Editing works — nano is installed and is the configured EDITOR.
+#   * Image, video and PDF previews render as coloured half-blocks: superfile
+#     falls back to ANSI when the terminal has no Kitty graphics protocol, and
+#     the browser terminal has none. ffmpeg and pdftoppm are in the image to
+#     produce the thumbnails that fallback then draws.
+#   * Entering an empty directory logs "invalid cursor : 0, element count : 0"
+#     and draws an empty preview. That is upstream superfile, not the packaging
+#     — verified by the same step in a directory holding one file.
+
+name: superfile
+
+services:
+  app:
+    # Pinned to an immutable tag. 1.6.0 is superfile's version; -rN counts the
+    # packaging revisions on top of it, so the tag cannot quietly change under
+    # an installed app the way `1.6.0` or `latest` can.
+    image: chicohaager/superfile-web:1.6.0-r4
+    container_name: superfile
+    restart: unless-stopped
+    ports:
+      # host:container — 7681 inside is ttyd's own default and stays as it is.
+      - "7682:7681"
+    environment:
+      # Basic authentication for the terminal. Both are required; an empty
+      # password stops the container instead of publishing an open shell.
+      - SPF_USER=admin
+      - SPF_PASSWORD=Zx7mQ2vK9rTn4Lbd
+      # Where superfile opens. It can walk anywhere below the mounts, so this is
+      # the roof over all shares rather than one of them.
+      - SPF_START_DIR=/files
+      # Set to true to hand out a terminal that accepts no keystrokes at all —
+      # superfile then shows the first screen and nothing can be changed.
+      - SPF_READONLY=false
+      # 0 means no limit on simultaneous browser tabs.
+      - SPF_MAX_CLIENTS=0
+      - SPF_FONT_SIZE=15
+      - TZ=Europe/Berlin
+    volumes:
+      # superfile's own config, theme, hotkeys and state. Survives a restart,
+      # and is what you edit if you want different keybindings.
+      - /DATA/AppData/superfile/config:/config
+      # The shares. These are ZimaOS' own directories; keep the ones you want.
+      - /DATA/Documents:/files/Documents
+      - /DATA/Downloads:/files/Downloads
+      - /DATA/Gallery:/files/Gallery
+      - /DATA/Media:/files/Media
+      - /DATA/Backup:/files/Backup
+    networks:
+      - superfile-network
+    x-casaos:
+      ports:
+        - container: "7681"
+          description:
+            en_us: The browser terminal running superfile
+      volumes:
+        - container: /config
+          description:
+            en_us: superfile's config, hotkeys, theme and state
+        - container: /files/Documents
+          description:
+            en_us: Browsed as the folder "Documents"
+        - container: /files/Downloads
+          description:
+            en_us: Browsed as the folder "Downloads"
+        - container: /files/Gallery
+          description:
+            en_us: Browsed as the folder "Gallery"
+        - container: /files/Media
+          description:
+            en_us: Browsed as the folder "Media"
+        - container: /files/Backup
+          description:
+            en_us: Browsed as the folder "Backup"
+
+networks:
+  superfile-network:
+    driver: bridge
+
+x-casaos:
+  architectures:
+    - amd64
+  main: app
+  id: io.github.chicohaager.superfile
+  version: 1.6.0
+  scheme: http
+  author: Lintuxer
+  developer: yorukot
+  category: Productivity
+  icon: https://raw.githubusercontent.com/chicohaager/zima-appstore/main/Apps/Superfile/icon.png
+  title:
+    en_us: Superfile
+    custom: Superfile
+  tagline:
+    en_us: The keyboard-driven file manager, in a browser tab
+  description:
+    en_us: >-
+      superfile is a terminal file manager built for the keyboard: multiple
+      panels side by side, fuzzy search, batch rename, compress and extract,
+      a metadata pane and previews for text, images, video and PDFs. This
+      package ships the upstream release binary together with ttyd, so the
+      whole thing runs in a browser tab against the shares you mount into it —
+      no client to install, no separate terminal. Press "?" inside for the
+      hotkeys. Access is protected by HTTP basic authentication; anyone who
+      gets in can also run shell commands from superfile's command line, so
+      treat the password as a password to the machine, not to an app.
+  tips:
+    before_install:
+      en_us: >-
+        Change SPF_PASSWORD before installing — the value in this file is
+        public, and it guards a terminal that can delete the files you mount.
+        Keep the published port off 7681: ZimaOS runs its own web terminal
+        there. The mounts under /files are exactly what the app will be able
+        to reach.
+  index: /
+  port_map: "7682"
