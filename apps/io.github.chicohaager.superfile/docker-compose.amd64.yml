@@ -1,14 +1,14 @@
 name: superfile
 services:
   app:
-    image: chicohaager/superfile-web:1.6.0-r4@sha256:8f6e724d47fcde84a9b78371c10071a22ef698c01d46c5984ed8d441cee25638
+    image: chicohaager/superfile-web:1.6.0-r5@sha256:b31e1e5d11744e2269702e4d08f19b71c60390292a75b62bda85fd414bb02399
     container_name: superfile
     restart: unless-stopped
     ports:
     - 7682:7681
     environment:
     - SPF_USER=admin
-    - SPF_PASSWORD=Zx7mQ2vK9rTn4Lbd
+    - SPF_PASSWORD=change-me-asap
     - SPF_START_DIR=/files
     - SPF_READONLY=false
     - SPF_MAX_CLIENTS=0

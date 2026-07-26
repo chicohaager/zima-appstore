@@ -1,5 +1,5 @@
 chicohaager/casadrop:2.4.2 sha256:ccd73b692f6f0457dadab91897d69735c3b1b847112577f96fe2e20aa5de70ae
-chicohaager/superfile-web:1.6.0-r4 sha256:8f6e724d47fcde84a9b78371c10071a22ef698c01d46c5984ed8d441cee25638
+chicohaager/superfile-web:1.6.0-r5 sha256:b31e1e5d11744e2269702e4d08f19b71c60390292a75b62bda85fd414bb02399
 ghcr.io/pterodactyl/panel:v1.14.1 sha256:6a576b07a34d442fd0f1dd98efccbc08330b81668b2a9f7eef4d5261fd8a32f6
 ghcr.io/pterodactyl/wings:v1.13.1 sha256:860dbf16929982ae9fbeaf5e999cdc3a8ea7552b9989ec79bd01218ba7e1f8b7
 gitea/act_runner:0.6.1-dind-rootless sha256:e3917b4c56f02d67e098bfb013a7a26684ef54a7da73302be520e82505ee69a3
