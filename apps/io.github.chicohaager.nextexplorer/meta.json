@@ -1,0 +1,26 @@
+{
+  "architectures": [
+    "amd64",
+    "arm64"
+  ],
+  "author": "Lintuxer",
+  "developer": "nxzai",
+  "category": "Productivity",
+  "tagline": "Browse, preview and share the files on this machine",
+  "description": "NextExplorer is a self-hosted file explorer: it shows every directory you mount under /mnt as a volume, previews images, video, audio, PDFs and code, edits text files in the browser, and hands out share links with expiry. Local accounts come with the image, OIDC is optional. It is a single container with no database service — /config holds the SQLite database and settings, /cache holds thumbnails and can be thrown away.",
+  "tips": {
+    "before_install": "Set PUBLIC_URL to this machine's address including the port before installing — a wrong value lets the page load but breaks the login. Change SESSION_SECRET and the admin password as well. The mounts under /mnt are the shares you will see in the app; PUID/PGID decide who owns newly created files."
+  },
+  "title": "NextExplorer",
+  "base_url": "https://chicohaager.github.io/zima-appstore",
+  "id": "io.github.chicohaager.nextexplorer",
+  "version": "2.2.7",
+  "categories": [
+    "productivity"
+  ],
+  "min_memory": 0,
+  "min_image_size": {
+    "amd64": 258880845,
+    "arm64": 252845820
+  }
+}

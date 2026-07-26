@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "updated_at": "2026-07-26T10:54:13Z",
-  "app_count": 4,
+  "updated_at": "2026-07-26T11:01:56Z",
+  "app_count": 5,
   "base_url": "https://chicohaager.github.io/zima-appstore",
   "apps": [
     {
@@ -66,6 +66,27 @@
       "meta_url": "/apps/io.github.chicohaager.invoiceninja/meta.json",
       "content_hash": "d2a7d227",
       "version": "5.13.26"
+    },
+    {
+      "id": "io.github.chicohaager.nextexplorer",
+      "title": "NextExplorer",
+      "tagline": "Browse, preview and share the files on this machine",
+      "category": "Productivity",
+      "categories": [
+        "productivity"
+      ],
+      "author": "Lintuxer",
+      "developer": "nxzai",
+      "architectures": [
+        "amd64",
+        "arm64"
+      ],
+      "icon": "/apps/io.github.chicohaager.nextexplorer/assets/icon.png",
+      "thumbnail": "",
+      "compose_url": "/apps/io.github.chicohaager.nextexplorer/docker-compose.yml",
+      "meta_url": "/apps/io.github.chicohaager.nextexplorer/meta.json",
+      "content_hash": "8a3e84d4",
+      "version": "2.2.7"
     },
     {
       "id": "io.github.chicohaager.pterodactyl",
