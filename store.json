@@ -1,0 +1,8 @@
+{
+  "version": 2,
+  "store_id": "io.github.chicohaager.lintuxer-apps",
+  "name": "Lintuxer Apps",
+  "description": "Self-hosted apps for ZimaOS, each one installed and logged into on a real machine before it is listed here.",
+  "maintainer": "Lintuxer",
+  "url": "https://github.com/chicohaager/zima-appstore"
+}
