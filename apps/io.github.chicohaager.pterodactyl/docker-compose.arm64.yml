@@ -236,6 +236,5 @@ x-casaos:
   title:
     en_US: Pterodactyl
     custom: Pterodactyl
-    de_DE: Pterodactyl
   index: /
   port_map: '8080'

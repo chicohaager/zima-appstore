@@ -1,9 +1,0 @@
-{
-  "id": "io.github.chicohaager.casadrop",
-  "title": "CasaDrop",
-  "description": "**CasaDrop** macht aus deiner ZimaOS-Box einen Ort, an den man Dateien\nschicken und von dem man Dateien teilen kann — ohne dass etwas bei einem\nCloud-Anbieter landet.\n\n- Hochladen per Drag and Drop, mit Link und wahlweise QR-Code\n- Die Host-Ordner durchsehen, die du freigibst, und einzelne Dateien oder\n  ganze Ordner teilen\n- Empfangs-Links, damit andere Dateien *an dich* schicken können\n- Wahlweise Passwort, Gültigkeit von einer Stunde bis 30 Tage, Download-Limit\n- Video und Audio laufen im Browser, statt erst geladen zu werden\n- Mehrere Benutzer, auf Wunsch über OIDC-Anmeldung\n\nIm LAN sofort erreichbar. Für den Zugriff von außen kommt ein Tunnel oder\nein Reverse-Proxy davor.\n",
-  "tagline": "Dateien von deiner ZimaOS-Box per Link teilen",
-  "tips": {
-    "before_install": "**Port.** Die App wird auf 8086 veröffentlicht. Ändere ihn unten, falls\nder Port belegt ist; im Container hört sie immer auf 8080.\n\n**Welche Ordner teilbar sind.** Erreichbar sind nur die fünf\nschreibgeschützt eingehängten Ordner: Media, Documents, Downloads,\nGallery, Backup. `/DATA/AppData` fehlt mit Absicht — dort liegen\nDatenbanken und Geheimnisse der anderen Apps. Ein weiterer Ordner\nbraucht **beides**: den Bind-Mount und den Eintrag in\n`SHARE_ALLOWED_PATHS`.\n\n**Der erste Start braucht einen Token aus dem Log.** CasaDrop schreibt\nbeim Start einen einmaligen Setup-Token — und zeigt ihn *sonst nirgends*:\n\n```\ndocker logs casadrop | grep \"SETUP TOKEN\"\n```\n\nKachel öffnen, Token einfügen, Administrator-Passwort setzen. Und zwar\nbevor die App von irgendwo außerhalb des LAN erreichbar ist.\n"
-  }
-}
