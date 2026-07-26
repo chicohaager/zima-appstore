@@ -139,7 +139,10 @@ x-casaos:
     # The tagline is the one line shown on the store card AND above the install
     # button, and ZimaOS 1.7.0-beta1 does not render tips.before_install anywhere.
     # So the login goes here — this is the last place it can still be missed.
-    en_us: Keyboard-driven file manager in a browser tab — login admin / change-me-asap
+    # Login first, description second: the store card truncates after roughly
+    # sixty characters, and measured on 1.7.0-beta1 it cut "login admin /…"
+    # right before the password. Whatever must survive that cut goes in front.
+    en_us: Login admin / change-me-asap — keyboard-driven file manager in a browser tab
   description:
     en_us: >-
       superfile is a terminal file manager built for the keyboard: multiple
