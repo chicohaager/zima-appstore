@@ -1,6 +1,0 @@
-{
-  "id": "io.github.chicohaager.pterodactyl",
-  "title": "Pterodactyl",
-  "description": "Pterodactyl 1.14 — das Game-Server-Panel zusammen mit seinem wings-Daemon als\n**eine** ZimaOS-App. Panel, MariaDB, Redis und wings starten zusammen; ein\nEinmal-Container legt den ersten Administrator, eine Location und einen Node an und\nschreibt die Daemon-Konfiguration gleich selbst. Anderswo ist dieser Node-Handschlag\nein Kopieren von Hand — hier steht der Node schon da, wenn du dich zum ersten Mal\nanmeldest. Die Game-Server laufen als eigene Docker-Container neben der App, verwaltet\nvon wings über den Docker-Socket des Hosts.\n",
-  "tagline": "Game-Server-Panel und Daemon — der Node ist schon verdrahtet"
-}

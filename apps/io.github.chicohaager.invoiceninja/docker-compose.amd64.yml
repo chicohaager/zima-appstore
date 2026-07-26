@@ -145,7 +145,6 @@ x-casaos:
   title:
     en_US: Invoice Ninja
     custom: Invoice Ninja
-    de_DE: Invoice Ninja
   index: /
   port_map: '8012'
   version: 5.13.26
