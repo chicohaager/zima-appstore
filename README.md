@@ -85,13 +85,14 @@ Measured on 2026-07-26 against ZimaOS v1.7.0-beta1, on a ZimaCube (amd64):
 * Not verified: installing Invoice Ninja **from the store tile** on this machine.
   The app itself was installed and logged into on 2026-07-24, but through the
   compose, not through this store entry.
-* **App text is English, deliberately.** Title, tagline, description and install
-  tips carry `en_US` and nothing else, so an app reads the same to everyone who
-  finds this store. The store's own name and description stay localized in
-  `store-config.json` — that is the shelf, not the goods on it.
+* **Everything here is English, deliberately.** App title, tagline, description
+  and install tips carry `en_US` and nothing else, and so do the store's own name
+  and description in `store-config.json`. The store reads the same to everyone
+  who finds it, and no `*.de_DE.json` is generated at all.
 * Loose end: our repo record reports `locales: []` where the official store
-  reports 19. Nothing visibly depends on it, but it is not understood, so it is
-  written down rather than glossed over.
+  reports 19. With a single-locale store that is now the expected answer rather
+  than a puzzle, but it was already `[]` while German files were published, so
+  the original question stays open.
 
 ## Layout
 
