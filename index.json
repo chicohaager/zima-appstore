@@ -1,13 +1,13 @@
 {
   "version": 2,
-  "updated_at": "2026-07-26T18:12:27Z",
+  "updated_at": "2026-07-27T08:16:16Z",
   "app_count": 6,
   "base_url": "https://chicohaager.github.io/zima-appstore",
   "apps": [
     {
       "id": "io.github.chicohaager.casadrop",
       "title": "CasaDrop",
-      "tagline": "Share files from your ZimaOS box with a link",
+      "tagline": "Setup token is in the log — share files with a link",
       "category": "Productivity",
       "categories": [
         "productivity"
@@ -22,13 +22,13 @@
       "thumbnail": "",
       "compose_url": "/apps/io.github.chicohaager.casadrop/docker-compose.yml",
       "meta_url": "/apps/io.github.chicohaager.casadrop/meta.json",
-      "content_hash": "2c8318cc",
+      "content_hash": "51c5d7d0",
       "version": "2.4.2"
     },
     {
       "id": "io.github.chicohaager.gitea",
       "title": "Gitea",
-      "tagline": "Git hosting with Actions, runner already registered and isolated",
+      "tagline": "Sign in as gitadmin — Git hosting with working Actions",
       "category": "Developer",
       "categories": [
         "developer"
@@ -43,13 +43,13 @@
       "thumbnail": "",
       "compose_url": "/apps/io.github.chicohaager.gitea/docker-compose.yml",
       "meta_url": "/apps/io.github.chicohaager.gitea/meta.json",
-      "content_hash": "65bc4e82",
+      "content_hash": "afcb5698",
       "version": "1.27.0"
     },
     {
       "id": "io.github.chicohaager.invoiceninja",
       "title": "Invoice Ninja",
-      "tagline": "Invoices, quotes and payments, self-hosted",
+      "tagline": "First start takes 90 seconds — self-hosted invoicing",
       "category": "Finance",
       "categories": [
         "finance"
@@ -64,13 +64,13 @@
       "thumbnail": "",
       "compose_url": "/apps/io.github.chicohaager.invoiceninja/docker-compose.yml",
       "meta_url": "/apps/io.github.chicohaager.invoiceninja/meta.json",
-      "content_hash": "d2a7d227",
+      "content_hash": "72fcddd0",
       "version": "5.13.26"
     },
     {
       "id": "io.github.chicohaager.nextexplorer",
       "title": "NextExplorer",
-      "tagline": "Browse, preview and share the files on this machine",
+      "tagline": "Sign in with the admin e-mail you set — file explorer",
       "category": "Productivity",
       "categories": [
         "productivity"
@@ -85,13 +85,13 @@
       "thumbnail": "",
       "compose_url": "/apps/io.github.chicohaager.nextexplorer/docker-compose.yml",
       "meta_url": "/apps/io.github.chicohaager.nextexplorer/meta.json",
-      "content_hash": "8a3e84d4",
+      "content_hash": "0a1ea836",
       "version": "2.2.7"
     },
     {
       "id": "io.github.chicohaager.pterodactyl",
       "title": "Pterodactyl",
-      "tagline": "Game server panel and daemon, with the node already wired up",
+      "tagline": "Sign in as admin — game server panel, node wired up",
       "category": "Others",
       "categories": [
         "others"
@@ -106,7 +106,7 @@
       "thumbnail": "",
       "compose_url": "/apps/io.github.chicohaager.pterodactyl/docker-compose.yml",
       "meta_url": "/apps/io.github.chicohaager.pterodactyl/meta.json",
-      "content_hash": "ba401108",
+      "content_hash": "21cb82a2",
       "version": "1.14.1"
     },
     {
