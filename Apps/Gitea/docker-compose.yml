@@ -235,21 +235,51 @@ x-casaos:
     en_US: Gitea
     custom: Gitea
   tagline:
-    en_US: Git hosting with Actions, runner already registered and isolated
+    en_US: Sign in as gitadmin — Git hosting with working Actions
   description:
-    en_US: >-
+    en_US: |
       Gitea 1.27 with a working Actions runner in a single ZimaOS app. Gitea,
       PostgreSQL and act_runner come up together, and a one-shot provision
       container creates the first administrator and mints the runner's
       registration token over Gitea's own CLI. This variant runs the runner
       with its own rootless Docker daemon instead of the host's socket, so a
       workflow can start containers without seeing the rest of the machine.
+
+      **Install it through "Custom install", not the blue button.** Four values
+      have to carry this machine's address, and that dialog is the only place
+      they can be reached: switch on "Advanced (show more)", then pick the
+      service in the row of tabs and edit its variables.
+
+      - `server` — `GITEA__server__ROOT_URL`, `GITEA__server__SSH_DOMAIN` and
+        `GITEA__server__DOMAIN`: replace `REPLACE-WITH-YOUR-ZIMAOS-IP` with
+        this machine's address.
+      - `runner` — `GITEA_INSTANCE_URL`: the same address, no trailing slash.
+        This is the one people get wrong. The runner hands the value to every
+        job container, and a job container cannot resolve compose service
+        names, so `http://server:3000` there breaks actions/checkout.
+      - `provision` — `ADMIN_PASSWORD`: the password in this file is public,
+        because this file is public. Change it before you install.
+
+      **The tile opens Gitea's start page — "Git with a cup of tea". That is
+      not the Gitea website and not an error: it is your own Gitea, greeting a
+      visitor who is not signed in.** Sign in at the top right, user
+      `gitadmin`, with the `ADMIN_PASSWORD` you set. What you find afterwards:
+
+      - Sign-ups are disabled. Further accounts come from Site Administration.
+      - The runner is already registered: Site Administration → Actions →
+        Runners lists it as `zimaos-isolated`. Actions still have to be
+        switched on per repository, under that repository's settings.
+      - Web interface on port 3020, Git over SSH on 2226. Both are published
+        to the LAN without TLS; put a reverse proxy in front for anything else.
   tips:
     before_install:
       en_US: >-
         Set ROOT_URL, SSH_DOMAIN, DOMAIN and the runner's GITEA_INSTANCE_URL to
-        this machine's address before installing, and change ADMIN_PASSWORD.
-        The runner runs privileged because it carries its own Docker daemon; it
-        does not get the host's Docker socket. Sign-ups are disabled by default.
+        this machine's address before installing, and change ADMIN_PASSWORD —
+        all of them live behind "Custom install" plus "Advanced (show more)".
+        After installing, the tile shows Gitea's logged-out start page; sign in
+        as gitadmin. The runner runs privileged because it carries its own
+        Docker daemon; it does not get the host's Docker socket. Sign-ups are
+        disabled by default.
   index: /
   port_map: "3020"

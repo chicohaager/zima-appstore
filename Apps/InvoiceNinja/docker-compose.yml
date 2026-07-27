@@ -152,9 +152,29 @@ x-casaos:
     en_US: Invoice Ninja
     custom: Invoice Ninja
   tagline:
-    en_US: Invoices, quotes and payments, self-hosted
+    en_US: First start takes 90 seconds — self-hosted invoicing
   description:
-    en_US: Invoice Ninja 5 — invoicing, quotes, recurring billing, time tracking and online payments. MySQL and Redis are part of the same ZimaOS app; PDFs are rendered by the Chrome that ships inside the app image.
+    en_US: |
+      Invoice Ninja 5 — invoicing, quotes, recurring billing, time tracking and
+      online payments. MySQL and Redis are part of the same ZimaOS app; PDFs are
+      rendered by the Chrome that ships inside the app image.
+
+      **Install it through "Custom install", not the blue button.** Switch on
+      "Advanced (show more)", pick the service `app` in the row of tabs and edit
+      three of its variables:
+
+      - `APP_URL` — the address you browse to, including the port. Invoice Ninja
+        builds PDF links, mail links and the client portal from it.
+      - `APP_KEY` — the key in this file is public, because this file is public.
+        Generate your own:
+        `docker run --rm invoiceninja/invoiceninja-debian php artisan key:generate --show`
+      - `IN_PASSWORD` — the first administrator's password, together with
+        `IN_USER_EMAIL`. The account is created once, on the first start.
+
+      **After installing, wait about 90 seconds — longer than ZimaOS waits.**
+      The app runs its database migrations before it serves anything and
+      answers `502` until they are done; ZimaOS already says *running* by then.
+      Once the page comes up, sign in with `IN_USER_EMAIL` and `IN_PASSWORD`.
   index: /
   is_uncontrolled: false
   port_map: '8012'

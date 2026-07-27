@@ -92,7 +92,7 @@ x-casaos:
     custom: CasaDrop
     en_US: CasaDrop
   tagline:
-    en_US: Share files from your ZimaOS box with a link
+    en_US: Setup token is in the log — share files with a link
   description:
     en_US: |
       **CasaDrop** turns your ZimaOS box into a place you can send files to and
@@ -107,6 +107,23 @@ x-casaos:
 
       Reachable over the LAN out of the box. Public access is a matter of
       putting a tunnel or a reverse proxy in front of it.
+
+      **The first start needs a token that exists only in the log.** CasaDrop
+      prints a one-time setup token when it starts and shows it *nowhere else*.
+      Without it there is no way to create the administrator account:
+
+      `docker logs casadrop | grep "SETUP TOKEN"`
+
+      Then open the tile, paste the token and choose an administrator password.
+      Do that before the app is reachable from anywhere but your LAN.
+
+      **Which folders can be shared.** Only the five read-only mounts are
+      reachable: Media, Documents, Downloads, Gallery, Backup. `/DATA/AppData`
+      is left out on purpose — it holds other apps' databases and secrets. To
+      add one, add both the bind mount and the entry in `SHARE_ALLOWED_PATHS`
+      under **Custom install → Advanced (show more)**; the plain install button
+      takes the file as it is. The app is published on 8086 and always listens
+      on 8080 inside the container.
   tips:
     before_install:
       en_US: |
