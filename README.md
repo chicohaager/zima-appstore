@@ -137,8 +137,11 @@ store. Both files live in `~/dev/Appstore-Pakete/Gitea/`.
 
 ### Before you install
 
-Every app's install form carries its own notes; these are the ones worth knowing
-before you click.
+These notes also stand in each app's `description`, which is the block "About this
+app" on its store page — measured 2026-07-26 on v1.7.0-beta1: `tips.before_install`
+is published into `meta.json` but no dialog ever renders it, so nothing that matters
+may live there alone. Values are editable under **Custom install → Advanced (show
+more) → the service's variables**; the plain install button takes the file as it is.
 
 **CasaDrop** prints a one-time setup token to its log and shows it nowhere else.
 Without it you cannot create the administrator account:
@@ -147,7 +150,10 @@ Without it you cannot create the administrator account:
 **Gitea** needs `ROOT_URL`, `SSH_DOMAIN`, `DOMAIN` and the runner's
 `GITEA_INSTANCE_URL` pointed at this machine's address. `GITEA_INSTANCE_URL` must
 **not** stay `http://server:3000` — the runner hands that value to every job
-container, and those run in a network where `server` does not resolve.
+container, and those run in a network where `server` does not resolve. Afterwards
+the tile opens Gitea's *logged-out* start page ("Git with a cup of tea") — that is
+the app, not the Gitea website; sign in at the top right as `gitadmin` with the
+`ADMIN_PASSWORD` set at install time.
 
 **Pterodactyl** wants its `APP_URL` and the wings token values reviewed; the
 panel builds every link from them.

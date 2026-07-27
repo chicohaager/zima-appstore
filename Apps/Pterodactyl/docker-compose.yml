@@ -389,9 +389,9 @@ x-casaos:
     en_US: Pterodactyl
     custom: Pterodactyl
   tagline:
-    en_US: Game server panel and daemon, with the node already wired up
+    en_US: Sign in as admin — game server panel, node wired up
   description:
-    en_US: >-
+    en_US: |
       Pterodactyl 1.14 — the game server panel together with its wings daemon in
       a single ZimaOS app. Panel, MariaDB, Redis and wings come up together, and
       a one-shot provision container creates the first administrator, a location
@@ -400,6 +400,27 @@ x-casaos:
       there when you first log in. Game servers run as separate Docker
       containers next to the app, managed by wings through the host's Docker
       socket.
+
+      **Install it through "Custom install", not the blue button.** Switch on
+      "Advanced (show more)", then pick the service named below in the row of
+      tabs and edit its variables:
+
+      - `panel` and `provision` — `APP_URL`: this machine's address including
+        the port, the same value in both. The panel builds every link from it,
+        and wings is told the same address.
+      - `provision` — `NODE_FQDN`: a bare IP or hostname, no scheme, no port.
+      - `provision` — `ADMIN_PASSWORD`: the password in this file is public,
+        because this file is public. Change it before you install.
+
+      **After installing, give it about two minutes.** wings restarts a few
+      times until the provision container has written its configuration; that
+      is expected, not a failure. Then open the tile and sign in with the user
+      `admin` and the `ADMIN_PASSWORD` you set. The node is already there under
+      *Admin → Nodes*.
+
+      wings drives the host's Docker socket, which is root-equivalent access to
+      this machine — anyone you give a panel account to runs containers on it.
+      Its ports are 8080 for the panel, 8443 and 2022 for the daemon.
   tips:
     before_install:
       en_US: >-

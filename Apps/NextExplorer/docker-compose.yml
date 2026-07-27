@@ -144,15 +144,32 @@ x-casaos:
     en_US: NextExplorer
     custom: NextExplorer
   tagline:
-    en_US: Browse, preview and share the files on this machine
+    en_US: Sign in with the admin e-mail you set — file explorer
   description:
-    en_US: >-
+    en_US: |
       NextExplorer is a self-hosted file explorer: it shows every directory you
       mount under /mnt as a volume, previews images, video, audio, PDFs and
       code, edits text files in the browser, and hands out share links with
       expiry. Local accounts come with the image, OIDC is optional. It is a
       single container with no database service — /config holds the SQLite
       database and settings, /cache holds thumbnails and can be thrown away.
+
+      **Install it through "Custom install", not the blue button.** Switch on
+      "Advanced (show more)" and edit the variables of the service `app`:
+
+      - `PUBLIC_URL` — this machine's address including the port. A wrong value
+        lets the page load and breaks the login, which looks like a password
+        problem and is not one.
+      - `AUTH_ADMIN_EMAIL` and `AUTH_ADMIN_PASSWORD` — the first administrator,
+        created once on the first start. Both are public in this file.
+      - `SESSION_SECRET` — change it; sessions are signed with it.
+      - `PUID`/`PGID` decide who owns files the app creates on the host.
+
+      **After installing, open the tile and sign in** with the
+      `AUTH_ADMIN_EMAIL` and `AUTH_ADMIN_PASSWORD` you set — that account is
+      created once, on the first start. The shares you see inside are exactly
+      the folders mounted under /mnt; add or remove them in the same install
+      dialog, under the service's volumes.
   tips:
     before_install:
       en_US: >-
