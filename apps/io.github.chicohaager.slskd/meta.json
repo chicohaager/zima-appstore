@@ -1,0 +1,24 @@
+{
+  "architectures": [
+    "amd64",
+    "arm64"
+  ],
+  "author": "Lintuxer",
+  "developer": "slskd",
+  "category": "Media",
+  "tagline": "Login admin / change-me-asap — Soulseek client with a web UI",
+  "description": "**Sign in as `admin` / `change-me-asap`** and change it. That password and\nthe shipped `SLSKD_API_KEY` are placeholders every install from this store\nshares — the API key is an **administrator** key, so replace both in the\ncompose (Advanced → environment) before you expose port 5030.\n\nThen add your own Soulseek account under **System → Options**. It is not in\nthis package on purpose: Soulseek has no registration site, an unused name\nis claimed on first login, and a made-up account would be a lie the app\ncannot use.\n\nA modern client-server application for the Soulseek file sharing network,\nwith a web UI and an API. Runs headless, downloads into /DATA/Downloads —\nthe folder SoulSync reads — and pairs with SoulSync as its download\nbackend. Sharing is switched OFF here by design; your music library is\nmounted read-only, and you decide whether to share it.",
+  "is_uncontrolled": false,
+  "title": "slskd",
+  "base_url": "https://chicohaager.github.io/zima-appstore",
+  "id": "io.github.chicohaager.slskd",
+  "version": "0.26.0",
+  "categories": [
+    "media"
+  ],
+  "min_memory": 0,
+  "min_image_size": {
+    "amd64": 110273449,
+    "arm64": 106955914
+  }
+}

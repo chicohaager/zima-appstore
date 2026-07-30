@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "updated_at": "2026-07-27T08:16:16Z",
-  "app_count": 6,
+  "updated_at": "2026-07-30T08:07:16Z",
+  "app_count": 8,
   "base_url": "https://chicohaager.github.io/zima-appstore",
   "apps": [
     {
@@ -64,7 +64,7 @@
       "thumbnail": "",
       "compose_url": "/apps/io.github.chicohaager.invoiceninja/docker-compose.yml",
       "meta_url": "/apps/io.github.chicohaager.invoiceninja/meta.json",
-      "content_hash": "72fcddd0",
+      "content_hash": "67365fde",
       "version": "5.13.26"
     },
     {
@@ -108,6 +108,48 @@
       "meta_url": "/apps/io.github.chicohaager.pterodactyl/meta.json",
       "content_hash": "21cb82a2",
       "version": "1.14.1"
+    },
+    {
+      "id": "io.github.chicohaager.slskd",
+      "title": "slskd",
+      "tagline": "Login admin / change-me-asap — Soulseek client with a web UI",
+      "category": "Media",
+      "categories": [
+        "media"
+      ],
+      "author": "Lintuxer",
+      "developer": "slskd",
+      "architectures": [
+        "amd64",
+        "arm64"
+      ],
+      "icon": "/apps/io.github.chicohaager.slskd/assets/icon.png",
+      "thumbnail": "",
+      "compose_url": "/apps/io.github.chicohaager.slskd/docker-compose.yml",
+      "meta_url": "/apps/io.github.chicohaager.slskd/meta.json",
+      "content_hash": "90c4c0f2",
+      "version": "0.26.0"
+    },
+    {
+      "id": "io.github.chicohaager.soulsync",
+      "title": "SoulSync",
+      "tagline": "Needs slskd for downloads — music discovery and automation",
+      "category": "Media",
+      "categories": [
+        "media"
+      ],
+      "author": "Lintuxer",
+      "developer": "Nezreka",
+      "architectures": [
+        "amd64",
+        "arm64"
+      ],
+      "icon": "/apps/io.github.chicohaager.soulsync/assets/icon.png",
+      "thumbnail": "",
+      "compose_url": "/apps/io.github.chicohaager.soulsync/docker-compose.yml",
+      "meta_url": "/apps/io.github.chicohaager.soulsync/meta.json",
+      "content_hash": "032a1f8a",
+      "version": "3.1.9"
     },
     {
       "id": "io.github.chicohaager.superfile",

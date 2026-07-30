@@ -1,0 +1,24 @@
+{
+  "architectures": [
+    "amd64",
+    "arm64"
+  ],
+  "author": "Lintuxer",
+  "developer": "Nezreka",
+  "category": "Media",
+  "tagline": "Needs slskd for downloads — music discovery and automation",
+  "description": "**Downloads need slskd**, a separate app in this same store. Install it\nfirst, then paste its API key into SoulSync under **Settings → Downloads\n→ Source Settings** (the slskd URL is already filled in) and press Save.\nWithout slskd, SoulSync finds and organises music but downloads nothing.\n\nMusic discovery and automation platform. Find new music, curate\nplaylists, sync libraries, and integrate with popular streaming\nservices, Soulseek (slskd), and media servers. Also manages a video\nlibrary (movies, TV, YouTube) with metadata, overlays and a download\npipeline — the video side additionally needs a TMDB and a TVDB API key\nbefore anything on it works.\n\nWrites organised music to /DATA/Media/Music and reads downloads from\n/DATA/Downloads, the folders ZimaOS itself suggests, so Plex, Jellyfin\nand Navidrome pick the library up without extra mounts.",
+  "is_uncontrolled": false,
+  "title": "SoulSync",
+  "base_url": "https://chicohaager.github.io/zima-appstore",
+  "id": "io.github.chicohaager.soulsync",
+  "version": "3.1.9",
+  "categories": [
+    "media"
+  ],
+  "min_memory": 0,
+  "min_image_size": {
+    "amd64": 356988067,
+    "arm64": 349528276
+  }
+}

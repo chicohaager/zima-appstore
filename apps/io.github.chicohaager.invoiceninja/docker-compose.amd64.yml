@@ -1,7 +1,7 @@
 name: invoiceninja
 services:
   mysql:
-    image: mysql:8@sha256:870634c634aae968ea1a93e5c094a14e00c692da2ee9bed956b3dfcc7bd08cb0
+    image: mysql:8@sha256:1d6b6a8fcee8ff758ff151d017f5203cd06792a0e698f0a593c9dfcb14609cf0
     restart: unless-stopped
     environment:
     - MYSQL_DATABASE=ninja

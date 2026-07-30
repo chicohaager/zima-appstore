@@ -1,0 +1,95 @@
+name: soulsync
+services:
+  soulsync:
+    image: boulderbadgedad/soulsync:3.1.9@sha256:1789a690683e11b9d1e7c62b4e9b9db498593244d466841ad9a0068dbf6c29e7
+    container_name: soulsync-webui
+    environment:
+    - PUID=1000
+    - PGID=1000
+    - UMASK=022
+    - PYTHONPATH=/app
+    - SOULSYNC_CONFIG_PATH=/app/config/config.json
+    - TZ=Europe/Berlin
+    - SOULSYNC_SPOTIFY_CALLBACK_PORT=8888
+    - SOULSYNC_TIDAL_CALLBACK_PORT=8889
+    healthcheck:
+      test:
+      - CMD
+      - curl
+      - -f
+      - http://localhost:8008/
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    restart: unless-stopped
+    extra_hosts:
+    - host.docker.internal:host-gateway
+    ports:
+    - mode: ingress
+      target: 8008
+      published: '8008'
+      protocol: tcp
+    - mode: ingress
+      target: 8888
+      published: '8888'
+      protocol: tcp
+    - mode: ingress
+      target: 8889
+      published: '8889'
+      protocol: tcp
+    volumes:
+    - type: bind
+      source: /DATA/AppData/soulsync/config
+      target: /app/config
+    - type: bind
+      source: /DATA/AppData/soulsync/data
+      target: /app/data
+    - type: bind
+      source: /DATA/AppData/soulsync/logs
+      target: /app/logs
+    - type: bind
+      source: /DATA/AppData/soulsync/staging
+      target: /app/Staging
+    - type: bind
+      source: /DATA/AppData/soulsync/scripts
+      target: /app/scripts
+    - type: bind
+      source: /DATA/Downloads
+      target: /app/downloads
+    - type: bind
+      source: /DATA/Media/Music
+      target: /app/Transfer
+    - type: bind
+      source: /DATA/Media/MusicVideos
+      target: /app/MusicVideos
+    - type: bind
+      source: /DATA/Media/Movies
+      target: /media/movies
+    - type: bind
+      source: /DATA/Media/TV Shows
+      target: /media/tv
+    - type: bind
+      source: /DATA/Media/YouTube
+      target: /media/youtube
+    networks:
+    - soulsync-network
+    deploy:
+      resources:
+        limits:
+          memory: 2GB
+          cpus: '2.00'
+networks:
+  soulsync-network:
+    driver: bridge
+x-casaos:
+  main: soulsync
+  id: io.github.chicohaager.soulsync
+  scheme: http
+  version: 3.1.9
+  icon: https://chicohaager.github.io/zima-appstore/apps/io.github.chicohaager.soulsync/assets/icon.png
+  title:
+    en_US: SoulSync
+    custom: SoulSync
+  index: /
+  port_map: '8008'

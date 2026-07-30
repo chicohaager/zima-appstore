@@ -1,0 +1,59 @@
+name: slskd
+services:
+  slskd:
+    image: slskd/slskd:0.26.0@sha256:e807d57eb9033e4a4578b9e2f7e1d4c23b19fe0d9a2e7f28cfcd0bc4c9eeb130
+    container_name: slskd
+    user: 1000:1000
+    environment:
+    - SLSKD_REMOTE_CONFIGURATION=true
+    - SLSKD_DOWNLOADS_DIR=/downloads
+    - SLSKD_USERNAME=admin
+    - SLSKD_PASSWORD=change-me-asap
+    - SLSKD_API_KEY=CHANGE-ME-generate-your-own-key
+    - TZ=Europe/Berlin
+    restart: unless-stopped
+    ports:
+    - mode: ingress
+      target: 5030
+      published: '5030'
+      protocol: tcp
+    - mode: ingress
+      target: 5031
+      published: '5031'
+      protocol: tcp
+    - mode: ingress
+      target: 50300
+      published: '50300'
+      protocol: tcp
+    volumes:
+    - type: bind
+      source: /DATA/AppData/slskd/app
+      target: /app
+    - type: bind
+      source: /DATA/Downloads
+      target: /downloads
+    - type: bind
+      source: /DATA/Media/Music
+      target: /music
+      read_only: true
+    networks:
+    - slskd-network
+    deploy:
+      resources:
+        limits:
+          memory: 1GB
+          cpus: '2.00'
+networks:
+  slskd-network:
+    driver: bridge
+x-casaos:
+  main: slskd
+  id: io.github.chicohaager.slskd
+  scheme: http
+  version: 0.26.0
+  icon: https://chicohaager.github.io/zima-appstore/apps/io.github.chicohaager.slskd/assets/icon.png
+  title:
+    en_US: slskd
+    custom: slskd
+  index: /
+  port_map: '5030'
