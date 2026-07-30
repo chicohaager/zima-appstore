@@ -127,6 +127,9 @@ cp .env.example .env
 | [Invoice Ninja](Apps/InvoiceNinja/) | 5.13.26 | 8012 | 2026-07-24 on ZimaOS v1.7.0-beta1: four containers up, app container `healthy`, `/health` returning `{"status":"ok"}`, tile in the grid, admin login through the browser to the dashboard |
 | [NextExplorer](Apps/NextExplorer/) | 2.2.7 | 3000 | 2026-07-25 on ZimaOS v1.7.0-beta1: `running` after 18 s, `healthy`, no placeholder left in the environment. `GET /api/volumes` returned exactly the four mounted shares and `GET /api/browse/Media` listed the same entries as `ls` on the host — so it reads the share, not a cache. A folder created through the API appeared on the host with the ownership `PUID`/`PGID` asked for, and was removed again |
 | [Pterodactyl](Apps/Pterodactyl/) | 1.14.1 | 8080 | 2026-07-24 on ZimaOS v1.7.0-beta1: panel and wings as one app, the node wires itself up, a Minecraft server actually started (`Done (5.404s)!`, confirmed from outside over the game protocol), then removed without trace |
+| [slskd](Apps/slskd/) | 0.26.0 | 5030 | 2026-07-28 on ZimaOS v1.7.0-beta1: installed, signed into the web UI, and measured working as SoulSync's download backend — including that SoulSync's container can actually reach this one. Still running healthy on 2026-07-30. The shipped password and API key were replaced by obvious placeholders for this listing and were not re-run; the key satisfies upstream's documented 16–255 character rule |
+| [SoulSync](Apps/SoulSync/) | 3.1.9 | 8008 | 2026-07-28 on ZimaOS v1.7.0-beta1: `healthy`, 0 restarts, all eleven mounts present and writable as uid 1000, config seeded and migrations run, web UI driven in the browser (wizard → dashboard, "Media scan completed"), tile carrying SoulSync's own logo checked by eye. Still running healthy on 2026-07-30 with slskd wired in. Not verified: an actual Soulseek download, the OAuth round-trip, arm64 |
+| [Superfile](Apps/Superfile/) | 1.6.0 | 7682 | 2026-07-26 on ZimaOS v1.7.0-beta1: a terminal file manager served over ttyd, installed and then *operated* in the browser — a file created through the interface and found again on the host, then deleted. Nerd-Font glyphs checked on the rendered screen, not by asking the font API |
 
 Gitea ships here as the **isolated** variant: the runner has its own Docker
 daemon, not the host's socket. The socket variant is a little simpler and was
@@ -169,6 +172,30 @@ app's install form exposes them:
 
 First start takes about 90 seconds *after* ZimaOS reports `running`: the app runs
 its database migrations before it serves anything, and answers `502` until then.
+
+**SoulSync and slskd are two apps that make one feature.** SoulSync cannot
+download on its own — Soulseek downloads run through slskd, and SoulSync has no
+built-in Soulseek client. Install **slskd first**, then in SoulSync open
+*Settings → Downloads → Source Settings*: the slskd URL
+`http://host.docker.internal:5030` is already filled in, because it is SoulSync's
+own shipped default, so the API key is the only field to paste. Press *Save
+Settings* top right. Without slskd, SoulSync still finds, matches and organises
+music — it just downloads nothing.
+
+They share one folder rather than a network: slskd writes finished downloads to
+`/DATA/Downloads` and SoulSync reads that same folder. Two ZimaOS apps are two
+compose projects in two networks, so the service name `slskd` does *not* resolve
+from SoulSync — the host route does, via the `extra_hosts` entry in SoulSync's
+file. Incomplete downloads stay out of the shared folder on purpose.
+
+**slskd** ships `admin` / `change-me-asap` and a placeholder `SLSKD_API_KEY`.
+Both are deliberately obvious rather than random-looking: every install from this
+store gets the same bytes, and the primary API key carries the **Administrator**
+role and never expires. Change both before port 5030 is reachable by anyone else.
+Your Soulseek account is deliberately not in the file — Soulseek has no
+registration site, a name is claimed on first login, and a made-up account would
+be one the app cannot use. Add it under *System → Options*. Sharing is off by
+design; the music library is mounted read-only and sharing it is your call.
 
 ## What is not here, and why
 
