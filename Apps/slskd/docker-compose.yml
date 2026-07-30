@@ -1,0 +1,277 @@
+# slskd — Soulseek client with a web UI — as a ZimaOS app, wired to feed SoulSync.
+#
+# Install: from the "Lintuxer Apps" store in the ZimaOS App Store.
+#
+# Upstream: https://github.com/slskd/slskd (AGPL-3.0) · image `slskd/slskd:0.26.0`
+# (amd64 + arm64 + arm, checked against the manifest). Hand-built from upstream's
+# own `docs/docker.md` and `docs/config.md`, not from a compose in their repo —
+# they ship deployment examples, not a compose file.
+#
+# ────────────────────────────────────────────────────────────────────────────
+# CHANGE BEFORE YOU INSTALL — the first two are printed in a public repository,
+# which is exactly why they are worthless as secrets:
+#
+#   1. SLSKD_PASSWORD  deliberately the obvious placeholder `change-me-asap`,
+#                      NOT a random-looking string: every install from this store
+#                      gets these same bytes, and a value that looks like a secret
+#                      invites people to keep it. The UI is published on the LAN
+#                      on port 5030. Upstream's own default is `slskd`/`slskd`.
+#   2. SLSKD_API_KEY   what SoulSync (or any other client) authenticates with.
+#                      Role `Administrator` by default for the primary key, and
+#                      it never expires — so the shipped placeholder is an
+#                      administrator key that everyone else also has. Upstream
+#                      requires 16–255 characters (`docs/config.md`).
+#                      Generate your own:
+#                        python3 -c "import secrets,string; \
+#                          print(''.join(secrets.choice(string.ascii_letters+string.digits) \
+#                          for _ in range(32)))"
+#   3. Your Soulseek account is NOT in this file, on purpose. slskd starts
+#                      without it and connects to nothing (measured: the API
+#                      reports `soulseek.username: null`, server state `None`).
+#                      Set it after the install in the web UI (System → Options,
+#                      editable because SLSKD_REMOTE_CONFIGURATION is on —
+#                      measured `remoteConfiguration: true`), or add
+#                      SLSKD_SLSK_USERNAME / SLSKD_SLSK_PASSWORD here. A made-up
+#                      account would be a lie the app cannot use.
+#
+#                      There is nothing else to install for it: slskd IS the
+#                      Soulseek client, and Soulseek has no registration site.
+#                      A username is claimed by the login itself — the protocol's
+#                      login rejection list has `SVRPRIVATE` ("server does not
+#                      accept registrations") and `INVALIDPASS` ("password for
+#                      existing user is incorrect"), i.e. an unused name is
+#                      created on first login. ⚠️ The official FAQ: usernames are
+#                      recycled after "a full month of the person not logging in",
+#                      so an account only used here needs to log in occasionally
+#                      or it can be taken by someone else.
+#
+# ────────────────────────────────────────────────────────────────────────────
+# WHERE THE SOULSEEK ACCOUNT GOES — in the `soulseek:` block at the very bottom
+# of slskd's own config file, which slskd creates on first start as
+# /DATA/AppData/slskd/app/slskd.yml (fully commented out; every line is a
+# default). The three lines that matter, with `~` meaning "not set":
+#
+#   soulseek:
+#     username: <your Soulseek name>
+#     password: <your Soulseek password>
+#
+# Edit it in the **web UI**: System → Options. Measured why that is the way and
+# not the file on disk:
+#
+#   - The file is owned by uid 1000 (this container) with mode 0644, so a ZimaOS
+#     shell user (uid 999 on the box measured) gets `Permission denied` on it.
+#   - The UI writes it with `PUT /api/v0/options/yaml`, which is `JwtOnly` +
+#     `AdministratorOnly` and **validates the YAML before writing**
+#     (upstream `OptionsController.cs`). That is also why the API key below
+#     cannot read or write this config: `GET .../options/yaml` answers 401 to an
+#     API key by design — the key SoulSync uses can drive transfers, not
+#     reconfigure slskd.
+#   - The editor is only there because SLSKD_REMOTE_CONFIGURATION is set below
+#     (measured: the API reports `remoteConfiguration: true`). The config file
+#     carries a commented `# remote_configuration: false` — uncommenting that
+#     locks you out of the editor.
+#
+# ⚠️ Change values that this compose sets as environment variables **here in the
+# compose**, not in slskd.yml. Upstream documents the YAML file as being loaded
+# *after* environment variables, but measured on this install the opposite held:
+# writing `directories: downloads: /app/downloads` into slskd.yml while
+# SLSKD_DOWNLOADS_DIR was set changed nothing after 15 s and produced no reload
+# signal at all (`pendingRestart` stayed false, no log line). Which of the two it
+# is — precedence or a file watcher that did not fire — was NOT established, so
+# treat the env vars as the authority and use the YAML file for what the compose
+# does not set: the Soulseek account, shares, rooms, limits.
+#
+# ────────────────────────────────────────────────────────────────────────────
+# HOW THIS FEEDS SoulSync (the "SoulSync" app in this same store)
+#
+# One shared folder, two apps: slskd writes finished downloads to
+# /DATA/Downloads on the host, and SoulSync reads that same folder as
+# /app/downloads. Nothing else connects them — as two ZimaOS apps they are two
+# compose projects in two networks, so service-name DNS does NOT work between
+# them. SoulSync reaches this one over the host:
+#
+#   SoulSync → Settings → Downloads → expand "Source Settings" (clicked through
+#   on the running app, v3.1.9). The two fields sit right below the
+#   "Test all sources" button and are labelled exactly:
+#     slskd URL:  http://host.docker.internal:5030   — already filled in,
+#                 because it is SoulSync's OWN shipped default (read out of
+#                 /defaults/config.json inside the image); the SoulSync package
+#                 carries the extra_hosts entry that makes the name resolve
+#     API Key:    the SLSKD_API_KEY value below — THIS is the only field that has
+#                 to be pasted. The shipped default is the literal placeholder
+#                 `SoulseekAPIKey`, which is why slskd's log fills with
+#                 `Unauthorized request … Unknown API key beginning with: Soul`
+#                 until it is replaced. That line means "SoulSync is calling me
+#                 with its placeholder", not a broken install.
+#   Then "Save Settings" (top right) — the tabs share one save button.
+#
+# `http://<zimaos-ip>:5030` works there too and is easier to verify by hand.
+#
+# Incomplete downloads deliberately stay OUT of the shared folder: they live in
+# /app/incomplete inside this app's own data directory (slskd's default), so
+# SoulSync never sees a half-written file in /DATA/Downloads.
+#
+# ────────────────────────────────────────────────────────────────────────────
+# SHARING IS OFF, AND THAT IS A DECISION, NOT AN OMISSION. Soulseek is a
+# give-and-take network, and sharing nothing is how you get ignored or blocked by
+# the individual users you want files from. (SoulSync's setup guide calls it a
+# ban risk; the official Soulseek FAQ documents no automatic network ban for it —
+# what it documents is that non-sharers upset people, and the protocol's `BANNED`
+# login rejection is marked obsolete. Blocking happens per user, not per server.)
+# This file mounts your music library READ-ONLY at /music
+# but does not declare it as a share, because sharing your library with
+# strangers is not something a package should switch on for you. When you want
+# it, either add `/music` under System → Options → Shares in the web UI, or set
+# `SLSKD_SHARED_DIR=/music` in `environment` below.
+#
+# 🔴 PORTS. 5030 is the web UI, 5031 the same over self-signed HTTPS, and 50300
+# is the port other Soulseek clients connect IN on. Open all three in the ZimaOS
+# firewall (ZFW), and forward 50300 in your router as well — without it, search
+# results get poor and browsing other users fails (upstream `docs/config.md`,
+# "listen port"). Changing 50300 here means changing it in System → Options too;
+# the port is announced to the network from the configuration, not from the
+# mapping.
+#
+# The container runs as `user: "1000:1000"` — upstream calls Docker's own
+# `user:` key objectively superior to the PUID/PGID method, because the process
+# is never root. Files land owned by uid 1000, which is the same uid SoulSync
+# runs as, so it can move them out of /DATA/Downloads.
+#
+# ⚠️ slskd does NOT create a download directory that is missing: "Directories
+# must exist and be writable by the application; the application will not
+# attempt to create them" (upstream `docs/config.md`). /DATA/Downloads exists on
+# ZimaOS, and a bind source ZimaOS has to create it makes mode 0777 anyway — but
+# if you re-point SLSKD_DOWNLOADS_DIR at a folder of your own, create it first.
+#
+# ────────────────────────────────────────────────────────────────────────────
+# VERIFIED 2026-07-28 on ZimaOS v1.7.0-beta1 (ZimaCube, amd64) — installed,
+# signed into, and measured working as SoulSync's download backend, including
+# the reachability of this app from inside the SoulSync container. Still running
+# healthy on that machine on 2026-07-30.
+#
+# ⚠️ NOT byte-identical to what was verified. For this store listing three things
+# were changed on 2026-07-30 and NOT re-run:
+#   - SLSKD_PASSWORD and SLSKD_API_KEY are now obvious placeholders instead of
+#     the generated values that were tested (a public store hands every installer
+#     the same bytes). The API key still satisfies upstream's 16–255 character
+#     rule — checked against `docs/config.md`, not assumed — but no install has
+#     been run with these exact strings.
+#   - the icon URL now points at this store repo instead of jsDelivr; the image
+#     bytes are the same file.
+#
+name: slskd
+services:
+  slskd:
+    image: slskd/slskd:0.26.0
+    container_name: slskd
+    user: '1000:1000'
+    environment:
+    - SLSKD_REMOTE_CONFIGURATION=true
+    - SLSKD_DOWNLOADS_DIR=/downloads
+    - SLSKD_USERNAME=admin
+    - SLSKD_PASSWORD=change-me-asap
+    - SLSKD_API_KEY=CHANGE-ME-generate-your-own-key
+    - TZ=Europe/Berlin
+    restart: unless-stopped
+    ports:
+    - mode: ingress
+      target: 5030
+      published: '5030'
+      protocol: tcp
+    - mode: ingress
+      target: 5031
+      published: '5031'
+      protocol: tcp
+    - mode: ingress
+      target: 50300
+      published: '50300'
+      protocol: tcp
+    volumes:
+    - type: bind
+      source: /DATA/AppData/slskd/app
+      target: /app
+    - type: bind
+      source: /DATA/Downloads
+      target: /downloads
+    - type: bind
+      source: /DATA/Media/Music
+      target: /music
+      read_only: true
+    networks:
+    - slskd-network
+    labels:
+      icon: https://raw.githubusercontent.com/chicohaager/zima-appstore/main/Apps/slskd/icon.png
+    deploy:
+      resources:
+        limits:
+          memory: 1GB
+          cpus: '2.00'
+    x-casaos:
+      ports:
+      - container: '5030'
+        description:
+          en_us: WebUI port (5030)
+      - container: '5031'
+        description:
+          en_us: WebUI over HTTPS, self-signed (5031)
+      - container: '50300'
+        description:
+          en_us: Incoming Soulseek connections (50300) — forward this in your router
+      volumes:
+      - container: /app
+        description:
+          en_us: Application data (config, database, logs, incomplete downloads)
+      - container: /downloads
+        description:
+          en_us: Finished downloads — the folder SoulSync reads
+      - container: /music
+        description:
+          en_us: Music library, read-only; share it in the UI to give back to the network
+networks:
+  slskd-network:
+    driver: bridge
+x-casaos:
+  architectures:
+  - amd64
+  - arm64
+  main: slskd
+  # Reverse-domain id, required by the ZimaOS app store (v2). It names who
+  # publishes this file, not who writes slskd — change it if you fork.
+  id: io.github.chicohaager.slskd
+  scheme: http
+  # Pins a permanent upstream tag, so the version a store shows is a fact and
+  # not a guess. Moving it is two edits: the tag in `image:` and this line.
+  version: 0.26.0
+  author: Lintuxer
+  developer: slskd
+  # `Media` exists in both category vocabularies on a ZimaOS box: the nine the
+  # modern stores use, and the 20 CasaOS names the bundled `default` store still
+  # carries (where a client like this would be `Downloader` — a name the modern
+  # ones do not have).
+  category: Media
+  icon: https://raw.githubusercontent.com/chicohaager/zima-appstore/main/Apps/slskd/icon.png
+  title:
+    en_us: slskd
+    custom: slskd
+  tagline:
+    en_us: Login admin / change-me-asap — Soulseek client with a web UI
+  description:
+    en_us: |-
+      **Sign in as `admin` / `change-me-asap`** and change it. That password and
+      the shipped `SLSKD_API_KEY` are placeholders every install from this store
+      shares — the API key is an **administrator** key, so replace both in the
+      compose (Advanced → environment) before you expose port 5030.
+
+      Then add your own Soulseek account under **System → Options**. It is not in
+      this package on purpose: Soulseek has no registration site, an unused name
+      is claimed on first login, and a made-up account would be a lie the app
+      cannot use.
+
+      A modern client-server application for the Soulseek file sharing network,
+      with a web UI and an API. Runs headless, downloads into /DATA/Downloads —
+      the folder SoulSync reads — and pairs with SoulSync as its download
+      backend. Sharing is switched OFF here by design; your music library is
+      mounted read-only, and you decide whether to share it.
+  index: /
+  is_uncontrolled: false
+  port_map: '5030'
