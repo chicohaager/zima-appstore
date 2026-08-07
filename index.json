@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "updated_at": "2026-07-30T08:07:16Z",
-  "app_count": 8,
+  "updated_at": "2026-08-07T17:04:55Z",
+  "app_count": 9,
   "base_url": "https://chicohaager.github.io/zima-appstore",
   "apps": [
     {
@@ -64,7 +64,7 @@
       "thumbnail": "",
       "compose_url": "/apps/io.github.chicohaager.invoiceninja/docker-compose.yml",
       "meta_url": "/apps/io.github.chicohaager.invoiceninja/meta.json",
-      "content_hash": "67365fde",
+      "content_hash": "577fffb2",
       "version": "5.13.26"
     },
     {
@@ -89,6 +89,27 @@
       "version": "2.2.7"
     },
     {
+      "id": "io.github.chicohaager.onlyoffice",
+      "title": "ONLYOFFICE Docs",
+      "tagline": "The editor behind Nextcloud & friends — set JWT_SECRET before you connect one",
+      "category": "Productivity",
+      "categories": [
+        "productivity"
+      ],
+      "author": "Lintuxer",
+      "developer": "ONLYOFFICE",
+      "architectures": [
+        "amd64",
+        "arm64"
+      ],
+      "icon": "/apps/io.github.chicohaager.onlyoffice/assets/icon.png",
+      "thumbnail": "",
+      "compose_url": "/apps/io.github.chicohaager.onlyoffice/docker-compose.yml",
+      "meta_url": "/apps/io.github.chicohaager.onlyoffice/meta.json",
+      "content_hash": "295b3816",
+      "version": "9.4.0"
+    },
+    {
       "id": "io.github.chicohaager.pterodactyl",
       "title": "Pterodactyl",
       "tagline": "Sign in as admin — game server panel, node wired up",
@@ -106,7 +127,7 @@
       "thumbnail": "",
       "compose_url": "/apps/io.github.chicohaager.pterodactyl/docker-compose.yml",
       "meta_url": "/apps/io.github.chicohaager.pterodactyl/meta.json",
-      "content_hash": "21cb82a2",
+      "content_hash": "49bcf9cd",
       "version": "1.14.1"
     },
     {

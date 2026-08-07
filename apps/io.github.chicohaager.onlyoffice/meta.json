@@ -1,0 +1,24 @@
+{
+  "architectures": [
+    "amd64",
+    "arm64"
+  ],
+  "author": "Lintuxer",
+  "developer": "ONLYOFFICE",
+  "category": "Productivity",
+  "tagline": "The editor behind Nextcloud & friends — set JWT_SECRET before you connect one",
+  "description": "**Change `JWT_SECRET` first** (Advanced → environment). It is the same\nplaceholder for everyone who installs this, and it is what an integration\nauthenticates with.\n\nONLYOFFICE Docs Community Edition — the engine that renders and edits\nWord, Excel and PowerPoint files inside Nextcloud, Seafile, ownCloud and\nothers. It brings no portal of its own: opening it shows a status page,\nnot a document library. Point your file app at\n`http://<zimaos-ip>:8090/` and give it the same secret.\n\nRuns as one container, keeps logs, certificates and its conversion cache\nunder /DATA/AppData/onlyoffice, and needs no database — the Community\nEdition ships without PostgreSQL, RabbitMQ and Redis.",
+  "is_uncontrolled": false,
+  "title": "ONLYOFFICE Docs",
+  "base_url": "https://chicohaager.github.io/zima-appstore",
+  "id": "io.github.chicohaager.onlyoffice",
+  "version": "9.4.0",
+  "categories": [
+    "productivity"
+  ],
+  "min_memory": 0,
+  "min_image_size": {
+    "amd64": 1399080205,
+    "arm64": 1410850673
+  }
+}

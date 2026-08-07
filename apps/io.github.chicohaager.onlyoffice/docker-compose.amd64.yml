@@ -1,0 +1,60 @@
+name: onlyoffice
+services:
+  onlyoffice:
+    image: onlyoffice/documentserver:9.4.0.1@sha256:e231bc62da8c1f0c1f78188f8c7e17e67716f38955d0ad1d703cf911ad6db84b
+    container_name: onlyoffice-documentserver
+    environment:
+    - JWT_SECRET=change-me-before-you-connect-anything
+    - JWT_ENABLED=true
+    - JWT_HEADER=Authorization
+    - JWT_IN_BODY=false
+    - TZ=Europe/Berlin
+    restart: unless-stopped
+    stop_grace_period: 60s
+    stdin_open: true
+    ports:
+    - mode: ingress
+      target: 80
+      published: '8090'
+      protocol: tcp
+    volumes:
+    - type: bind
+      source: /DATA/AppData/onlyoffice/logs
+      target: /var/log/onlyoffice
+    - type: bind
+      source: /DATA/AppData/onlyoffice/data
+      target: /var/www/onlyoffice/Data
+    - type: bind
+      source: /DATA/AppData/onlyoffice/lib
+      target: /var/lib/onlyoffice
+    healthcheck:
+      test:
+      - CMD
+      - curl
+      - -f
+      - http://localhost:8000/info/info.json
+      interval: 30s
+      retries: 5
+      start_period: 120s
+      timeout: 10s
+    networks:
+    - onlyoffice-network
+    deploy:
+      resources:
+        limits:
+          memory: 6GB
+          cpus: '4.00'
+networks:
+  onlyoffice-network:
+    driver: bridge
+x-casaos:
+  main: onlyoffice
+  id: io.github.chicohaager.onlyoffice
+  scheme: http
+  version: 9.4.0
+  icon: https://chicohaager.github.io/zima-appstore/apps/io.github.chicohaager.onlyoffice/assets/icon.png
+  title:
+    en_US: ONLYOFFICE Docs
+    custom: ONLYOFFICE Docs
+  index: /
+  port_map: '8090'
