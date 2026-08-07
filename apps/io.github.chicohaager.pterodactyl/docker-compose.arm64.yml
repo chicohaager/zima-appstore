@@ -1,7 +1,7 @@
 name: pterodactyl
 services:
   database:
-    image: mariadb:11@sha256:11b028f310df7e8d7b22462b5126b50abeca8888de3240f4be3200e015fff771
+    image: mariadb:11@sha256:099e7fa5025fb430773b26da1adbbc183b792aa903adedac6292c615712ad1e6
     restart: unless-stopped
     command:
     - --default-authentication-plugin=mysql_native_password
@@ -27,7 +27,7 @@ services:
     networks:
     - pterodactyl-network
   cache:
-    image: redis:alpine@sha256:ca5075df9552da2423c20c691a0208d60106f2ea71b47406d52c396bf0a6bd65
+    image: redis:alpine@sha256:0f8941c253cc39d98439a608dcb4f0a840b54421cc5109a68c72b2d2d223cea5
     restart: unless-stopped
     environment:
     - TZ=UTC

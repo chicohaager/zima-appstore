@@ -27,7 +27,7 @@ services:
     networks:
     - invoiceninja-network
   redis:
-    image: redis:alpine@sha256:ca5075df9552da2423c20c691a0208d60106f2ea71b47406d52c396bf0a6bd65
+    image: redis:alpine@sha256:0f8941c253cc39d98439a608dcb4f0a840b54421cc5109a68c72b2d2d223cea5
     restart: unless-stopped
     volumes:
     - type: bind
