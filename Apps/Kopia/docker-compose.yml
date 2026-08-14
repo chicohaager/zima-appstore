@@ -1,0 +1,287 @@
+# Kopia — encrypted, deduplicated backup with a web UI — as a ZimaOS app.
+#
+# Install: from the "Lintuxer Apps" store in the ZimaOS App Store.
+#
+# ⚠️ ONE THING CHANGED against what was verified, on 2026-08-14 and NOT re-run:
+# the icon URL points at this store repo instead of jsDelivr. The image bytes are
+# the same file (sha256 29ba4fa4f64f3b36c1c71ffb3ac539827bc32479063b7190073306db9a03c924,
+# 512×512 PNG). Nothing else moved — the three password variables ship empty here
+# exactly as they did during the verification install.
+#
+# Upstream: https://github.com/kopia/kopia (Apache-2.0) · image `kopia/kopia:0.23.1`
+# (digest sha256:89fd95ee2942880ca00eae964266958a394421ddbdf69bca62e38afc55f5900e,
+# linux/amd64 + linux/arm64 + linux/arm, pushed 2026-06-16). v0.23.1 is the newest
+# stable release — `GET /repos/kopia/kopia/releases/latest` returns exactly this
+# tag, and Docker Hub gives `latest`, `0.23` and `0.23.1` the same push date.
+# Built from upstream's own compose example on kopia.io/docs/installation/, not
+# from a third-party template.
+#
+# ────────────────────────────────────────────────────────────────────────────
+# WHY NOT THE APP STORE ENTRY. The BigBear store (registered on this machine as
+# the `github.com` source) ships a Kopia, and it is stale in a way that matters:
+# it pins `ghcr.io/thespad/kopia-server:v0.17.0-spad3@sha256:e9e9256e…`, whose
+# image config says `created: 2024-05-05` — Kopia **v0.17.0**, built two years and
+# three months ago. thespad himself has published up to v0.23.1; only BigBear's
+# pin never moved. Kopia v0.23.1 is a bugfix release for "a rare race condition
+# which might lead to a data loss" — on a backup tool that is not a detail.
+#
+# That package also ships working credentials in the file
+# (`KOPIA_UI_USERNAME=casaos`, `KOPIA_UI_PASSWORD=casaos`, `KOPIA_PASSWORD=casaos`).
+# Anyone who installs it and does not change them has a backup server on the LAN
+# whose password is printed in a public git repository. This file ships those
+# three variables **empty** on purpose — see below.
+#
+# ────────────────────────────────────────────────────────────────────────────
+# 🔴 SET THREE PASSWORDS BEFORE YOU INSTALL. Open "Advanced (show more)" in the
+# install dialog and fill in:
+#
+#   KOPIA_SERVER_USERNAME  the login for the web UI
+#   KOPIA_SERVER_PASSWORD  the password for the web UI
+#   KOPIA_PASSWORD         the repository password — this one encrypts your
+#                          backups. Lose it and the backups are unreadable.
+#                          There is no reset. Put it in a password manager now.
+#
+# Leaving them empty does not open a hole, it locks you out: measured on
+# kopia/kopia:0.23.1 with an empty server password, every request answers `401`
+# — with credentials, without credentials, right username, wrong username. The
+# browser then keeps asking for a login that cannot be given. That is the
+# deliberate failure direction: a wrong-but-working default would be invisible.
+#
+# ────────────────────────────────────────────────────────────────────────────
+# WHAT IT MOUNTS
+#
+#   /DATA → /data, READ-ONLY. This is what you back up. A backup tool never needs
+#   to write into the data it protects, and one that cannot write cannot destroy.
+#   Restores come back through the UI as a download, so read-only costs nothing.
+#
+#   🔴 If you snapshot `/data` as a whole, EXCLUDE `/data/AppData/kopia` in the
+#   snapshot policy. The repository below is reachable through the read-only
+#   mount as well, and a repository that backs itself up grows without end.
+#
+#   /app/config, /app/cache, /app/logs go to /DATA/AppData/kopia/. The image
+#   already points KOPIA_CONFIG_PATH, KOPIA_CACHE_DIRECTORY and KOPIA_LOG_DIR at
+#   these three paths (read out of the image config), so nothing has to be told
+#   to Kopia twice. `/app/cache` is the one that grows and the one that is safe
+#   to delete.
+#
+#   /repository → /DATA/AppData/kopia/repository is a convenience, not a
+#   recommendation. A repository on the same disk as the data is not a backup —
+#   it dies with the disk. Use it to try Kopia out, then point the repository at
+#   S3, Backblaze B2, an SFTP host, or a second machine. Kopia does all of these
+#   from the same UI.
+#
+# ⚠️ RUNS AS ROOT, deliberately, and it is the only app in this repo that does.
+# The image sets no user, and a backup tool that is not allowed to read a file
+# does not fail — it skips the file and reports success. Read access to all of
+# /DATA is the whole point, and the mount is read-only, so root here buys reach,
+# not write power.
+#
+# ⚠️ PLAIN HTTP. Kopia refuses to serve without TLS unless told to: start it
+# without `--insecure` and it exits with "TLS not configured. To start server
+# without encryption pass --insecure". A self-signed certificate would make the
+# ZimaOS tile throw a browser warning on every click, so this file serves HTTP
+# and protects the UI with HTTP basic auth. On a LAN that is the same footing as
+# every other tile on this dashboard; over the internet, put it behind a reverse
+# proxy that terminates TLS.
+#
+# ✅ CSRF CHECKS STAY ON. Upstream's own compose example passes
+# `--disable-csrf-token-checks`; this file does not, and does not need to.
+# Measured against v0.23.1: the server injects
+# `<meta name="kopia-csrf-token" content="…">` into the page and sets a
+# `Kopia-Session-Cookie`, and `validateCSRFToken` (internal/server/
+# server_authz_checks.go) compares only those two — it looks at no Origin, Host
+# or Referer header. An API call carrying the token from the page answered 200
+# even with `Origin:` and `Referer:` set to a foreign host; the same call with a
+# deliberately wrong token answered 401. So access from any LAN address works
+# with the checks left in place.
+#
+# ────────────────────────────────────────────────────────────────────────────
+# VERIFIED 2026-08-13 on ZimaOS v1.7.1-beta1 (ZimaCube Pro, amd64), installed
+# from exactly these bytes — see the `kopia.yml` section in README.md for what
+# was measured.
+#
+name: kopia
+services:
+  kopia:
+    image: kopia/kopia:0.23.1
+    container_name: kopia
+    # The image's entrypoint is `/bin/kopia`, so this is the argument list, not
+    # a shell line. `--ui` is what upstream documents; on 0.23.1 the UI and the
+    # API answer with and without it (measured), and it is kept because it says
+    # what this container is for.
+    command:
+    - server
+    - start
+    - --insecure
+    - --address=0.0.0.0:51515
+    - --ui
+    environment:
+    - TZ=Europe/Berlin
+    # 🔴 All three are empty on purpose. Fill them in before installing.
+    - KOPIA_SERVER_USERNAME=
+    - KOPIA_SERVER_PASSWORD=
+    - KOPIA_PASSWORD=
+    restart: unless-stopped
+    ports:
+    - mode: ingress
+      target: 51515
+      published: '51515'
+      protocol: tcp
+    volumes:
+    - type: bind
+      source: /DATA/AppData/kopia/config
+      target: /app/config
+    - type: bind
+      source: /DATA/AppData/kopia/cache
+      target: /app/cache
+    - type: bind
+      source: /DATA/AppData/kopia/logs
+      target: /app/logs
+    - type: bind
+      source: /DATA/AppData/kopia/repository
+      target: /repository
+    - type: bind
+      source: /DATA
+      target: /data
+      read_only: true
+    # `curl` is in the image (`/usr/bin/curl`, checked). No `-f`: an unauthorised
+    # 401 is a healthy server answering, and that is what is being tested here.
+    # Measured both ways inside the container — exit 0 against the live port,
+    # exit 7 ("Connection refused") against a dead one.
+    healthcheck:
+      test:
+      - CMD
+      - curl
+      - -sS
+      - -o
+      - /dev/null
+      - http://127.0.0.1:51515/
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    networks:
+    - kopia-network
+    labels:
+      icon: https://raw.githubusercontent.com/chicohaager/zima-appstore/main/Apps/Kopia/icon.png
+    deploy:
+      resources:
+        limits:
+          # Kopia's memory use grows with the size of the repository index. If a
+          # snapshot dies and the container shows exit code 137, it was killed
+          # here — raise this, do not shrink the backup.
+          memory: 4GB
+          cpus: '4.00'
+    x-casaos:
+      envs:
+      - container: KOPIA_SERVER_USERNAME
+        description:
+          en_us: Web UI login name — REQUIRED, the UI is unreachable while empty
+      - container: KOPIA_SERVER_PASSWORD
+        description:
+          en_us: Web UI password — REQUIRED, the UI is unreachable while empty
+      - container: KOPIA_PASSWORD
+        description:
+          en_us: >-
+            Repository password — REQUIRED. This encrypts the backups. There is
+            no recovery if it is lost.
+      - container: TZ
+        description:
+          en_us: Timezone used for snapshot schedules and log timestamps
+      ports:
+      - container: '51515'
+        description:
+          en_us: WebUI port (51515)
+      volumes:
+      - container: /data
+        description:
+          en_us: The data to back up — all of /DATA, read-only
+      - container: /repository
+        description:
+          en_us: Local filesystem repository — same disk, so not yet a real backup
+      - container: /app/config
+        description:
+          en_us: Repository configuration and the server's user database
+      - container: /app/cache
+        description:
+          en_us: Index and content cache — grows, and is safe to delete
+      - container: /app/logs
+        description:
+          en_us: Kopia's own log files
+networks:
+  kopia-network:
+    driver: bridge
+x-casaos:
+  architectures:
+  - amd64
+  - arm64
+  main: kopia
+  # Reverse-domain id, required by the ZimaOS app store (v2). It names who
+  # publishes this file, not who writes Kopia — change it if you fork.
+  id: io.github.chicohaager.kopia
+  scheme: http
+  version: 0.23.1
+  author: Lintuxer
+  developer: Kopia
+  # ZimaOS' curated stores use nine categories: AI, Developer, Finance, Home,
+  # Media, Networking, Others, Productivity, Social — counted on the host, and
+  # there is no "Backup" among them. (The bundled legacy `default` store does
+  # have one, with a single app in it.) `Others` is where 79 of the apps in the
+  # BigBear source sit; it is the honest shelf for a backup tool.
+  category: Others
+  icon: https://raw.githubusercontent.com/chicohaager/zima-appstore/main/Apps/Kopia/icon.png
+  title:
+    en_us: Kopia
+    custom: Kopia
+  tagline:
+    en_us: Encrypted, deduplicated backup of your ZimaOS data — to disk or to the cloud
+  description:
+    en_us: >-
+      Kopia backs up your files with client-side encryption, deduplication and
+      compression. Nothing leaves this machine unencrypted, and identical data is
+      stored once no matter how often it repeats across snapshots. The repository
+      can live on a local disk, on S3, Backblaze B2, Google Cloud, Azure, an SFTP
+      or WebDAV server, or anything rclone reaches — all from the same web UI.
+
+
+      **Set three variables before you install** — open "Advanced (show more)":
+      `KOPIA_SERVER_USERNAME` and `KOPIA_SERVER_PASSWORD` are the web UI login,
+      and `KOPIA_PASSWORD` is the repository password that encrypts the backups.
+      **If you lose the repository password, the backups cannot be read — there
+      is no reset.** While these are empty the UI answers every request with 401,
+      so an install without them is locked, not exposed.
+
+
+      This package mounts all of /DATA read-only, so Kopia can read everything it
+      backs up and cannot change any of it. If you snapshot /data as a whole,
+      exclude /data/AppData/kopia — otherwise the repository backs itself up.
+  # Rendered by the ZimaOS UI in its own modal (`AppTipModal.vue`), which loads a
+  # Markdown editor component — so **bold** and lists arrive as formatting, not as
+  # literal asterisks. `tips.custom` takes precedence over `before_install` in
+  # `checkAndShowTips`; only one of the two is ever shown, so this file sets one.
+  tips:
+    before_install:
+      en_us: >-
+        **SET THREE VARIABLES BEFORE YOU INSTALL** — open "Advanced (show more)"
+        and fill them in. While they are empty this app answers every request
+        with 401: it is locked, not open, and no password will get you in.
+
+
+        - `KOPIA_SERVER_USERNAME` — the name you log into the web UI with.
+
+        - `KOPIA_SERVER_PASSWORD` — the password for that login. It guards a tool
+        that can read every file under /DATA.
+
+        - `KOPIA_PASSWORD` — the repository password. **This one encrypts your
+        backups. If you lose it the backups cannot be read, and there is no
+        reset.** Put it in a password manager before you press install.
+
+
+        Two more things. All of /DATA is mounted **read-only** at `/data`, so
+        Kopia can read everything it backs up and change none of it. And if you
+        snapshot `/data` as a whole, exclude `/data/AppData/kopia` — the
+        repository is visible through that mount too, and a repository that backs
+        itself up never stops growing.
+  index: /
+  is_uncontrolled: false
+  port_map: '51515'
