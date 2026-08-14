@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "updated_at": "2026-08-07T17:04:55Z",
-  "app_count": 9,
+  "updated_at": "2026-08-14T12:54:09Z",
+  "app_count": 10,
   "base_url": "https://chicohaager.github.io/zima-appstore",
   "apps": [
     {
@@ -43,7 +43,7 @@
       "thumbnail": "",
       "compose_url": "/apps/io.github.chicohaager.gitea/docker-compose.yml",
       "meta_url": "/apps/io.github.chicohaager.gitea/meta.json",
-      "content_hash": "afcb5698",
+      "content_hash": "896e77fb",
       "version": "1.27.0"
     },
     {
@@ -66,6 +66,27 @@
       "meta_url": "/apps/io.github.chicohaager.invoiceninja/meta.json",
       "content_hash": "577fffb2",
       "version": "5.13.26"
+    },
+    {
+      "id": "io.github.chicohaager.kopia",
+      "title": "Kopia",
+      "tagline": "Encrypted, deduplicated backup of your ZimaOS data — to disk or to the cloud",
+      "category": "Others",
+      "categories": [
+        "others"
+      ],
+      "author": "Lintuxer",
+      "developer": "Kopia",
+      "architectures": [
+        "amd64",
+        "arm64"
+      ],
+      "icon": "/apps/io.github.chicohaager.kopia/assets/icon.png",
+      "thumbnail": "",
+      "compose_url": "/apps/io.github.chicohaager.kopia/docker-compose.yml",
+      "meta_url": "/apps/io.github.chicohaager.kopia/meta.json",
+      "content_hash": "0119bbdf",
+      "version": "0.23.1"
     },
     {
       "id": "io.github.chicohaager.nextexplorer",
