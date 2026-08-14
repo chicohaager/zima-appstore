@@ -1,0 +1,72 @@
+name: kopia
+services:
+  kopia:
+    image: kopia/kopia:0.23.1@sha256:df0c8a203511eb4dfe985a5e189dc74d542c2eb72ce5006b2ba021edb5c4cd5f
+    container_name: kopia
+    command:
+    - server
+    - start
+    - --insecure
+    - --address=0.0.0.0:51515
+    - --ui
+    environment:
+    - TZ=Europe/Berlin
+    - KOPIA_SERVER_USERNAME=
+    - KOPIA_SERVER_PASSWORD=
+    - KOPIA_PASSWORD=
+    restart: unless-stopped
+    ports:
+    - mode: ingress
+      target: 51515
+      published: '51515'
+      protocol: tcp
+    volumes:
+    - type: bind
+      source: /DATA/AppData/kopia/config
+      target: /app/config
+    - type: bind
+      source: /DATA/AppData/kopia/cache
+      target: /app/cache
+    - type: bind
+      source: /DATA/AppData/kopia/logs
+      target: /app/logs
+    - type: bind
+      source: /DATA/AppData/kopia/repository
+      target: /repository
+    - type: bind
+      source: /DATA
+      target: /data
+      read_only: true
+    healthcheck:
+      test:
+      - CMD
+      - curl
+      - -sS
+      - -o
+      - /dev/null
+      - http://127.0.0.1:51515/
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    networks:
+    - kopia-network
+    deploy:
+      resources:
+        limits:
+          memory: 4GB
+          cpus: '4.00'
+networks:
+  kopia-network:
+    driver: bridge
+x-casaos:
+  main: kopia
+  id: io.github.chicohaager.kopia
+  scheme: http
+  version: 0.23.1
+  icon: https://chicohaager.github.io/zima-appstore/apps/io.github.chicohaager.kopia/assets/icon.png
+  title:
+    en_US: Kopia
+    custom: Kopia
+  index: /
+  port_map: '51515'

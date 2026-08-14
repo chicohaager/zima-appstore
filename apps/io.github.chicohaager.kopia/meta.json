@@ -1,0 +1,27 @@
+{
+  "architectures": [
+    "amd64",
+    "arm64"
+  ],
+  "author": "Lintuxer",
+  "developer": "Kopia",
+  "category": "Others",
+  "tagline": "Encrypted, deduplicated backup of your ZimaOS data — to disk or to the cloud",
+  "description": "Kopia backs up your files with client-side encryption, deduplication and compression. Nothing leaves this machine unencrypted, and identical data is stored once no matter how often it repeats across snapshots. The repository can live on a local disk, on S3, Backblaze B2, Google Cloud, Azure, an SFTP or WebDAV server, or anything rclone reaches — all from the same web UI.\n\n**Set three variables before you install** — open \"Advanced (show more)\": `KOPIA_SERVER_USERNAME` and `KOPIA_SERVER_PASSWORD` are the web UI login, and `KOPIA_PASSWORD` is the repository password that encrypts the backups. **If you lose the repository password, the backups cannot be read — there is no reset.** While these are empty the UI answers every request with 401, so an install without them is locked, not exposed.\n\nThis package mounts all of /DATA read-only, so Kopia can read everything it backs up and cannot change any of it. If you snapshot /data as a whole, exclude /data/AppData/kopia — otherwise the repository backs itself up.",
+  "tips": {
+    "before_install": "**SET THREE VARIABLES BEFORE YOU INSTALL** — open \"Advanced (show more)\" and fill them in. While they are empty this app answers every request with 401: it is locked, not open, and no password will get you in.\n\n- `KOPIA_SERVER_USERNAME` — the name you log into the web UI with.\n- `KOPIA_SERVER_PASSWORD` — the password for that login. It guards a tool that can read every file under /DATA.\n- `KOPIA_PASSWORD` — the repository password. **This one encrypts your backups. If you lose it the backups cannot be read, and there is no reset.** Put it in a password manager before you press install.\n\nTwo more things. All of /DATA is mounted **read-only** at `/data`, so Kopia can read everything it backs up and change none of it. And if you snapshot `/data` as a whole, exclude `/data/AppData/kopia` — the repository is visible through that mount too, and a repository that backs itself up never stops growing."
+  },
+  "is_uncontrolled": false,
+  "title": "Kopia",
+  "base_url": "https://chicohaager.github.io/zima-appstore",
+  "id": "io.github.chicohaager.kopia",
+  "version": "0.23.1",
+  "categories": [
+    "others"
+  ],
+  "min_memory": 0,
+  "min_image_size": {
+    "amd64": 78913751,
+    "arm64": 73149276
+  }
+}
