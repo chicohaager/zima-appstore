@@ -1,0 +1,27 @@
+{
+  "architectures": [
+    "amd64",
+    "arm64"
+  ],
+  "author": "Lintuxer",
+  "developer": "Vaemendis",
+  "category": "Media",
+  "tagline": "Comics, ebooks and PDFs from your own shelf, in the browser",
+  "description": "Ubooquity serves comics, ebooks and PDFs to any browser and to OPDS readers — one small Java process, no cloud account, no telemetry.\n\n**Set the admin password first, on port 2203:** open `http://<your-zimaos>:2203/ubooquity/admin` and tell Ubooquity which folders to scan. The library on **2202** stays empty until you have.\n\n**Both ports serve under `/ubooquity/`, never at the root** — the tile is set to that path, and a hand-typed address needs it too.\n\nPut your files in `/DATA/Media/Books`, `/DATA/Media/Comics` and `/DATA/Media/Files` — **not** in `/DATA/AppData/ubooquity/`, where only `config` is mounted. Then run a scan from the admin page; nothing is picked up automatically. Both ports need a ZFW allow rule before they answer from the LAN.",
+  "tips": {
+    "before_install": "**THE ADMIN PAGE COMES FIRST — port 2203, not 2202.**\n\n`http://<your-zimaos>:2203/ubooquity/admin` asks you to set an admin password, and that is where you tell Ubooquity which folders to scan. Until that is done the library on 2202 is empty, and it will look as though nothing was imported.\n\n- **Everything lives under `/ubooquity/`.** The root of both ports answers `HTTP 500 Could not find matching provider (wrong URL)` — measured against this image, not guessed, and it is how Ubooquity is built, not a fault. The tile is set to `/ubooquity/` for that reason; a hand-typed address needs the path too.\n- **Two ports, two jobs, two firewall rules.** 2202 is the library your readers use, 2203 is the admin page. ZFW's default policy is `deny`, so both need an allow rule — and then `apply` **and** `commit`. Without that the app answers on the host and times out from everywhere else.\n- **Where the files go: `/DATA/Media/Books`, `/DATA/Media/Comics`, `/DATA/Media/Files`** — **not** `/DATA/AppData/ubooquity/`. That folder exists and looks like the obvious place in the file manager, but only `config` inside it is mounted; books dropped there are invisible to the app, and the library then shows \"No file to display\" as if nothing had been imported. Change the host side under \"Advanced (show more)\" if your library lives elsewhere; the container paths `/books`, `/comics` and `/files` must stay as they are, Ubooquity scans exactly those.\n- **A new file is not picked up by itself.** \"Automatic scan period\" ships as **Disabled**, so after copying books in, go to the admin page → GENERAL → **LAUNCH NEW SCAN**, or set a scan period there once. The counter under \"Status\" tells you whether it found them.\n- **MAXMEM is the Java heap cap in MB**, set to 1024 against a 2 GB container limit. Raise both together for a large library, and keep MAXMEM the lower of the two."
+  },
+  "is_uncontrolled": false,
+  "title": "Ubooquity",
+  "base_url": "https://chicohaager.github.io/zima-appstore",
+  "id": "io.github.chicohaager.ubooquity",
+  "version": "3.1.0",
+  "categories": [
+    "media"
+  ],
+  "min_memory": 0,
+  "min_image_size": {
+    "amd64": 110916430,
+    "arm64": 111140408
+  }
+}

@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "updated_at": "2026-08-14T12:54:09Z",
-  "app_count": 10,
+  "updated_at": "2026-08-16T08:07:43Z",
+  "app_count": 11,
   "base_url": "https://chicohaager.github.io/zima-appstore",
   "apps": [
     {
@@ -212,6 +212,27 @@
       "meta_url": "/apps/io.github.chicohaager.superfile/meta.json",
       "content_hash": "47f1f684",
       "version": "1.6.0"
+    },
+    {
+      "id": "io.github.chicohaager.ubooquity",
+      "title": "Ubooquity",
+      "tagline": "Comics, ebooks and PDFs from your own shelf, in the browser",
+      "category": "Media",
+      "categories": [
+        "media"
+      ],
+      "author": "Lintuxer",
+      "developer": "Vaemendis",
+      "architectures": [
+        "amd64",
+        "arm64"
+      ],
+      "icon": "/apps/io.github.chicohaager.ubooquity/assets/icon.png",
+      "thumbnail": "",
+      "compose_url": "/apps/io.github.chicohaager.ubooquity/docker-compose.yml",
+      "meta_url": "/apps/io.github.chicohaager.ubooquity/meta.json",
+      "content_hash": "827c73eb",
+      "version": "3.1.0"
     }
   ]
 }
