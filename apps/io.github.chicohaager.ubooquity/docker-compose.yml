@@ -1,0 +1,54 @@
+name: ubooquity
+services:
+  ubooquity:
+    image: lscr.io/linuxserver/ubooquity:3.1.0-ls91
+    container_name: ubooquity
+    environment:
+    - PUID=1000
+    - PGID=1000
+    - TZ=Europe/Berlin
+    - MAXMEM=1024
+    restart: unless-stopped
+    ports:
+    - mode: ingress
+      target: 2202
+      published: '2202'
+      protocol: tcp
+    - mode: ingress
+      target: 2203
+      published: '2203'
+      protocol: tcp
+    volumes:
+    - type: bind
+      source: /DATA/AppData/ubooquity/config
+      target: /config
+    - type: bind
+      source: /DATA/Media/Books
+      target: /books
+    - type: bind
+      source: /DATA/Media/Comics
+      target: /comics
+    - type: bind
+      source: /DATA/Media/Files
+      target: /files
+    networks:
+    - ubooquity-network
+    deploy:
+      resources:
+        limits:
+          memory: 2GB
+          cpus: '2.00'
+networks:
+  ubooquity-network:
+    driver: bridge
+x-casaos:
+  main: ubooquity
+  id: io.github.chicohaager.ubooquity
+  scheme: http
+  version: 3.1.0
+  icon: https://chicohaager.github.io/zima-appstore/apps/io.github.chicohaager.ubooquity/assets/icon.png
+  title:
+    en_US: Ubooquity
+    custom: Ubooquity
+  index: /ubooquity/
+  port_map: '2202'
