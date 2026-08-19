@@ -1,0 +1,25 @@
+{
+  "architectures": [
+    "amd64"
+  ],
+  "author": "Lintuxer",
+  "developer": "MediaCMS",
+  "category": "Media",
+  "tagline": "Self-hosted video and media portal",
+  "description": "MediaCMS turns your ZimaOS box into your own video portal: upload, it\ntranscodes to several resolutions, and plays back in the browser with\nplaylists, categories, comments and user accounts. No cloud, no telemetry.\n\n**Log in at `/admin`** — the first account is `admin`. Its password is the\n`ADMIN_PASSWORD` variable and it is only read on the very first start.\n\nUploads live in `/DATA/AppData/mediacms/media_files`. Transcoding is real\nCPU work — a long video keeps the `celery_worker` container busy for a while.\n\n**amd64 only.** Upstream publishes no arm64 image, so this will not run on\na ZimaBoard.",
+  "tips": {
+    "before_install": "**Change four values before installing** — open \"Advanced (show more)\". Every copy of this file ships with the same ones.\n\n- `ADMIN_PASSWORD` (service `migrations`) — creates the admin account on first start and is read only then.\n\n- `SECRET_KEY` — must be the SAME string on all four mediacms services. Django signs sessions with it.\n\n- `POSTGRES_PASSWORD` — must match on `db` and on all four mediacms services.\n\n- `FRONTEND_HOST` — `http://<your-zimaos-ip>:8010`. Only the links inside notification e-mails and RSS items are built from it; the web interface follows whatever address you typed, and you can log in without touching it.\n\n**amd64 only** — upstream ships no arm64 image."
+  },
+  "is_uncontrolled": false,
+  "title": "MediaCMS",
+  "base_url": "https://chicohaager.github.io/zima-appstore",
+  "id": "io.github.chicohaager.mediacms",
+  "version": "8.3.4",
+  "categories": [
+    "media"
+  ],
+  "min_memory": 0,
+  "min_image_size": {
+    "amd64": 715093785
+  }
+}

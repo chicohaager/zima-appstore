@@ -1,38 +1,115 @@
+# Ubooquity — comic, ebook and PDF library server — as one ZimaOS app.
+#
+# ────────────────────────────────────────────────────────────────────────────
+# 🔴 THE ADMIN PAGE COMES FIRST, AND IT IS ON THE OTHER PORT.
+#
+#   http://<your-zimaos>:2203/ubooquity/admin   ← set the password, add folders
+#   http://<your-zimaos>:2202/ubooquity/        ← the library, once you have
+#
+#   Until the admin page has been through, the library on 2202 shows nothing.
+#
+# 🔴 NOTHING IS SERVED AT THE ROOT. Measured against this exact image on
+#   2026-08-16: both ports answer "/" with HTTP 500 "Could not find matching
+#   provider (wrong URL)", and "/ubooquity/" resp. "/ubooquity/admin" with 200 —
+#   no redirect in either direction. That is not a fault, it is how Ubooquity is
+#   built. x-casaos.index below is "/ubooquity/" for exactly that reason; typed
+#   by hand, the path has to be included. This is the first app in this store
+#   whose index is not "/", and it was found the hard way: installed with the
+#   converter's default "/", the tile opened a Jetty error page on a container
+#   that was running perfectly.
+#
+# 🔴 BOTH PORTS ARE CLOSED FROM THE LAN UNTIL YOU OPEN THEM. Since ZFW
+#   rules.json version 3 the default policy is "deny" and every newly published
+#   Docker port gets LOG+DROP (ZIMAOS-KNOWLEDGE.md §8.4). Add an allow rule for
+#   2202 and 2203, then "apply" AND "commit" — without apply the rule does
+#   nothing. Without this the tile answers on the host and times out from your
+#   notebook.
+#
+# ────────────────────────────────────────────────────────────────────────────
+# WHAT IT MOUNTS
+#
+#   /config → /DATA/AppData/ubooquity/config   database, thumbnails, settings
+#   /books  → /DATA/Media/Books                EPUB, PDF
+#   /comics → /DATA/Media/Comics               CBZ, CBR
+#   /files  → /DATA/Media/Files                raw files offered for download
+#
+#   The /DATA/Media/* anchors are the host paths ZimaOS itself proposes for
+#   media (§36.1), so Files and the other media apps already look there; on a
+#   ZimaCube it also keeps the library off the small system disk. Change the
+#   host side under "Advanced (show more)" if your library lives elsewhere — the
+#   container paths must stay as they are, Ubooquity scans exactly /books,
+#   /comics and /files.
+#
+# 🔴 THE FILE MANAGER POINTS THE WRONG WAY, AND IT COST THE FIRST TESTER AN
+#   HOUR. /DATA/AppData/ubooquity/ is what you find when you look for "the
+#   ubooquity folder", and of it ONLY config is mounted. Eight books dropped
+#   into /DATA/AppData/ubooquity/books on 2026-08-16 were invisible to the app;
+#   the container's /books stayed empty and the library said "No file to
+#   display", which reads like a broken import rather than a wrong folder. If
+#   an earlier install used a different volume layout, its directories survive
+#   the change and look exactly as plausible as the live ones — the only
+#   witness is what the CONTAINER sees:
+#     docker inspect ubooquity --format '{{range .Mounts}}{{.Source}} -> {{.Destination}}
+#     {{end}}'   and   docker exec ubooquity ls /books
+#
+# 🟡 NOTHING IS SCANNED AUTOMATICALLY. "Automatic scan period" ships as
+#   Disabled and only "Scan collection at launch" is ticked, so a file copied in
+#   while the app runs is never noticed. Admin page → GENERAL → LAUNCH NEW SCAN,
+#   and read the counter: "Added/updated" is the witness, not the file listing
+#   on the host.
+#
+#   Read-write on purpose: Ubooquity writes nothing into them by itself, but the
+#   admin page can delete files, and a read-only mount would make that fail
+#   silently instead of refusing it.
+#
+# 🟡 PERMISSIONS depend on who creates the directories. Through the ZimaOS API a
+#   missing bind source is created 0777 and PUID=1000 can write; created by a
+#   hand-run "docker compose up" it is root:root 0755 and the container cannot
+#   (§36). If the app starts but sees no files, run
+#   stat -c '%a %u:%g' /DATA/Media/Books before changing anything here.
+#
+# MAXMEM is the JVM heap cap in MB. Upstream ships it empty; 1024 here keeps the
+# Java process below the 2 GB container limit instead of letting the cgroup
+# OOM-kill it. Raise both together for a large library.
+#
+# No secrets in this file — Ubooquity has no credentials until you set the admin
+# password yourself on port 2203, and that one never touches this compose.
+#
 name: ubooquity
 services:
   ubooquity:
     image: lscr.io/linuxserver/ubooquity:3.1.0-ls91@sha256:3d094ecde63404490c744cae328652cb49cbc695efb80d80bbf6cacc82855fcf
     container_name: ubooquity
     environment:
-    - PUID=1000
-    - PGID=1000
-    - TZ=Europe/Berlin
-    - MAXMEM=1024
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Berlin
+      - MAXMEM=1024
     restart: unless-stopped
     ports:
-    - mode: ingress
-      target: 2202
-      published: '2202'
-      protocol: tcp
-    - mode: ingress
-      target: 2203
-      published: '2203'
-      protocol: tcp
+      - mode: ingress
+        target: 2202
+        published: '2202'
+        protocol: tcp
+      - mode: ingress
+        target: 2203
+        published: '2203'
+        protocol: tcp
     volumes:
-    - type: bind
-      source: /DATA/AppData/ubooquity/config
-      target: /config
-    - type: bind
-      source: /DATA/Media/Books
-      target: /books
-    - type: bind
-      source: /DATA/Media/Comics
-      target: /comics
-    - type: bind
-      source: /DATA/Media/Files
-      target: /files
+      - type: bind
+        source: /DATA/AppData/ubooquity/config
+        target: /config
+      - type: bind
+        source: /DATA/Media/Books
+        target: /books
+      - type: bind
+        source: /DATA/Media/Comics
+        target: /comics
+      - type: bind
+        source: /DATA/Media/Files
+        target: /files
     networks:
-    - ubooquity-network
+      - ubooquity-network
     deploy:
       resources:
         limits:

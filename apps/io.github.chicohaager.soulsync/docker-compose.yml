@@ -1,79 +1,243 @@
+# SoulSync — music discovery, download and library automation — as ONE ZimaOS app.
+#
+# Install: from the "Lintuxer Apps" store in the ZimaOS App Store.
+#
+# 🔴 SoulSync CANNOT DOWNLOAD ON ITS OWN. Soulseek downloads run through slskd,
+# which is a separate app — install "slskd" from this same store first, then
+# paste its API key into SoulSync (Settings → Downloads → Source Settings).
+# Everything else — Spotify/Tidal/Plex matching, library organisation and the
+# video side — works without it.
+#
+# Upstream: https://github.com/Nezreka/SoulSync (MIT) · image
+# `boulderbadgedad/soulsync:3.1.9` (amd64 + arm64, checked against the manifest).
+# Generated from upstream's own `docker-compose.yml` with
+# `zimapp.py convert`, then hand-finished — the parts a generic conversion
+# cannot know are listed under "What was changed" below.
+#
+# ────────────────────────────────────────────────────────────────────────────
+# BEFORE YOU INSTALL — nothing here breaks the install, but two of them decide
+# whether the app can do its job:
+#
+#   1. TZ            is Europe/Berlin here (upstream ships America/New_York).
+#                    It drives scheduled automations and log timestamps.
+#   2. The mounts     under "volumes" are ZimaOS' own suggested locations
+#                    (measured in the firmware's app UI: a container path
+#                    containing "Music" is offered `/Media/Music`, "movies"
+#                    → `/Media/Movies`, "tv" → `/Media/TV Shows`, "download"
+#                    → `/Downloads`, "config" → `/AppData/<app>/…`). Change the
+#                    host side if your library lives on a data pool instead —
+#                    and read the note on directory permissions below before
+#                    you do.
+#   3. slskd          is a prerequisite for Soulseek downloads and is NOT part of
+#                    this file — it is its own app in this same store, already
+#                    wired to write into /DATA/Downloads, the folder this app
+#                    reads. Install it, then in SoulSync → Settings → Downloads →
+#                    "Source Settings": the slskd URL
+#                    http://host.docker.internal:5030 is already filled in
+#                    (SoulSync's own shipped default), so the API Key is the only
+#                    field you have to paste — the SLSKD_API_KEY you set in
+#                    slskd's compose. `extra_hosts` below is what makes that
+#                    hostname resolve — two ZimaOS apps are two compose projects
+#                    in two networks, so the service name `slskd` does NOT work
+#                    from here. Then "Save Settings" (top right).
+#
+# AFTER THE INSTALL — less than upstream's Setup Guide suggests, because the
+# mounts were chosen to match the shipped defaults. Read out of the config the
+# app writes on first start (/DATA/AppData/soulsync/config/config.json):
+#
+#   already correct, nothing to do:  soulseek.download_path = /app/downloads
+#                                    soulseek.transfer_path = /app/Transfer
+#   relative in the default config:  import.staging_path = ./Staging — resolves
+#                                    against the image's WORKDIR (/app), so it
+#                                    lands on the mount; set it to /app/Staging
+#                                    in Settings if you want it explicit
+#   NOT in the config at all:        the video paths. The video side is a
+#                                    SEPARATE settings page — switch Music/Video
+#                                    top left, then Settings — and it needs a
+#                                    TMDB and a TVDB API key before anything
+#                                    there works at all ("so nothing works until
+#                                    both keys are set", its own banner). Point
+#                                    the libraries at /media/movies, /media/tv,
+#                                    /media/youtube and music_videos_path at
+#                                    /app/MusicVideos.
+#
+# ⚠️ One shipped default worth knowing: SoulSync's `plex.base_url` default is
+# `http://192.168.86.36:32400` — a real address from somebody else's network,
+# baked into /defaults/config.json upstream. Harmless (a wrong Plex just fails to
+# connect), but it looks alarming in the UI on a fresh install.
+#
+# And open ports 8008/8888/8889 in the ZimaOS firewall (ZFW), otherwise the
+# containers run and the LAN times out.
+#
+# ────────────────────────────────────────────────────────────────────────────
+# WHAT WAS CHANGED against upstream's compose, and why (all of it measured on
+# ZimaOS v1.7.0-beta1, ZimaCube, 2026-07-28):
+#
+#   - `./config`, `./logs`, `./Staging`, `./scripts` and the named volume
+#     `soulsync_database` are relative/named sources ZimaOS never creates next
+#     to a compose. They become binds under /DATA/AppData/soulsync/.
+#     Upstream's warning about /app/data ("a host path can overwrite Python
+#     module files") does not apply to this image: /app/data, /app/Transfer,
+#     /app/downloads, /app/Staging, /app/MusicVideos and /app/logs are all
+#     EMPTY in it, so a bind shadows nothing.
+#   - `./downloads` → /DATA/Downloads, the folder ZimaOS itself offers for a
+#     container path called "downloads", so a torrent/usenet/slskd client and
+#     this app share one input folder without extra mounts.
+#   - `./Transfer` → /DATA/Media/Music. Upstream leaves this mount commented
+#     out, but the app needs an output folder for organised music, so a
+#     "finished" package has to name one. /DATA/Media/Music is what ZimaOS
+#     suggests and what Plex/Jellyfin/Navidrome read.
+#   - `./Movies`, `./TV`, `./YouTube` → /DATA/Media/Movies, /DATA/Media/TV
+#     Shows, /DATA/Media/YouTube (video output, same reasoning).
+#   - `ports:` in long form with `published:` as a STRING, and `port_map`
+#     likewise — an int there makes the app disappear from the app grid with
+#     no error anywhere.
+#   - `deploy.reservations` dropped (ZimaOS ignores it); the limits stay, with
+#     a period as the decimal separator — a comma is an HTTP 400 on install.
+#   - `networks: default: name: soulsync-network` became a normal bridge
+#     network of the same name.
+#
+# 🔴 DIRECTORY PERMISSIONS — the one trap in this file, and the reason the
+# mounts look the way they do. The container runs as PUID/PGID 1000, which is
+# the image's own `soulsync` user (uid 1000), so every mount has to be writable
+# for uid 1000. Two mechanisms create a missing bind source, and they differ:
+#
+#   - installed through ZimaOS (this file's path): every missing source is
+#     created mode **0777** — measured on install, /DATA/AppData/soulsync/*
+#     as `1000:1000 0777` and /DATA/Media/YouTube as `root:root 0777`,
+#     i.e. also OUTSIDE the app data directory. All eleven mounts were then
+#     write-tested from inside the running container as uid 1000: all writable.
+#   - `docker run` / `docker compose up` by hand: the daemon creates it
+#     **root:root 0755**, and uid 1000 is denied (measured separately, same
+#     host). If you run this file with plain compose instead of installing it,
+#     create the directories first: `mkdir -p <dir> && chown 1000:1000 <dir>`.
+#
+# So: re-point a mount at a folder that already exists and is NOT writable for
+# uid 1000, and the container still starts, the tile is still green, and the app
+# silently fails to move a single file. The entrypoint says so in the container
+# log ("Host bind-mount perms likely mismatch the PUID/PGID env vars") — that
+# log is the witness, not the app status.
+#
+# ⚠️ /app/scripts holds FOUR example scripts in the image
+# (hello_world.sh, notify_ntfy.sh, system_info.py, dedupe_source_ids.py). The
+# bind below hides them behind an empty directory — it is kept anyway, because
+# without it your own scripts are gone on every container recreate. Copy the
+# examples across once, as root on the host:
+#
+#   export DOCKER_CONFIG=/DATA/AppData/.dockercfg
+#   docker run --rm --entrypoint sh \
+#       -v /DATA/AppData/soulsync/scripts:/dst \
+#       boulderbadgedad/soulsync:latest -c 'cp -a /app/scripts/. /dst/'
+#
+# ⚠️ OAuth on 8888/8889. Spotify wants the redirect URI
+# `http://127.0.0.1:8888/callback`, which only matches when the browser runs on
+# the ZimaOS host itself. Do not renumber the host ports without changing
+# SOULSYNC_SPOTIFY_CALLBACK_PORT / SOULSYNC_TIDAL_CALLBACK_PORT and the URI in
+# the Spotify/Tidal dashboard to match. Upstream documents the LAN case in
+# Support/DOCKER-OAUTH-FIX.md.
+#
+# ────────────────────────────────────────────────────────────────────────────
+# VERIFIED 2026-07-28 on ZimaOS v1.7.0-beta1 (ZimaCube, amd64): HTTP 200,
+# app in the grid after 3 s, container `healthy`,
+# 0 restarts, RestartPolicy `unless-stopped`. All eleven mounts present in
+# `docker inspect` — including `/DATA/Media/TV Shows`, so the space in that
+# path survives the install API — and all eleven writable as uid 1000. The
+# entrypoint reported no permission mismatch, seeded config.json from
+# /defaults, and the database migrations ran. WebUI answered on 8008 in the
+# browser (setup wizard → dashboard, "Media scan completed", Deezer and Hybrid
+# `Connected`), and the tile in the ZimaOS grid carries SoulSync's own logo —
+# the same mark the app shows in its own wizard, checked by eye, not just by
+# HTTP status. Still running healthy on that machine on 2026-07-30, with slskd
+# wired in as its download backend (`slskd_url: http://host.docker.internal:5030`
+# read back out of its own config.json).
+#
+# Not verified: an actual Soulseek download (needs a Soulseek account), the
+# OAuth round-trip, and arm64 — the arm64 image exists per the manifest, but
+# nothing here ran on it.
+#
+# ⚠️ Changed for this store listing on 2026-07-30 and NOT re-run: `image:` was
+# moved from `:latest` to the pinned `3.1.9`. That is the same image, not a
+# guess — both tags resolved to digest sha256:89aa9776291dc8347de… on Docker Hub
+# on 2026-07-30, which is the digest of the container measured above. The icon
+# URL now points at this store repo instead of upstream; the bytes are the same
+# file.
+#
 name: soulsync
 services:
   soulsync:
     image: boulderbadgedad/soulsync:3.1.9
     container_name: soulsync-webui
     environment:
-    - PUID=1000
-    - PGID=1000
-    - UMASK=022
-    - PYTHONPATH=/app
-    - SOULSYNC_CONFIG_PATH=/app/config/config.json
-    - TZ=Europe/Berlin
-    - SOULSYNC_SPOTIFY_CALLBACK_PORT=8888
-    - SOULSYNC_TIDAL_CALLBACK_PORT=8889
+      - PUID=1000
+      - PGID=1000
+      - UMASK=022
+      - PYTHONPATH=/app
+      - SOULSYNC_CONFIG_PATH=/app/config/config.json
+      - TZ=Europe/Berlin
+      - SOULSYNC_SPOTIFY_CALLBACK_PORT=8888
+      - SOULSYNC_TIDAL_CALLBACK_PORT=8889
     healthcheck:
       test:
-      - CMD
-      - curl
-      - -f
-      - http://localhost:8008/
+        - CMD
+        - curl
+        - -f
+        - http://localhost:8008/
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 60s
     restart: unless-stopped
     extra_hosts:
-    - host.docker.internal:host-gateway
+      - host.docker.internal:host-gateway
     ports:
-    - mode: ingress
-      target: 8008
-      published: '8008'
-      protocol: tcp
-    - mode: ingress
-      target: 8888
-      published: '8888'
-      protocol: tcp
-    - mode: ingress
-      target: 8889
-      published: '8889'
-      protocol: tcp
+      - mode: ingress
+        target: 8008
+        published: '8008'
+        protocol: tcp
+      - mode: ingress
+        target: 8888
+        published: '8888'
+        protocol: tcp
+      - mode: ingress
+        target: 8889
+        published: '8889'
+        protocol: tcp
     volumes:
-    - type: bind
-      source: /DATA/AppData/soulsync/config
-      target: /app/config
-    - type: bind
-      source: /DATA/AppData/soulsync/data
-      target: /app/data
-    - type: bind
-      source: /DATA/AppData/soulsync/logs
-      target: /app/logs
-    - type: bind
-      source: /DATA/AppData/soulsync/staging
-      target: /app/Staging
-    - type: bind
-      source: /DATA/AppData/soulsync/scripts
-      target: /app/scripts
-    - type: bind
-      source: /DATA/Downloads
-      target: /app/downloads
-    - type: bind
-      source: /DATA/Media/Music
-      target: /app/Transfer
-    - type: bind
-      source: /DATA/Media/MusicVideos
-      target: /app/MusicVideos
-    - type: bind
-      source: /DATA/Media/Movies
-      target: /media/movies
-    - type: bind
-      source: /DATA/Media/TV Shows
-      target: /media/tv
-    - type: bind
-      source: /DATA/Media/YouTube
-      target: /media/youtube
+      - type: bind
+        source: /DATA/AppData/soulsync/config
+        target: /app/config
+      - type: bind
+        source: /DATA/AppData/soulsync/data
+        target: /app/data
+      - type: bind
+        source: /DATA/AppData/soulsync/logs
+        target: /app/logs
+      - type: bind
+        source: /DATA/AppData/soulsync/staging
+        target: /app/Staging
+      - type: bind
+        source: /DATA/AppData/soulsync/scripts
+        target: /app/scripts
+      - type: bind
+        source: /DATA/Downloads
+        target: /app/downloads
+      - type: bind
+        source: /DATA/Media/Music
+        target: /app/Transfer
+      - type: bind
+        source: /DATA/Media/MusicVideos
+        target: /app/MusicVideos
+      - type: bind
+        source: /DATA/Media/Movies
+        target: /media/movies
+      - type: bind
+        source: /DATA/Media/TV Shows
+        target: /media/tv
+      - type: bind
+        source: /DATA/Media/YouTube
+        target: /media/youtube
     networks:
-    - soulsync-network
+      - soulsync-network
     deploy:
       resources:
         limits:
