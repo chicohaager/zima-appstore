@@ -1,0 +1,537 @@
+# MediaCMS — your own video portal on ZimaOS.
+#
+# ────────────────────────────────────────────────────────────────────────────
+# 🔴 SET FOUR VALUES BEFORE YOU INSTALL — "Advanced (show more)" in the dialog.
+#    Every installation from this store entry starts with the SAME ones.
+#
+#      ADMIN_PASSWORD    -> your admin password (service `migrations`).
+#                           Read once, on the very first start.
+#      SECRET_KEY        -> any long random string, the SAME on all four
+#                           mediacms services.
+#      POSTGRES_PASSWORD -> the same string on `db` and on all four mediacms
+#                           services.
+#      FRONTEND_HOST     -> http://<your-zimaos-ip>:8010
+#                           Only the links inside notification e-mails and RSS
+#                           items come from it. You can log in without it — the
+#                           interface follows whatever address you typed.
+#                           See "THE LOST PORT" below for why that is not obvious.
+#
+#    Then open http://<your-zimaos-ip>:8010/ and sign in as `admin`.
+#
+# 🔴 amd64 only — upstream publishes no arm64 image, so this does not run on a
+#    ZimaBoard.
+#
+# ────────────────────────────────────────────────────────────────────────────
+# Upstream: https://github.com/mediacms-io/mediacms · image `mediacms/mediacms:latest`
+# Built from upstream's own `docker-compose/docker-compose-named-volumes.yaml`,
+# not from a third-party template — and then changed in four places that upstream
+# cannot make for us. Each change is explained below, because three of them look
+# like mistakes until you know what was measured.
+#
+# ────────────────────────────────────────────────────────────────────────────
+# 🔴 CHANGE BEFORE YOU INSTALL — every copy of this file carries the SAME values:
+#
+#   1. ADMIN_PASSWORD (service `migrations`) — creates the admin account on the
+#      very first start and is read only then. Leave it as-is and every MediaCMS
+#      installed from this file has the same admin login.
+#   2. SECRET_KEY (all four mediacms services) — Django signs sessions and
+#      password-reset links with it. It must be IDENTICAL in all four; see below.
+#   3. POSTGRES_PASSWORD (service `db` and the four mediacms services) — must
+#      match everywhere, upstream's default is the published string `mediacms`.
+#   4. FRONTEND_HOST — sets the address used in notification e-mails and RSS
+#      items. Not needed to log in (that is fixed at the cause, see below).
+#
+# ────────────────────────────────────────────────────────────────────────────
+# WHY THIS IS NOT UPSTREAM'S docker-compose.yaml
+#
+#   Upstream's main compose mounts the **repository checkout** over the app:
+#   `./:/home/mediacms.io/mediacms/`. That is a developer layout — it assumes you
+#   cloned the repo and are running compose from inside it. On ZimaOS there is no
+#   checkout, so that mount would put an EMPTY directory over the application and
+#   the container would have no code at all. Measured 2026-08-19: the image ships
+#   the complete tree at that path (38 entries incl. `manage.py`, `cms/`,
+#   `deploy/`), so overmounting it destroys the app rather than configuring it.
+#   `docker-compose/docker-compose-named-volumes.yaml` is upstream's own answer to
+#   this and is what this file is based on.
+#
+# 🔴 THE STATIC FILES DELIBERATELY HAVE NO VOLUME — this is the one deviation
+#   from upstream that looks wrong. Upstream puts a **named volume** on
+#   `/home/mediacms.io/mediacms/static/`. Docker pre-populates a fresh *named
+#   volume* from the image; a *bind mount* — which is what ZimaOS apps use so the
+#   data is visible under /DATA — does NOT. Measured: that directory holds **374
+#   files, 68 MB** (css, js, vendor, the built frontend). Rewriting it to a bind
+#   mount the ZimaOS way would therefore serve an empty /static and the portal
+#   would render as unstyled HTML while every container reports healthy.
+#   Static files belong to the image anyway — they are rebuilt with it, not by
+#   the user — so the correct fix is no mount at all. `collectstatic` still runs
+#   in `migrations`; its output lands in that container's own layer and is
+#   discarded, which is harmless because the image already ships the collected
+#   result.
+#
+#   `media_files` IS bind-mounted: measured empty in the image (0 files), so
+#   nothing is hidden, and it holds the uploads — the data that must survive.
+#
+# 🔴 SECRET_KEY IS SET EXPLICITLY — upstream's `deploy/docker/entrypoint.sh`
+#   generates one into `/home/mediacms.io/mediacms/.secret_key` and its own
+#   comment says it is "shared across all containers via the host-mounted project
+#   volume". That volume is the repo bind mount this file does not have. Without
+#   it each container writes its own key into its own layer, and every container
+#   recreate produces a new one — so every ZimaOS app update would silently log
+#   out every user and invalidate every pending password-reset link. The
+#   entrypoint honours a pre-set `SECRET_KEY` and then skips the file entirely,
+#   which is why it is set on all four mediacms services with the same value.
+#
+# 🟡 THE DB HEALTHCHECK WAS REWRITTEN because upstream's uses shell variables.
+#   A literal dollar sign does not survive the ZimaOS install API: it collapses
+#   the compose escape (doubled dollar) to a single one when storing the file, and
+#   `docker compose up` then substitutes it away (ZIMAOS-KNOWLEDGE.md §27.11).
+#   Upstream's healthcheck expands POSTGRES_DB and POSTGRES_USER that way, so it
+#   would arrive as `pg_isready -d  -U` — with both values gone — and the database
+#   would never report healthy, which stalls `migrations`, which stalls `web`.
+#   The values are written out literally below; if you change the database name or
+#   user, change them in the healthcheck too.
+#
+#   (This file therefore contains no dollar sign at all, in values OR in comments:
+#   `python3 zimapp.py validate` scans the raw text, not just the parsed YAML, and
+#   a comment that merely looks like a variable is flagged as well — correctly, it
+#   is exactly as misleading to a human editing the file.)
+#
+# ────────────────────────────────────────────────────────────────────────────
+# 🔴 THE LOST PORT — one cause, three symptoms, and why `web` overrides its command
+#
+#   The bundled nginx forwards the Host header using nginx's `host` variable,
+#   which carries NO port (its `http_host` one does). On any published port other
+#   than 80, Django therefore believes it is reachable at `http://<host>` while
+#   the browser is actually at `http://<host>:8010`. Everything the application
+#   derives from `request.get_host()` is then wrong by exactly that port:
+#
+#   **Symptom 1 — every POST is refused with 403 "CSRF verification failed."**
+#   No login, no upload, no comment. Measured on a real ZimaOS host:
+#
+#     POST without an Origin header (what curl sends)   -> 302  (works)
+#     POST with Origin: http://<host>:8010 (a browser)  -> 403  (fails)
+#     POST with Origin: http://<host>     (no port)     -> 302  (works)
+#
+#   **Symptom 2 — the frontend calls the wrong server.** `files/context_processors.py`
+#   sets the template variable FRONTEND_HOST from
+#   `request.build_absolute_uri('/')` — shadowing the setting of the same name —
+#   so the page shipped `api: 'http://<host>/api/v1'` without the port. Every
+#   XHR then went to port 80, i.e. to ZimaOS itself, and the browser reported
+#   "blocked by CORS policy: No 'Access-Control-Allow-Origin' header". View
+#   counts, watch history and the like silently stopped working.
+#
+#   **Symptom 3 — canonical links, og:url and the JSON-LD block** all carried the
+#   portless address, so anything that follows them lands on ZimaOS.
+#
+#   🔴 The fix repairs the CAUSE: `web` rewrites that one nginx line to
+#   `http_host` before the server starts, so `request.get_host()` finally carries
+#   the port the client actually used. The CSRF_TRUSTED_ORIGINS append stays as a
+#   second line of defence for setups behind an HTTPS reverse proxy — measured
+#   with a control, a FOREIGN origin still gets 403, so the protection is intact
+#   rather than switched off.
+#
+#   🔴 And this is why a status-code check is not a proof: verifying the login
+#   with curl passes, because curl sends no Origin header. It measures a path no
+#   browser ever takes. Symptom 1 only appeared on the first real click on
+#   "Sign In"; symptom 2 only in the browser console.
+#
+# ────────────────────────────────────────────────────────────────────────────
+# FRONTEND_HOST — WHAT IT STILL GOVERNS, AND WHAT IT DOES NOT
+#
+#   🟡 Read this if you saw an older revision of this file: it used to say that
+#   leaving FRONTEND_HOST at its default stops you logging in. That was true
+#   before the nginx line above was repaired, and it is NOT true now — measured:
+#   with FRONTEND_HOST deliberately left pointing at `localhost` while browsing
+#   over a different address, the login POST returned 302, and a foreign origin
+#   still returned 403.
+#
+#   What it does NOT control any more: anything the browser sees. The template
+#   variable of the same name is overwritten per request by
+#   `files/context_processors.py`, so the UI, its API base and the canonical link
+#   follow the address you actually typed.
+#
+#   What it still controls — all of it server-side, none of it visible until
+#   someone follows a link from outside: the URLs in **notification e-mails**
+#   (`users/adapter.py`, `files/methods.py`), the item links in the **RSS feeds**
+#   (`files/feeds.py`), and the SAML entity id. Those have no request to derive
+#   an address from, so they use this setting. Set it to
+#   `http://<your-zimaos-ip>:8010` under "Advanced (show more)" and they are right.
+#
+#   Not a problem here, so nobody hunts it: unlike paperless-ngx (§4.4.2) a wrong
+#   host never causes HTTP 400 — `cms/settings.py:51` has `ALLOWED_HOSTS = ["*", …]`.
+#
+# ────────────────────────────────────────────────────────────────────────────
+# THE MISSING DEFAULT AVATAR — why `migrations` seeds a file
+#
+#   `users/models.py:22` gives every account `default="userlogos/user.jpg"`, a
+#   path under MEDIA_ROOT. That file is **not in the image**: upstream's
+#   `.dockerignore:52` excludes `media_files/**` on purpose, and the only copy
+#   lives in the git repository (`media_files/userlogos/user.jpg`, 2790 bytes) —
+#   reachable, once more, solely through the repo bind mount that this package
+#   does not have. The result is a 404 on every page that shows a user, which
+#   surfaces as `user.jpg:1 Failed to load resource: 404` in the browser console
+#   and a broken image where the avatar belongs.
+#
+#   The `migrations` service therefore draws a neutral grey placeholder with
+#   Pillow (already in the image, 11.1.0) if — and only if — the file is absent,
+#   so an avatar a user later uploads is never overwritten. It is a run-once
+#   service and `web` waits for it to exit 0, so the file exists before anything
+#   serves a page. Nothing is fetched from the network at start.
+#
+# ────────────────────────────────────────────────────────────────────────────
+# WHAT WAS MEASURED (2026-08-19, against mediacms/mediacms:latest)
+#
+#   · Image digest sha256:e80156c9079e1581279619134abb880a98ff2532bac13b863ab9c5d45c942d67
+#   · `cms/version.py` → `VERSION = "8.3.4"`, matching GitHub release v8.3.4
+#     (2026-07-15). That is where `x-casaos.version` comes from — read off the
+#     application, not guessed from the tag (§34.9).
+#   · 🟡 The tag is `:latest` on purpose. Docker Hub's newest **semver** tag is
+#     `7.2.0` from 2025-11-11 — upstream has published no version tag for eight
+#     months and ships 8.3.4 only under `latest`. Pinning a version tag here would
+#     hand out an eight-month-old app. If you want an immutable pin, use the
+#     digest above.
+#   · 🔴 amd64 ONLY. Asked the registry for a manifest list first and got a plain
+#     `manifest.v2+json` back — there is no multi-arch index, and
+#     `docker image inspect` says `amd64 linux`. A ZimaBoard or any arm64 ZimaOS
+#     cannot run this. postgres and redis are multi-arch; the app image is not.
+#   · Container runs as **root** (`Config.User` empty, `id` → uid=0), so the
+#     PUID/PGID permission question from §36 does not arise here.
+#   · `STATIC_ROOT = BASE_DIR + "/static/"`, `MEDIA_ROOT = BASE_DIR +
+#     "/media_files/"` (`cms/settings.py:192,194`); the bundled nginx serves both
+#     by alias from exactly those paths (`deploy/docker/nginx_http_only.conf`).
+#   · Without ADMIN_PASSWORD, `deploy/docker/prestart.sh` invents a random
+#     10-character password and prints it once into the *migrations* container's
+#     log — an account nobody will ever find. Hence it is set here.
+#   · The icon URL was fetched AND looked at: 512×512 PNG, the MediaCMS wordmark,
+#     sha256 b829cbf8…6676 — byte-identical to
+#     `static/favicons/android-chrome-512x512.png` inside the image, so it is the
+#     project's own logo and not a stand-in.
+#
+# ────────────────────────────────────────────────────────────────────────────
+# WHAT WAS PROVEN ON A REAL MACHINE (2026-08-19, ZimaOS v1.7.1-beta1, x86_64)
+#
+#   Installed through the ZimaOS install API. All six containers came up: db and
+#   redis `healthy`, `migrations` exited 0, web/celery_beat/celery_worker running.
+#   /DATA/AppData/mediacms/ holds `media_files` (www-data) and `postgres` (uid 70).
+#
+#   · Portal answered HTTP 200 from a LAN workstation, and all 12 static assets
+#     the page references returned 200 with their real sizes (683 KB CSS,
+#     1.17 MB JS) — the no-volume-on-/static decision holds on the real host.
+#   · Counter-test for that decision, both controls run: a bind mount over
+#     /static leaves **0** files there, no mount leaves **374**, a named volume
+#     leaves **374**. That is the whole reason the mount is absent.
+#   · Signed in as `admin` **in a real browser** (Chrome, German UI): "Erfolgreich
+#     als admin@localhost angemeldet", with the superuser menus (Hochladen,
+#     Medien/Benutzer/Kommentare verwalten) rendered.
+#   · CSRF: a POST carrying a browser Origin returned 302 after the fix and 403
+#     before it, while a POST from a FOREIGN origin still returns 403 — the
+#     protection was repaired, not switched off. Proven again after the nginx
+#     line was corrected, this time with FRONTEND_HOST deliberately WRONG: still
+#     302 for the real origin, still 403 for a foreign one.
+#   · The page now ships `url:` and `api:` **with** the port (before: zero
+#     occurrences of the address with a port anywhere in the HTML), so the
+#     frontend stops calling port 80. The running container's
+#     /etc/nginx/sites-enabled/default was read back to confirm the rewrite
+#     arrived, rather than trusting the command string.
+#   · `/media/userlogos/user.jpg` answers 200 with a real 256×256 JPEG (3282
+#     bytes) drawn at first start; the seed logs which of its two branches it
+#     took, and re-running it leaves an existing avatar alone.
+#   · Restarting `web` leaves exactly one CSRF_TRUSTED_ORIGINS line in
+#     cms/local_settings.py (counted before and after), so the append cannot
+#     accumulate, and the login still worked afterwards.
+#   · Django's own runtime — not the file — reports
+#     CSRF_TRUSTED_ORIGINS = ['http://<host>:8010', 'https://<host>:8010'].
+#
+#   · End to end, by the maintainer: a 90-second clip uploaded through the
+#     browser and played back. Read out of the running installation afterwards
+#     rather than assumed — `encoding_status: success`; six renditions (144p,
+#     240p, 360p, 480p, 720p, 1080p) each `success` at `progress: 100`; HLS with
+#     13 playlists and 138 segments; 165 files and 25 MB in the media_files bind
+#     mount, owned by `www-data`. So the transcoding chain, the celery worker and
+#     the bind mount all carry real work, not just a green status.
+#
+# 🟡 NOT verified: arm64 (no such image exists), behaviour behind an HTTPS
+#   reverse proxy, and a second installation on a different host.
+#
+# 🟡 `zimapp update` reports ERROR against this app and that report is a false
+#   negative: ZimaOS adds `labels.icon` to every service by itself and turns the
+#   list-form `command` into a string, so six differences never converge (§34.5),
+#   and `migrations` is a run-once service whose `exited` state the check counts
+#   as "not running". The live process was checked directly instead.
+#
+name: mediacms
+services:
+  db:
+    image: postgres:17.2-alpine
+    container_name: mediacms-db
+    environment:
+    - POSTGRES_USER=mediacms
+    - POSTGRES_PASSWORD=L4mU0dJ9bBKWWbjDFxyx5UWz
+    - POSTGRES_DB=mediacms
+    - TZ=Europe/Berlin
+    restart: unless-stopped
+    volumes:
+    - type: bind
+      source: /DATA/AppData/mediacms/postgres
+      target: /var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-d", "mediacms", "-U", "mediacms"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+    - mediacms-network
+    deploy:
+      resources:
+        limits:
+          memory: 2GB
+          cpus: '2.00'
+  redis:
+    image: redis:alpine
+    container_name: mediacms-redis
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+    - mediacms-network
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '1.00'
+  migrations:
+    image: mediacms/mediacms:latest
+    container_name: mediacms-migrations
+    # Seeds the default avatar before anything serves a page — see "THE MISSING
+    # DEFAULT AVATAR" in the header. This is a run-once service, which is exactly
+    # where a one-time seed belongs; `web` waits for it to exit 0.
+    command:
+    - sh
+    - -c
+    - |
+      python - <<'ZIMAPP_AVATAR'
+      import os
+      from PIL import Image, ImageDraw
+      ziel = "media_files/userlogos/user.jpg"
+      if not os.path.exists(ziel):
+          os.makedirs(os.path.dirname(ziel), exist_ok=True)
+          bild = Image.new("RGB", (256, 256), (222, 226, 230))
+          stift = ImageDraw.Draw(bild)
+          stift.ellipse((88, 48, 168, 128), fill=(173, 181, 189))
+          stift.ellipse((56, 144, 200, 288), fill=(173, 181, 189))
+          bild.save(ziel, "JPEG", quality=90)
+          os.chmod(ziel, 0o644)
+          print("seeded default avatar at", ziel)
+      else:
+          print("default avatar already present, left alone")
+      ZIMAPP_AVATAR
+      exec ./deploy/docker/prestart.sh
+    volumes:
+    - type: bind
+      source: /DATA/AppData/mediacms/media_files
+      target: /home/mediacms.io/mediacms/media_files
+    environment:
+    - ENABLE_UWSGI=no
+    - ENABLE_NGINX=no
+    - ENABLE_CELERY_SHORT=no
+    - ENABLE_CELERY_LONG=no
+    - ENABLE_CELERY_BEAT=no
+    - ADMIN_USER=admin
+    - ADMIN_EMAIL=admin@localhost
+    - ADMIN_PASSWORD=CpbBv0Ttxlt4Uu9eq2
+    - SECRET_KEY=QUsH9JRpH7pjnPUkAnY2htiXoAtH5VGAoceiYMLCIPiNXx3vLr
+    - POSTGRES_PASSWORD=L4mU0dJ9bBKWWbjDFxyx5UWz
+    - FRONTEND_HOST=http://localhost:8010
+    - TZ=Europe/Berlin
+    restart: on-failure
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+    - mediacms-network
+    deploy:
+      resources:
+        limits:
+          memory: 2GB
+          cpus: '2.00'
+  web:
+    image: mediacms/mediacms:latest
+    container_name: mediacms-web
+    # See "THE LOST PORT" in the header. Two edits, both before the server starts:
+    #   1. the nginx line, patched in deploy/docker/nginx_http_only.conf — which
+    #      is the file prestart.sh copies into place a moment later, so it has to
+    #      happen here and not afterwards;
+    #   2. the CSRF append onto cms/local_settings.py, which the entrypoint has
+    #      just refreshed from the pristine template — that is why it can never
+    #      accumulate (counted: one line before and after a restart).
+    # This overrides `command`, NOT `entrypoint` — the entrypoint still runs and
+    # still does its nginx wiring, its chown pass and its SECRET_KEY handling.
+    command:
+    - sh
+    - -c
+    - |
+      sed -i 's/\(proxy_set_header Host \)\(.\)host;/\1\2http_host;/' deploy/docker/nginx_http_only.conf
+      cat >> cms/local_settings.py <<'ZIMAPP_CSRF'
+      import os as _os
+      _fh = _os.getenv("FRONTEND_HOST", "").rstrip("/")
+      CSRF_TRUSTED_ORIGINS = [o for o in [_fh, _fh.replace("http://", "https://", 1)] if o]
+      ZIMAPP_CSRF
+      exec ./deploy/docker/start.sh
+    environment:
+    - ENABLE_CELERY_BEAT=no
+    - ENABLE_CELERY_SHORT=no
+    - ENABLE_CELERY_LONG=no
+    - ENABLE_MIGRATIONS=no
+    - SECRET_KEY=QUsH9JRpH7pjnPUkAnY2htiXoAtH5VGAoceiYMLCIPiNXx3vLr
+    - POSTGRES_PASSWORD=L4mU0dJ9bBKWWbjDFxyx5UWz
+    - FRONTEND_HOST=http://localhost:8010
+    - PORTAL_NAME=MediaCMS
+    - TZ=Europe/Berlin
+    restart: unless-stopped
+    depends_on:
+      migrations:
+        condition: service_completed_successfully
+    ports:
+    - mode: ingress
+      target: 80
+      published: '8010'
+      protocol: tcp
+    volumes:
+    - type: bind
+      source: /DATA/AppData/mediacms/media_files
+      target: /home/mediacms.io/mediacms/media_files
+    networks:
+    - mediacms-network
+    labels:
+      icon: https://raw.githubusercontent.com/chicohaager/zima-appstore/main/Apps/MediaCMS/icon.png
+    deploy:
+      resources:
+        limits:
+          memory: 4GB
+          cpus: '4.00'
+    x-casaos:
+      ports:
+      - container: '80'
+        description:
+          en_us: WebUI — the media portal and its admin at /admin
+      volumes:
+      - container: /home/mediacms.io/mediacms/media_files
+        description:
+          en_us: Uploaded and encoded media — the data worth backing up
+  celery_beat:
+    image: mediacms/mediacms:latest
+    container_name: mediacms-celery-beat
+    environment:
+    - ENABLE_UWSGI=no
+    - ENABLE_NGINX=no
+    - ENABLE_CELERY_SHORT=no
+    - ENABLE_CELERY_LONG=no
+    - ENABLE_MIGRATIONS=no
+    - SECRET_KEY=QUsH9JRpH7pjnPUkAnY2htiXoAtH5VGAoceiYMLCIPiNXx3vLr
+    - POSTGRES_PASSWORD=L4mU0dJ9bBKWWbjDFxyx5UWz
+    - FRONTEND_HOST=http://localhost:8010
+    - TZ=Europe/Berlin
+    restart: unless-stopped
+    depends_on:
+      migrations:
+        condition: service_completed_successfully
+    networks:
+    - mediacms-network
+    deploy:
+      resources:
+        limits:
+          memory: 1GB
+          cpus: '1.00'
+  celery_worker:
+    image: mediacms/mediacms:latest
+    container_name: mediacms-celery-worker
+    environment:
+    - ENABLE_UWSGI=no
+    - ENABLE_NGINX=no
+    - ENABLE_CELERY_BEAT=no
+    - ENABLE_MIGRATIONS=no
+    - SECRET_KEY=QUsH9JRpH7pjnPUkAnY2htiXoAtH5VGAoceiYMLCIPiNXx3vLr
+    - POSTGRES_PASSWORD=L4mU0dJ9bBKWWbjDFxyx5UWz
+    - FRONTEND_HOST=http://localhost:8010
+    - TZ=Europe/Berlin
+    restart: unless-stopped
+    depends_on:
+      migrations:
+        condition: service_completed_successfully
+    volumes:
+    - type: bind
+      source: /DATA/AppData/mediacms/media_files
+      target: /home/mediacms.io/mediacms/media_files
+    networks:
+    - mediacms-network
+    deploy:
+      resources:
+        limits:
+          memory: 8GB
+          cpus: '4.00'
+networks:
+  mediacms-network:
+    driver: bridge
+x-casaos:
+  architectures:
+  - amd64
+  main: web
+  id: io.github.chicohaager.mediacms
+  version: 8.3.4
+  author: Lintuxer
+  developer: MediaCMS
+  category: Media
+  icon: https://raw.githubusercontent.com/chicohaager/zima-appstore/main/Apps/MediaCMS/icon.png
+  title:
+    en_us: MediaCMS
+    custom: MediaCMS
+  tagline:
+    en_us: Self-hosted video and media portal
+  description:
+    en_us: |-
+      MediaCMS turns your ZimaOS box into your own video portal: upload, it
+      transcodes to several resolutions, and plays back in the browser with
+      playlists, categories, comments and user accounts. No cloud, no telemetry.
+
+      **Log in at `/admin`** — the first account is `admin`. Its password is the
+      `ADMIN_PASSWORD` variable and it is only read on the very first start.
+
+      Uploads live in `/DATA/AppData/mediacms/media_files`. Transcoding is real
+      CPU work — a long video keeps the `celery_worker` container busy for a while.
+
+      **amd64 only.** Upstream publishes no arm64 image, so this will not run on
+      a ZimaBoard.
+  tips:
+    before_install:
+      en_us: >-
+        **Change four values before installing** — open "Advanced (show more)".
+        Every copy of this file ships with the same ones.
+
+
+        - `ADMIN_PASSWORD` (service `migrations`) — creates the admin account on
+        first start and is read only then.
+
+
+        - `SECRET_KEY` — must be the SAME string on all four mediacms services.
+        Django signs sessions with it.
+
+
+        - `POSTGRES_PASSWORD` — must match on `db` and on all four mediacms
+        services.
+
+
+        - `FRONTEND_HOST` — `http://<your-zimaos-ip>:8010`. Only the links inside
+        notification e-mails and RSS items are built from it; the web interface
+        follows whatever address you typed, and you can log in without touching it.
+
+
+        **amd64 only** — upstream ships no arm64 image.
+  index: /
+  is_uncontrolled: false
+  scheme: http
+  port_map: '8010'
