@@ -1,44 +1,158 @@
+# ONLYOFFICE Docs (Document Server, Community Edition) as a ZimaOS app.
+#
+# Install: from the "Lintuxer Apps" store in the ZimaOS App Store.
+#
+# Upstream: https://github.com/ONLYOFFICE/Docker-DocumentServer (AGPL-3.0) ·
+# image `onlyoffice/documentserver:9.4.0.1`. Hand-built from upstream's own
+# `docker-compose.yml`, `README.md` and `run-document-server.sh` — their compose
+# carries a `build:` block (which ZimaOS refuses), publishes 80 and 443 on the
+# host, and stores everything in anonymous volumes.
+#
+# ────────────────────────────────────────────────────────────────────────────
+# WHAT THIS IS, AND WHAT IT IS NOT. ONLYOFFICE Docs is the editing *engine*
+# behind Nextcloud, Seafile, ownCloud, Alfresco and others. It has no portal,
+# no user accounts and no file manager of its own: open http://<zimaos-ip>:8090
+# and you land on a status page that says "ONLYOFFICE Docs Community Edition
+# installed" — measured, that is a 302 to /welcome/. It becomes an office suite
+# only when another app points at it. If you want rooms, users and a document
+# library out of the box, this is the wrong ONLYOFFICE product (that is
+# DocSpace, roughly twenty containers).
+#
+# The one URL an integration asks for is the base URL:
+#
+#     http://<zimaos-ip>:8090/
+#
+# and the one secret it asks for is JWT_SECRET below. Both have to match on
+# both sides or the editor shows "The document security token is not correctly
+# formed".
+#
+# ────────────────────────────────────────────────────────────────────────────
+# 🔴 CHANGE BEFORE YOU CONNECT ANYTHING — JWT_SECRET is a deliberate, obvious
+# placeholder (`change-me-before-you-connect-anything`), not a random-looking
+# string: every install from this store gets these same bytes, and a value that
+# looks like a secret invites people to keep it. Anyone who knows it can make
+# this server fetch and convert documents from URLs of their choosing.
+#
+# JWT has been on by default since ONLYOFFICE 7.2. Upstream's own image would
+# generate a random secret when none is given — this package sets one instead,
+# because a secret you cannot predict is one you have to dig out of the
+# container before any integration can work. Generate your own:
+#
+#     python3 -c "import secrets; print(secrets.token_urlsafe(32))"
+#
+# and read back what the server actually took (this is the check, not the
+# compose line):
+#
+#     docker exec onlyoffice-documentserver documentserver-jwt-status.sh
+#
+# ────────────────────────────────────────────────────────────────────────────
+# WHY ONLY THREE MOUNTS. Other ZimaOS/CasaOS packages for this image mount six
+# and add /var/lib/postgresql, /var/lib/rabbitmq and /var/lib/redis. In the
+# Community Edition those three do nothing, measured on 9.4.0.1:
+#
+#   - none of the three directories exists in the image, and there is no
+#     `postgres`, `psql`, `rabbitmq-server` or `redis-server` binary in it;
+#   - upstream's entrypoint gates all three behind `PRODUCT_EDITION`
+#     (`_is_commercial`), and `docker image inspect` shows `PRODUCT_EDITION=`
+#     — empty — in this image.
+#
+# So they would only create three empty host directories. The three that are
+# mounted are the ones upstream documents for the Community Edition. A bind at
+# /var/lib/onlyoffice hides nothing either: the directory in the image is 32 KB
+# of empty skeleton, and the entrypoint recreates it (measured).
+#
+# Nothing here is a document store. Your files live in the app that integrates
+# this one; what is under /DATA/AppData/onlyoffice is logs, certificates and a
+# conversion cache (48 KB + 20 KB + 76 KB after the test session).
+#
+# ────────────────────────────────────────────────────────────────────────────
+# PORTS AND HTTPS. Only 8090 → 80 is published. Upstream also exposes 443, but
+# without a certificate that port answers nothing useful, so it is left out
+# rather than shipped broken. For HTTPS, put the certificate into
+# /DATA/AppData/onlyoffice/data/certs/ as tls.crt + tls.key and add a
+# `- 8091:443` mapping — the paths are upstream's defaults (SSL_CERTIFICATE_PATH
+# / SSL_KEY_PATH), NOT measured here.
+#
+# ⚠️ ZFW (the ZimaOS firewall) does not know this port. Measured on the test
+# host: the DOCKER-USER chain drops the ports it manages and ends in a blanket
+# RETURN, so 8090 is reachable from anywhere the host is — while ports ZFW
+# manages are limited to the local /24. If you want that limit here too, add a
+# rule for 8090 in the ZFW UI and then `apply` **and** `commit` it.
+#
+# ────────────────────────────────────────────────────────────────────────────
+# VERIFIED 2026-08-07 on ZimaOS v1.7.0 (ZimaCube, amd64) — installed through
+# the ZimaOS install API from exactly this file:
+#
+#   - tile in the grid after 3 s, status `running`, health `healthy`,
+#     0 restarts, 365 MiB of the 6 GB limit at idle;
+#   - from the LAN (not localhost): / → 302 → /welcome/ → 200, and the file
+#     every integration loads, /web-apps/apps/api/documents/api.js → 200;
+#   - a JWT-signed conversion of a text file into .docx through
+#     /ConvertService.ashx returned `endConvert: true`, and the downloaded
+#     result is a real Word file whose text matches the source;
+#   - the negative control: the same request signed with a wrong secret is
+#     refused (`error: -8`, log line `checkJwt error: invalid signature`), so
+#     the JWT above is enforced and not decorative;
+#   - the editor itself was opened in a browser through the image's built-in
+#     test example, text typed, and the status bar reported "All changes
+#     saved" — the example service was started at runtime
+#     (`supervisorctl start ds:example`) and stopped again; this file does not
+#     enable it, and it should not be enabled on a reachable machine.
+#
+# NOT verified: arm64, HTTPS, and an actual integration with Nextcloud, Seafile
+# or ownCloud — the engine was proven with a signed conversion and an editor
+# session, not with a third-party connector. Also observed but not explained:
+# the conversion source was a LAN address although the image's own default is
+# `allowPrivateIPAddress: false`. If an integration on your LAN ever reports
+# that the file cannot be downloaded, ALLOW_PRIVATE_IP_ADDRESS=true is the
+# upstream switch for it.
+#
+# ⚠️ Two things changed for this store listing and were NOT re-run, both
+# metadata, neither of them reaching the container: the icon URL now points at
+# this store repo instead of jsDelivr (same image bytes), and `x-casaos.version`
+# reads `9.4.0` — the version the running server reports — where the verified
+# install still carries the image tag `9.4.0.1`. Everything the container sees,
+# including the JWT_SECRET placeholder, is what the verification install ran
+# with.
+#
 name: onlyoffice
 services:
   onlyoffice:
     image: onlyoffice/documentserver:9.4.0.1@sha256:4cf3b55487209b8f53492c545263b7bb257e1be48dba1f9e0b30d2e50371a1c8
     container_name: onlyoffice-documentserver
-    environment:
-    - JWT_SECRET=change-me-before-you-connect-anything
-    - JWT_ENABLED=true
-    - JWT_HEADER=Authorization
-    - JWT_IN_BODY=false
-    - TZ=Europe/Berlin
+    environment:   -
+        JWT_SECRET=change-me-before-you-connect-anything
+      - JWT_ENABLED=true
+      - JWT_HEADER=Authorization
+      - JWT_IN_BODY=false
+      - TZ=Europe/Berlin
     restart: unless-stopped
+    # Upstream's own value: the document service flushes open sessions on stop.
     stop_grace_period: 60s
     stdin_open: true
     ports:
-    - mode: ingress
-      target: 80
-      published: '8090'
-      protocol: tcp
+      - mode: ingress
+        target: 80
+        published: '8090'
+        protocol: tcp
     volumes:
-    - type: bind
-      source: /DATA/AppData/onlyoffice/logs
-      target: /var/log/onlyoffice
-    - type: bind
-      source: /DATA/AppData/onlyoffice/data
-      target: /var/www/onlyoffice/Data
-    - type: bind
-      source: /DATA/AppData/onlyoffice/lib
-      target: /var/lib/onlyoffice
+      - type: bind
+        source: /DATA/AppData/onlyoffice/logs
+        target: /var/log/onlyoffice
+      - type: bind
+        source: /DATA/AppData/onlyoffice/data
+        target: /var/www/onlyoffice/Data
+      - type: bind
+        source: /DATA/AppData/onlyoffice/lib
+        target: /var/lib/onlyoffice
     healthcheck:
-      test:
-      - CMD
-      - curl
-      - -f
-      - http://localhost:8000/info/info.json
+      test: ["CMD", "curl", "-f", "http://localhost:8000/info/info.json"]
       interval: 30s
       retries: 5
       start_period: 120s
       timeout: 10s
     networks:
-    - onlyoffice-network
+      - onlyoffice-network
     deploy:
       resources:
         limits:
