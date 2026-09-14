@@ -70,7 +70,7 @@ services:
       retries: 3
       start_period: 10s
     labels:
-      icon: https://raw.githubusercontent.com/chicohaager/casadrop/main/logo.png
+      icon: https://raw.githubusercontent.com/chicohaager/casadrop/main/icon.png
 
 x-casaos:
   architectures:
@@ -82,7 +82,7 @@ x-casaos:
   author: Lintuxer
   developer: chicohaager
   category: Productivity
-  icon: https://raw.githubusercontent.com/chicohaager/casadrop/main/logo.png
+  icon: https://raw.githubusercontent.com/chicohaager/casadrop/main/icon.png
   thumbnail: ""
   index: /
   port_map: "8086"
