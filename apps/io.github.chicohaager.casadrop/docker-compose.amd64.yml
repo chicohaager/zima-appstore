@@ -15,7 +15,7 @@ name: casadrop
 
 services:
   casadrop:
-    image: chicohaager/casadrop:2.4.4@sha256:92d7e6defef11b771ec5d2382d886fb93b29073e4c0abbf2633de6609a16a104
+    image: chicohaager/casadrop:2.5.0@sha256:4c4dd7f6ed1d6fb6be259921e1d173153b508fd3b4598dd7821044bd4f1f39f5
     container_name: casadrop
     hostname: casadrop
     restart: unless-stopped
@@ -72,7 +72,7 @@ services:
 x-casaos:
   main: casadrop
   id: io.github.chicohaager.casadrop
-  version: 2.4.4
+  version: 2.5.0
   icon: https://chicohaager.github.io/zima-appstore/apps/io.github.chicohaager.casadrop/assets/icon.png
   index: /
   port_map: "8086"
