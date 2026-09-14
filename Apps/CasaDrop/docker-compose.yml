@@ -15,7 +15,7 @@ name: casadrop
 
 services:
   casadrop:
-    image: chicohaager/casadrop:2.4.4
+    image: chicohaager/casadrop:2.5.0
     container_name: casadrop
     hostname: casadrop
     restart: unless-stopped
@@ -78,7 +78,7 @@ x-casaos:
     - arm64
   main: casadrop
   id: io.github.chicohaager.casadrop
-  version: 2.4.4
+  version: 2.5.0
   author: Lintuxer
   developer: chicohaager
   category: Productivity
