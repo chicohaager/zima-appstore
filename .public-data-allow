@@ -1,0 +1,21 @@
+# Allowances for the publication scanner (~/.claude/bin/check-public-data.py).
+# Keep every line path-scoped. Own host addresses and own user names are NEVER listed here.
+
+# The MediaCMS image installs itself under /home/mediacms.io — it is the upstream
+# Dockerfile's directory (mediacms-io/mediacms, Dockerfile line 18), not anyone's home.
+Apps/MediaCMS/docker-compose.yml:/home/mediacms.io
+
+# RFC 2606 placeholder addresses in the example values of the compose files.
+Apps/Gitea/docker-compose.yml:admin@example.com
+Apps/InvoiceNinja/docker-compose.yml:admin@example.com
+Apps/InvoiceNinja/docker-compose.yml:user@example.com
+Apps/NextExplorer/docker-compose.yml:admin@example.com
+Apps/Pterodactyl/docker-compose.yml:noreply@example.com
+Apps/Pterodactyl/docker-compose.yml:admin@example.com
+
+# SoulSync's own shipped plex.base_url default (present in Nezreka/SoulSync upstream,
+# e.g. core/video/duplicate_copies.py). Documented in the compose as a warning; not ours.
+Apps/SoulSync/docker-compose.yml:192.168.86.36
+
+# The git SSH remote form matched by the build script, not a mailbox.
+scripts/build_dist.sh:git@github.com
