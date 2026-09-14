@@ -34,6 +34,7 @@
 name: gitea
 
 services:
+  # ── database ──────────────────────────────────────────────────────────────
   db:
     image: postgres:17-alpine@sha256:7456ef82e5f5bc43d997f4781bbd7c0d6389bff397564649a356e206ba473aee
     restart: unless-stopped
@@ -190,8 +191,9 @@ services:
       # retry loop, so a longer wait cannot help — a restart re-reads it.
       - GITEA_MAX_REG_ATTEMPTS=3
       - GITEA_RUNNER_LABELS=ubuntu-latest:docker://gitea/runner-images:ubuntu-latest,alpine:docker://alpine:3.21
-    volumes:   -
-        type: bind
+    volumes:
+      # No /var/run/docker.sock here — that is the whole point of this variant.
+      - type: bind
         source: /DATA/AppData/gitea/runner
         target: /data
       - type: bind

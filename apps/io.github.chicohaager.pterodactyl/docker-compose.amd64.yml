@@ -69,8 +69,9 @@
 name: pterodactyl
 
 services:
+  # ── database ──────────────────────────────────────────────────────────────
   database:
-    image: mariadb:11@sha256:e564bcaefb87c3d2b8b09b539ea791d34f4b62c05e2e7cb03f5d6388bdc54f2c
+    image: mariadb:11@sha256:a75328dabed542a3b704efe54086071cb3f99e6a640cc8a18d7273bc4de2e5e7
     restart: unless-stopped
     command:
       - --default-authentication-plugin=mysql_native_password
@@ -94,7 +95,7 @@ services:
 
   # ── cache, queue and sessions ─────────────────────────────────────────────
   cache:
-    image: redis:alpine@sha256:a6a88248ad5b0c724b7f2b380b7d21f46097db158b2b077ef85bcb97f90aee3a
+    image: redis:alpine@sha256:9c3ecc609a8087c0f11c494fefaf37a8f7bf9a967631d4a0da8967a9810be354
     restart: unless-stopped
     environment:
       - TZ=UTC
@@ -114,8 +115,9 @@ services:
   panel:
     image: ghcr.io/pterodactyl/panel:v1.14.1@sha256:6a576b07a34d442fd0f1dd98efccbc08330b81668b2a9f7eef4d5261fd8a32f6
     restart: unless-stopped
-    environment:   -
-        APP_URL=http://REPLACE-WITH-YOUR-ZIMAOS-IP:8080
+    environment:
+      # 1. CHANGE THIS — the address you type in the browser, with the port.
+      - APP_URL=http://REPLACE-WITH-YOUR-ZIMAOS-IP:8080
       - APP_ENV=production
       - APP_ENVIRONMENT_ONLY=false
       - APP_DEBUG=false
@@ -148,8 +150,10 @@ services:
       - MAIL_MAILER=log
       - MAIL_FROM=noreply@example.com
       - MAIL_FROM_NAME=Pterodactyl Panel
-    volumes:   -
-        type: bind
+    volumes:
+      # /app/var holds the generated .env with APP_KEY — losing it locks you out
+      # of everything the panel encrypted.
+      - type: bind
         source: /DATA/AppData/pterodactyl/var
         target: /app/var
       - type: bind
@@ -179,8 +183,9 @@ services:
   provision:
     image: ghcr.io/pterodactyl/panel:v1.14.1@sha256:6a576b07a34d442fd0f1dd98efccbc08330b81668b2a9f7eef4d5261fd8a32f6
     restart: on-failure
-    environment:   -
-        ADMIN_EMAIL=admin@example.com
+    environment:
+      # 2. CHANGE THESE — the first administrator, created once.
+      - ADMIN_EMAIL=admin@example.com
       - ADMIN_USERNAME=admin
       - ADMIN_FIRST=Server
       - ADMIN_LAST=Admin
@@ -306,8 +311,9 @@ services:
         target: 2022
         published: "2022"
         protocol: tcp
-    volumes:   -
-        type: bind
+    volumes:
+      # Root-equivalent on the host. This is what lets wings run game servers.
+      - type: bind
         source: /var/run/docker.sock
         target: /var/run/docker.sock
       - type: bind

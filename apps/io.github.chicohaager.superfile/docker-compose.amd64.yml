@@ -54,13 +54,21 @@ name: superfile
 
 services:
   app:
+    # Pinned to an immutable tag. 1.6.0 is superfile's version; -rN counts the
+    # packaging revisions on top of it, so the tag cannot quietly change under
+    # an installed app the way `1.6.0` or `latest` can.
     image: chicohaager/superfile-web:1.6.0-r5@sha256:b31e1e5d11744e2269702e4d08f19b71c60390292a75b62bda85fd414bb02399
     container_name: superfile
     restart: unless-stopped
-    ports:   -
-        "7682:7681"
-    environment:   -
-        SPF_USER=admin
+    ports:
+      # host:container — 7681 inside is ttyd's own default and stays as it is.
+      - "7682:7681"
+    environment:
+      # The login for the browser terminal: admin / change-me-asap.
+      # Both are required; an empty password stops the container instead of
+      # publishing an open shell. The password is named in the install dialog on
+      # purpose — a credential nobody can find is a credential nobody changes.
+      - SPF_USER=admin
       - SPF_PASSWORD=change-me-asap
       # Where superfile opens. It can walk anywhere below the mounts, so this is
       # the roof over all shares rather than one of them.
@@ -72,8 +80,10 @@ services:
       - SPF_MAX_CLIENTS=0
       - SPF_FONT_SIZE=15
       - TZ=Europe/Berlin
-    volumes:   -
-        /DATA/AppData/superfile/config:/config
+    volumes:
+      # superfile's own config, theme, hotkeys and state. Survives a restart,
+      # and is what you edit if you want different keybindings.
+      - /DATA/AppData/superfile/config:/config
       # The shares. These are ZimaOS' own directories; keep the ones you want.
       - /DATA/Documents:/files/Documents
       - /DATA/Downloads:/files/Downloads

@@ -15,7 +15,7 @@ name: casadrop
 
 services:
   casadrop:
-    image: chicohaager/casadrop:2.4.2@sha256:ccd73b692f6f0457dadab91897d69735c3b1b847112577f96fe2e20aa5de70ae
+    image: chicohaager/casadrop:2.4.4@sha256:92d7e6defef11b771ec5d2382d886fb93b29073e4c0abbf2633de6609a16a104
     container_name: casadrop
     hostname: casadrop
     restart: unless-stopped
@@ -50,8 +50,10 @@ services:
       - no-new-privileges:true
     cap_drop:
       - ALL
-    cap_add:   -
-        CHOWN
+    cap_add:
+      # The entrypoint chowns the data directory and drops to an unprivileged
+      # uid; these are the capabilities it needs to do that, and no more.
+      - CHOWN
       - SETUID
       - SETGID
       - DAC_OVERRIDE
@@ -60,6 +62,8 @@ services:
     tmpfs:
       - /tmp
     healthcheck:
+      # GET, not --spider: the runtime image ships GNU wget, whose --spider
+      # issues a HEAD request. Keep this a plain GET.
       test: ["CMD-SHELL", "wget -qO- http://localhost:8080/healthz >/dev/null 2>&1 || exit 1"]
       interval: 30s
       timeout: 10s
@@ -68,7 +72,7 @@ services:
 x-casaos:
   main: casadrop
   id: io.github.chicohaager.casadrop
-  version: 2.4.2
+  version: 2.4.4
   icon: https://chicohaager.github.io/zima-appstore/apps/io.github.chicohaager.casadrop/assets/icon.png
   index: /
   port_map: "8086"

@@ -40,6 +40,11 @@ name: nextexplorer
 
 services:
   app:
+    # Bewusst ein bewegliches Tag: die ZimaOS-Oberfläche holt beim „Update" genau
+    # dieses Tag neu, ein gepinntes bekäme nie eine neue Version. Der Preis: der
+    # Versionsstring sagt nichts darüber, was läuft — wer es wissen muss, fragt den
+    # Digest (`docker image inspect --format '{{index .RepoDigests 0}}' nxzai/explorer:latest`)
+    # oder liest die Version in der App unter Einstellungen → Info.
     image: nxzai/explorer:latest@sha256:eac59819210f0dcccb653aebb941b1f693e3123b69636cbb070bb9f71575a2f1
     restart: unless-stopped
     environment:
@@ -59,8 +64,9 @@ services:
       # Owner of newly created files: ZimaOS user (999) and the samba group (1000).
       - PUID=999
       - PGID=1000
-    volumes:   -
-        type: bind
+    volumes:
+      # The app's own state. Lose /config and you lose users, shares and settings.
+      - type: bind
         source: /DATA/AppData/nextexplorer/config
         target: /config
       - type: bind

@@ -120,8 +120,9 @@ services:
   onlyoffice:
     image: onlyoffice/documentserver:9.4.0.1@sha256:e231bc62da8c1f0c1f78188f8c7e17e67716f38955d0ad1d703cf911ad6db84b
     container_name: onlyoffice-documentserver
-    environment:   -
-        JWT_SECRET=change-me-before-you-connect-anything
+    environment:
+    # 🔴 Replace this before anything connects — see the header.
+      - JWT_SECRET=change-me-before-you-connect-anything
       - JWT_ENABLED=true
       - JWT_HEADER=Authorization
       - JWT_IN_BODY=false
@@ -146,6 +147,8 @@ services:
         source: /DATA/AppData/onlyoffice/lib
         target: /var/lib/onlyoffice
     healthcheck:
+      # Upstream's own check. It talks to the document service directly on 8000;
+      # from outside, /info/info.json answers 403 by nginx design.
       test: ["CMD", "curl", "-f", "http://localhost:8000/info/info.json"]
       interval: 30s
       retries: 5
@@ -156,6 +159,8 @@ services:
     deploy:
       resources:
         limits:
+          # Upstream asks for 4 GB or more; measured idle usage was 365 MiB, but
+          # every open document adds a converter process.
           memory: 6GB
           cpus: '4.00'
 networks:

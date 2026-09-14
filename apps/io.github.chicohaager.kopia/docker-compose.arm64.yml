@@ -165,6 +165,9 @@ services:
     deploy:
       resources:
         limits:
+          # Kopia's memory use grows with the size of the repository index. If a
+          # snapshot dies and the container shows exit code 137, it was killed
+          # here — raise this, do not shrink the backup.
           memory: 4GB
           cpus: '4.00'
 networks:
