@@ -15,13 +15,13 @@
   "title": "CasaDrop",
   "base_url": "https://chicohaager.github.io/zima-appstore",
   "id": "io.github.chicohaager.casadrop",
-  "version": "2.4.4",
+  "version": "2.5.0",
   "categories": [
     "productivity"
   ],
   "min_memory": 0,
   "min_image_size": {
-    "amd64": 16626618,
-    "arm64": 16432689
+    "amd64": 16669794,
+    "arm64": 16473217
   }
 }
