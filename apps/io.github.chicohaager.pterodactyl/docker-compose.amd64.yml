@@ -71,7 +71,7 @@ name: pterodactyl
 services:
   # ── database ──────────────────────────────────────────────────────────────
   database:
-    image: mariadb:11@sha256:a75328dabed542a3b704efe54086071cb3f99e6a640cc8a18d7273bc4de2e5e7
+    image: mariadb:11@sha256:93fc3fe333b6cdfb061425869c2c3a5bb2851c0c74dbebc2c940f024e7482d76
     restart: unless-stopped
     command:
       - --default-authentication-plugin=mysql_native_password
@@ -95,7 +95,7 @@ services:
 
   # ── cache, queue and sessions ─────────────────────────────────────────────
   cache:
-    image: redis:alpine@sha256:9c3ecc609a8087c0f11c494fefaf37a8f7bf9a967631d4a0da8967a9810be354
+    image: redis:alpine@sha256:2d3814be5e9b06a30a0be54770b7e12052e7e79ec85271aefd34875c1f393b23
     restart: unless-stopped
     environment:
       - TZ=UTC

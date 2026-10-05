@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updated_at": "2026-09-15T17:44:06Z",
+  "updated_at": "2026-10-05T13:00:48Z",
   "app_count": 12,
   "base_url": "https://chicohaager.github.io/zima-appstore",
   "apps": [
@@ -22,8 +22,8 @@
       "thumbnail": "",
       "compose_url": "/apps/io.github.chicohaager.casadrop/docker-compose.yml",
       "meta_url": "/apps/io.github.chicohaager.casadrop/meta.json",
-      "content_hash": "17028d62",
-      "version": "2.5.1"
+      "content_hash": "15614980",
+      "version": "2.5.2"
     },
     {
       "id": "io.github.chicohaager.gitea",
@@ -43,7 +43,7 @@
       "thumbnail": "",
       "compose_url": "/apps/io.github.chicohaager.gitea/docker-compose.yml",
       "meta_url": "/apps/io.github.chicohaager.gitea/meta.json",
-      "content_hash": "4f4213f8",
+      "content_hash": "38c7ea67",
       "version": "1.27.0"
     },
     {
@@ -64,7 +64,7 @@
       "thumbnail": "",
       "compose_url": "/apps/io.github.chicohaager.invoiceninja/docker-compose.yml",
       "meta_url": "/apps/io.github.chicohaager.invoiceninja/meta.json",
-      "content_hash": "fcddcc6f",
+      "content_hash": "3dbed475",
       "version": "5.13.26"
     },
     {
@@ -105,7 +105,7 @@
       "thumbnail": "",
       "compose_url": "/apps/io.github.chicohaager.mediacms/docker-compose.yml",
       "meta_url": "/apps/io.github.chicohaager.mediacms/meta.json",
-      "content_hash": "44d0807d",
+      "content_hash": "d3424814",
       "version": "8.3.4"
     },
     {
@@ -126,7 +126,7 @@
       "thumbnail": "",
       "compose_url": "/apps/io.github.chicohaager.nextexplorer/docker-compose.yml",
       "meta_url": "/apps/io.github.chicohaager.nextexplorer/meta.json",
-      "content_hash": "375d4af1",
+      "content_hash": "0c8ce38f",
       "version": "2.2.7"
     },
     {
@@ -168,7 +168,7 @@
       "thumbnail": "",
       "compose_url": "/apps/io.github.chicohaager.pterodactyl/docker-compose.yml",
       "meta_url": "/apps/io.github.chicohaager.pterodactyl/meta.json",
-      "content_hash": "f6f4a345",
+      "content_hash": "aea7e8dc",
       "version": "1.14.1"
     },
     {

@@ -36,7 +36,7 @@ name: gitea
 services:
   # ── database ──────────────────────────────────────────────────────────────
   db:
-    image: postgres:17-alpine@sha256:dfc2780980fe6ca2d158bfe4342660db5e4c6431fb969088e543430d09f8d0f2
+    image: postgres:17-alpine@sha256:0b2882c46a2b8d8e148431b333394348cf4d7f15aec6df7f17d51dc641e56cfa
     restart: unless-stopped
     environment:
       - POSTGRES_DB=gitea
