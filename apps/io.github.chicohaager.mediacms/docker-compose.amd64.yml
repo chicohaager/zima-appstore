@@ -287,7 +287,7 @@ services:
           memory: 2GB
           cpus: '2.00'
   redis:
-    image: redis:alpine@sha256:9c3ecc609a8087c0f11c494fefaf37a8f7bf9a967631d4a0da8967a9810be354
+    image: redis:alpine@sha256:2d3814be5e9b06a30a0be54770b7e12052e7e79ec85271aefd34875c1f393b23
     container_name: mediacms-redis
     restart: unless-stopped
     healthcheck:
@@ -303,7 +303,7 @@ services:
           memory: 512M
           cpus: '1.00'
   migrations:
-    image: mediacms/mediacms:latest@sha256:110df89274b0e5703e2ca1bd997c293ff1d994c10150bc4554482d208ce13362
+    image: mediacms/mediacms:latest@sha256:ddf93b89a7d56909366d71b0e0008f3a32862d7cfb46e0c48d615446afe2435f
     container_name: mediacms-migrations
     # Seeds the default avatar before anything serves a page — see "THE MISSING
     # DEFAULT AVATAR" in the header. This is a run-once service, which is exactly
@@ -360,7 +360,7 @@ services:
           memory: 2GB
           cpus: '2.00'
   web:
-    image: mediacms/mediacms:latest@sha256:110df89274b0e5703e2ca1bd997c293ff1d994c10150bc4554482d208ce13362
+    image: mediacms/mediacms:latest@sha256:ddf93b89a7d56909366d71b0e0008f3a32862d7cfb46e0c48d615446afe2435f
     container_name: mediacms-web
     # See "THE LOST PORT" in the header. Two edits, both before the server starts:
     #   1. the nginx line, patched in deploy/docker/nginx_http_only.conf — which
@@ -413,7 +413,7 @@ services:
           memory: 4GB
           cpus: '4.00'
   celery_beat:
-    image: mediacms/mediacms:latest@sha256:110df89274b0e5703e2ca1bd997c293ff1d994c10150bc4554482d208ce13362
+    image: mediacms/mediacms:latest@sha256:ddf93b89a7d56909366d71b0e0008f3a32862d7cfb46e0c48d615446afe2435f
     container_name: mediacms-celery-beat
     environment:
       - ENABLE_UWSGI=no
@@ -437,7 +437,7 @@ services:
           memory: 1GB
           cpus: '1.00'
   celery_worker:
-    image: mediacms/mediacms:latest@sha256:110df89274b0e5703e2ca1bd997c293ff1d994c10150bc4554482d208ce13362
+    image: mediacms/mediacms:latest@sha256:ddf93b89a7d56909366d71b0e0008f3a32862d7cfb46e0c48d615446afe2435f
     container_name: mediacms-celery-worker
     environment:
       - ENABLE_UWSGI=no

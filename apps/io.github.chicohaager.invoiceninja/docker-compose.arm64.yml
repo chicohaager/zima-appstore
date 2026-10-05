@@ -1,7 +1,7 @@
 name: invoiceninja
 services:
   mysql:
-    image: mysql:8@sha256:eef35351206a4b4c03c1f57deb64c27bee324929df9f031d16b0a3a51631eb4d
+    image: mysql:8@sha256:ca3f0494c0f1fc86eb45f5e4786a1bb9f64d2f85b562cc74a9595046f6519a42
     restart: unless-stopped
     environment:
       - MYSQL_DATABASE=ninja
@@ -27,7 +27,7 @@ services:
     networks:
       - invoiceninja-network
   redis:
-    image: redis:alpine@sha256:6e628df1eb8b32f8bced77d65e798d4a1b42cf0a3b30ba0e31eb37411187ca83
+    image: redis:alpine@sha256:41a10b18bd238fa7837b1615b2b5b113edff1654233238ac82d87e6fb5531f44
     restart: unless-stopped
     volumes:
       - type: bind
@@ -95,7 +95,7 @@ services:
     networks:
       - invoiceninja-network
   nginx:
-    image: nginx:alpine@sha256:ac1c5b25bb178c48d4f758b8a67021b45a5e6b056b8407364f060e162943f08b
+    image: nginx:alpine@sha256:84dd96a0337ae0f15be81afa8c6bd99d06a514a2ab71a1503aba91ce4392ecc2
     restart: unless-stopped
     command:
       - /bin/sh
