@@ -303,7 +303,7 @@ services:
           memory: 512M
           cpus: '1.00'
   migrations:
-    image: mediacms/mediacms:latest@sha256:ddf93b89a7d56909366d71b0e0008f3a32862d7cfb46e0c48d615446afe2435f
+    image: mediacms/mediacms:latest@sha256:a3b8d80a16570fbcba708e32c58411644c8f2494ce00622fb7582bf1b9a66cd9
     container_name: mediacms-migrations
     # Seeds the default avatar before anything serves a page — see "THE MISSING
     # DEFAULT AVATAR" in the header. This is a run-once service, which is exactly
@@ -360,7 +360,7 @@ services:
           memory: 2GB
           cpus: '2.00'
   web:
-    image: mediacms/mediacms:latest@sha256:ddf93b89a7d56909366d71b0e0008f3a32862d7cfb46e0c48d615446afe2435f
+    image: mediacms/mediacms:latest@sha256:a3b8d80a16570fbcba708e32c58411644c8f2494ce00622fb7582bf1b9a66cd9
     container_name: mediacms-web
     # See "THE LOST PORT" in the header. Two edits, both before the server starts:
     #   1. the nginx line, patched in deploy/docker/nginx_http_only.conf — which
@@ -413,7 +413,7 @@ services:
           memory: 4GB
           cpus: '4.00'
   celery_beat:
-    image: mediacms/mediacms:latest@sha256:ddf93b89a7d56909366d71b0e0008f3a32862d7cfb46e0c48d615446afe2435f
+    image: mediacms/mediacms:latest@sha256:a3b8d80a16570fbcba708e32c58411644c8f2494ce00622fb7582bf1b9a66cd9
     container_name: mediacms-celery-beat
     environment:
       - ENABLE_UWSGI=no
@@ -437,7 +437,7 @@ services:
           memory: 1GB
           cpus: '1.00'
   celery_worker:
-    image: mediacms/mediacms:latest@sha256:ddf93b89a7d56909366d71b0e0008f3a32862d7cfb46e0c48d615446afe2435f
+    image: mediacms/mediacms:latest@sha256:a3b8d80a16570fbcba708e32c58411644c8f2494ce00622fb7582bf1b9a66cd9
     container_name: mediacms-celery-worker
     environment:
       - ENABLE_UWSGI=no
