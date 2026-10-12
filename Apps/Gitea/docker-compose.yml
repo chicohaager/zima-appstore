@@ -57,7 +57,7 @@ services:
 
   # ── Gitea itself (the tile points here) ───────────────────────────────────
   server:
-    image: gitea/gitea:1.27.0
+    image: gitea/gitea:1.27.3
     restart: unless-stopped
     environment:
       - USER_UID=1000
@@ -107,7 +107,7 @@ services:
 
   # ── one-shot: first administrator and the runner's registration token ─────
   provision:
-    image: gitea/gitea:1.27.0
+    image: gitea/gitea:1.27.3
     restart: on-failure
     user: "1000:1000"
     environment:
@@ -225,7 +225,7 @@ x-casaos:
     - arm64
   main: server
   id: io.github.chicohaager.gitea
-  version: 1.27.0
+  version: 1.27.3
   scheme: http
   author: Lintuxer
   developer: Gitea
