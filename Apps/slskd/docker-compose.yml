@@ -162,7 +162,7 @@
 name: slskd
 services:
   slskd:
-    image: slskd/slskd:0.26.0
+    image: slskd/slskd:0.26.1
     container_name: slskd
     user: '1000:1000'
     environment:
@@ -241,7 +241,7 @@ x-casaos:
   scheme: http
   # Pins a permanent upstream tag, so the version a store shows is a fact and
   # not a guess. Moving it is two edits: the tag in `image:` and this line.
-  version: 0.26.0
+  version: 0.26.1
   author: Lintuxer
   developer: slskd
   # `Media` exists in both category vocabularies on a ZimaOS box: the nine the
