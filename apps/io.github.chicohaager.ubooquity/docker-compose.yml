@@ -78,7 +78,7 @@
 name: ubooquity
 services:
   ubooquity:
-    image: lscr.io/linuxserver/ubooquity:3.1.0-ls91
+    image: lscr.io/linuxserver/ubooquity:3.1.0-ls95
     container_name: ubooquity
     environment:
       - PUID=1000
