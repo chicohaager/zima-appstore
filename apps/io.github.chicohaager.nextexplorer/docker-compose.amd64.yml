@@ -104,7 +104,7 @@ networks:
 x-casaos:
   main: app
   id: io.github.chicohaager.nextexplorer
-  version: 2.2.7
+  version: 3.1.0
   scheme: http
   icon: https://chicohaager.github.io/zima-appstore/apps/io.github.chicohaager.nextexplorer/assets/icon.png
   title:
