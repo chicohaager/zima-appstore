@@ -57,7 +57,7 @@ services:
     # Pinned to an immutable tag. 1.6.0 is superfile's version; -rN counts the
     # packaging revisions on top of it, so the tag cannot quietly change under
     # an installed app the way `1.6.0` or `latest` can.
-    image: chicohaager/superfile-web:1.6.0-r5
+    image: chicohaager/superfile-web:1.6.0-r6
     container_name: superfile
     restart: unless-stopped
     ports:
