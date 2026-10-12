@@ -165,7 +165,7 @@
 name: soulsync
 services:
   soulsync:
-    image: boulderbadgedad/soulsync:3.1.9
+    image: boulderbadgedad/soulsync:3.5.3
     container_name: soulsync-webui
     environment:
     - PUID=1000
@@ -307,7 +307,7 @@ x-casaos:
   # and not a guess. Checked on Docker Hub 2026-07-30: the `3.1.9` tag and
   # `latest` resolve to the SAME digest (sha256:89aa9776291dc8347de…), so this
   # pin is byte-for-byte the image that was verified on 2026-07-28.
-  version: 3.1.9
+  version: 3.5.3
   author: Lintuxer
   developer: Nezreka
   category: Media
