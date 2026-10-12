@@ -134,7 +134,7 @@ x-casaos:
     - arm64
   main: app
   id: io.github.chicohaager.nextexplorer
-  version: 2.2.7
+  version: 3.1.0
   scheme: http
   author: Lintuxer
   developer: nxzai
