@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updated_at": "2026-10-12T17:51:36Z",
+  "updated_at": "2026-10-12T18:00:42Z",
   "app_count": 13,
   "base_url": "https://chicohaager.github.io/zima-appstore",
   "apps": [
@@ -43,8 +43,8 @@
       "thumbnail": "/apps/io.github.chicohaager.craftsuite/assets/photocraft-demo.webp",
       "compose_url": "/apps/io.github.chicohaager.craftsuite/docker-compose.yml",
       "meta_url": "/apps/io.github.chicohaager.craftsuite/meta.json",
-      "content_hash": "0cd4f581",
-      "version": "1.0.0"
+      "content_hash": "565ae50d",
+      "version": "1.0.1"
     },
     {
       "id": "io.github.chicohaager.gitea",
@@ -272,7 +272,7 @@
       "thumbnail": "",
       "compose_url": "/apps/io.github.chicohaager.ubooquity/docker-compose.yml",
       "meta_url": "/apps/io.github.chicohaager.ubooquity/meta.json",
-      "content_hash": "26474035",
+      "content_hash": "ed068d71",
       "version": "3.1.0"
     }
   ]
