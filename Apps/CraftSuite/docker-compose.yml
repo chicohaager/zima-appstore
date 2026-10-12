@@ -1,0 +1,87 @@
+# Craft Suite — nine open-source creative and office apps for the browser, served by nginx.
+#
+# PhotoCraft, LightCraft, FilmCraft, EffectCraft, DesignCraft, DeckCraft, GridCraft, PdfCraft
+# and CADCraft, as the official WebAssembly builds from their GitHub releases. There is no
+# server-side code, no database and no volume: documents stay in the browser. Open uses the
+# browser's file picker, Save and Export download the file.
+#
+# All apps share one origin (this box and port), each under its own path.
+
+name: craftsuite
+
+services:
+  craftsuite:
+    image: chicohaager/craftsuite:1.0.0
+    container_name: craftsuite
+    restart: unless-stopped
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    ports:
+      - target: 8080
+        published: "8088"
+        protocol: tcp
+    labels:
+      icon: https://raw.githubusercontent.com/chicohaager/zima-appstore/main/Apps/CraftSuite/icon.png
+    x-casaos:
+      ports:
+        - container: "8080"
+          description:
+            en_US: Web UI
+
+x-casaos:
+  architectures:
+    - amd64
+    - arm64
+  main: craftsuite
+  id: io.github.chicohaager.craftsuite
+  version: 1.0.0
+  author: Lintuxer
+  developer: storytold
+  category: Productivity
+  icon: https://raw.githubusercontent.com/chicohaager/zima-appstore/main/Apps/CraftSuite/icon.png
+  thumbnail: https://raw.githubusercontent.com/storytold/photocraft/main/docs/images/photocraft-demo.jpg
+  screenshot_link:
+    - https://raw.githubusercontent.com/storytold/photocraft/main/docs/images/photocraft-demo.jpg
+  index: /
+  port_map: "8088"
+  scheme: http
+  store_app_id: craftsuite
+  title:
+    custom: Craft Suite
+    en_US: Craft Suite
+  tagline:
+    en_US: Photo, video, design, office and CAD apps in your browser
+  description:
+    en_US: |
+      Nine open-source apps written in Rust, served from your ZimaOS box and running entirely
+      in the browser:
+
+      - PhotoCraft: raster image editor with layers, masks and PSD files
+      - LightCraft: non-destructive photo editor with a photo library
+      - FilmCraft: nonlinear video editor
+      - EffectCraft: motion graphics and compositing
+      - DesignCraft: page and layout design
+      - DeckCraft: presentations and slide shows
+      - GridCraft: spreadsheets
+      - PdfCraft: PDF reader and editor
+      - CADCraft: computer-aided design and drafting
+
+      The start page links to each app. Your box only serves the app files: there is no
+      server-side code, no database and no volume, so nothing you open is stored on it. Apps
+      that keep settings or a library keep them in the browser you use. Save or export your
+      work before closing the tab.
+
+      Over plain HTTP the apps draw with WebGL2. WebGPU and the clipboard need HTTPS.
+
+      Based on the Craft apps by the ArtCraft team (https://github.com/storytold), under
+      MIT OR Apache-2.0. This package is not made or endorsed by the ArtCraft team.
+  tips:
+    before_install:
+      en_US: |
+        The start page is published on port 8088. Change it in the form below if that port
+        is taken. Every app is in early development upstream: save your work often.
