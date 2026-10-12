@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "updated_at": "2026-10-05T18:05:46Z",
-  "app_count": 12,
+  "updated_at": "2026-10-12T16:19:56Z",
+  "app_count": 13,
   "base_url": "https://chicohaager.github.io/zima-appstore",
   "apps": [
     {
@@ -24,6 +24,27 @@
       "meta_url": "/apps/io.github.chicohaager.casadrop/meta.json",
       "content_hash": "f7f93838",
       "version": "2.5.3"
+    },
+    {
+      "id": "io.github.chicohaager.craftsuite",
+      "title": "Craft Suite",
+      "tagline": "Photo, video, design, office and CAD apps in your browser",
+      "category": "Productivity",
+      "categories": [
+        "productivity"
+      ],
+      "author": "Lintuxer",
+      "developer": "storytold",
+      "architectures": [
+        "amd64",
+        "arm64"
+      ],
+      "icon": "/apps/io.github.chicohaager.craftsuite/assets/icon.png",
+      "thumbnail": "/apps/io.github.chicohaager.craftsuite/assets/photocraft-demo.webp",
+      "compose_url": "/apps/io.github.chicohaager.craftsuite/docker-compose.yml",
+      "meta_url": "/apps/io.github.chicohaager.craftsuite/meta.json",
+      "content_hash": "46db2812",
+      "version": "1.0.0"
     },
     {
       "id": "io.github.chicohaager.gitea",
@@ -105,7 +126,7 @@
       "thumbnail": "",
       "compose_url": "/apps/io.github.chicohaager.mediacms/docker-compose.yml",
       "meta_url": "/apps/io.github.chicohaager.mediacms/meta.json",
-      "content_hash": "a4306d14",
+      "content_hash": "e3ba79b2",
       "version": "8.3.4"
     },
     {

@@ -1,0 +1,30 @@
+{
+  "architectures": [
+    "amd64",
+    "arm64"
+  ],
+  "author": "Lintuxer",
+  "developer": "storytold",
+  "category": "Productivity",
+  "thumbnail": "/apps/io.github.chicohaager.craftsuite/assets/photocraft-demo.webp",
+  "screenshot_link": [
+    "/apps/io.github.chicohaager.craftsuite/assets/photocraft-demo.webp"
+  ],
+  "tagline": "Photo, video, design, office and CAD apps in your browser",
+  "description": "Nine open-source apps written in Rust, served from your ZimaOS box and running entirely\nin the browser:\n\n- PhotoCraft: raster image editor with layers, masks and PSD files\n- LightCraft: non-destructive photo editor with a photo library\n- FilmCraft: nonlinear video editor\n- EffectCraft: motion graphics and compositing\n- DesignCraft: page and layout design\n- DeckCraft: presentations and slide shows\n- GridCraft: spreadsheets\n- PdfCraft: PDF reader and editor\n- CADCraft: computer-aided design and drafting\n\nThe start page links to each app. Your box only serves the app files: there is no\nserver-side code, no database and no volume, so nothing you open is stored on it. Apps\nthat keep settings or a library keep them in the browser you use. Save or export your\nwork before closing the tab.\n\nOver plain HTTP the apps draw with WebGL2. WebGPU and the clipboard need HTTPS.\n\nBased on the Craft apps by the ArtCraft team (https://github.com/storytold), under\nMIT OR Apache-2.0. This package is not made or endorsed by the ArtCraft team.\n",
+  "tips": {
+    "before_install": "The start page is published on port 8088. Change it in the form below if that port\nis taken. Every app is in early development upstream: save your work often.\n"
+  },
+  "title": "Craft Suite",
+  "base_url": "https://chicohaager.github.io/zima-appstore",
+  "id": "io.github.chicohaager.craftsuite",
+  "version": "1.0.0",
+  "categories": [
+    "productivity"
+  ],
+  "min_memory": 0,
+  "min_image_size": {
+    "amd64": 0,
+    "arm64": 0
+  }
+}
