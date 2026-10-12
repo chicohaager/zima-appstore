@@ -20,7 +20,9 @@
 #      scheme, no port); with `--scheme=http` an IP is allowed.
 #   2. ADMIN_PASSWORD, ADMIN_EMAIL and the two MySQL passwords — the values below
 #      are in a public file, so everyone has them.
-#   3. Ports. The panel is on 8080. If you move wings off 8443, change it in
+#   3. WINGS_SUBNET/WINGS_GATEWAY only if 10.213.37.0/24 is in use on your LAN or
+#      VPN — it is the network wings creates for the game servers.
+#   4. Ports. The panel is on 8080. If you move wings off 8443, change it in
 #      THREE places: this file's `published:`, its `target:`, and the
 #      `--daemonListeningPort` in the provision script — the panel talks to wings
 #      from the outside, so the number the node stores must be the host port.
@@ -196,6 +198,14 @@ services:
       # How much of the machine the node may hand out, in MiB.
       - NODE_MEMORY=8192
       - NODE_DISK=51200
+      # The network wings creates for game servers (pterodactyl0). Wings' own
+      # default, 172.18.0.0/16, lies inside Docker's default address pool, so on a
+      # box where Docker has already handed that range to another network wings
+      # dies with "Pool overlaps with other one on this address space" and
+      # restarts forever. This range is outside Docker's default pools; change it
+      # only if your LAN or VPN uses it.
+      - WINGS_SUBNET=10.213.37.0/24
+      - WINGS_GATEWAY=10.213.37.1
       # The panel needs the same database and app config to run its CLI.
       - APP_URL=http://REPLACE-WITH-YOUR-ZIMAOS-IP:8080
       - APP_ENV=production
@@ -270,6 +280,12 @@ services:
                            print "  machine_id:"
                            print "    directory: /DATA/AppData/pterodactyl/run/machine-id"}' \
             /tmp/node.yml > /etc/pterodactyl/config.yml
+          # wings' default network (172.18.0.0/16) sits inside Docker's default
+          # address pool; see WINGS_SUBNET above. The panel's configuration has no
+          # docker section, so this block is appended, and wings keeps its
+          # defaults for every key not named here.
+          printf 'docker:\n  network:\n    interface: %s\n    interfaces:\n      v4:\n        subnet: %s\n        gateway: %s\n' \
+            "@WINGS_GATEWAY" "@WINGS_SUBNET" "@WINGS_GATEWAY" >> /etc/pterodactyl/config.yml
           echo "[provision] wrote /etc/pterodactyl/config.yml for wings"
         else
           echo "[provision] wings config already present, leaving it alone"
