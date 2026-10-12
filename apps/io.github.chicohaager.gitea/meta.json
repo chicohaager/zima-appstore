@@ -14,13 +14,13 @@
   "title": "Gitea",
   "base_url": "https://chicohaager.github.io/zima-appstore",
   "id": "io.github.chicohaager.gitea",
-  "version": "1.27.0",
+  "version": "1.27.3",
   "categories": [
     "developer"
   ],
   "min_memory": 0,
   "min_image_size": {
-    "amd64": 365345307,
-    "arm64": 350393853
+    "amd64": 365469769,
+    "arm64": 350511204
   }
 }

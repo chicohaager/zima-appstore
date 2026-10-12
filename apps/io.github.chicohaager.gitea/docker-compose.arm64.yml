@@ -57,7 +57,7 @@ services:
 
   # ── Gitea itself (the tile points here) ───────────────────────────────────
   server:
-    image: gitea/gitea:1.27.0@sha256:8cbb17621b79e49db127040744e5f4743b606f9b11e55ff356a42ca562a0070d
+    image: gitea/gitea:1.27.3@sha256:9b107dff838b4518f720aae53033fc712019a1680267ea45944b858a71b487b5
     restart: unless-stopped
     environment:
       - USER_UID=1000
@@ -107,7 +107,7 @@ services:
 
   # ── one-shot: first administrator and the runner's registration token ─────
   provision:
-    image: gitea/gitea:1.27.0@sha256:8cbb17621b79e49db127040744e5f4743b606f9b11e55ff356a42ca562a0070d
+    image: gitea/gitea:1.27.3@sha256:9b107dff838b4518f720aae53033fc712019a1680267ea45944b858a71b487b5
     restart: on-failure
     user: "1000:1000"
     environment:
@@ -214,7 +214,7 @@ networks:
 x-casaos:
   main: server
   id: io.github.chicohaager.gitea
-  version: 1.27.0
+  version: 1.27.3
   scheme: http
   icon: https://chicohaager.github.io/zima-appstore/apps/io.github.chicohaager.gitea/assets/icon.png
   title:

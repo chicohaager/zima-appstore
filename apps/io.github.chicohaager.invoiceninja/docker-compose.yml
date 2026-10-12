@@ -44,7 +44,7 @@ services:
     networks:
       - invoiceninja-network
   app:
-    image: invoiceninja/invoiceninja-debian:5.13.26
+    image: invoiceninja/invoiceninja-debian:5.13.47
     restart: unless-stopped
     environment:
       - APP_URL=http://REPLACE-WITH-YOUR-ZIMAOS-IP:8012
@@ -133,4 +133,4 @@ x-casaos:
     custom: Invoice Ninja
   index: /
   port_map: '8012'
-  version: 5.13.26
+  version: 5.13.47

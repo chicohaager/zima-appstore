@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updated_at": "2026-10-12T18:00:42Z",
+  "updated_at": "2026-10-12T18:01:41Z",
   "app_count": 13,
   "base_url": "https://chicohaager.github.io/zima-appstore",
   "apps": [
@@ -64,8 +64,8 @@
       "thumbnail": "",
       "compose_url": "/apps/io.github.chicohaager.gitea/docker-compose.yml",
       "meta_url": "/apps/io.github.chicohaager.gitea/meta.json",
-      "content_hash": "38c7ea67",
-      "version": "1.27.0"
+      "content_hash": "fd9f2ff8",
+      "version": "1.27.3"
     },
     {
       "id": "io.github.chicohaager.invoiceninja",
@@ -85,8 +85,8 @@
       "thumbnail": "",
       "compose_url": "/apps/io.github.chicohaager.invoiceninja/docker-compose.yml",
       "meta_url": "/apps/io.github.chicohaager.invoiceninja/meta.json",
-      "content_hash": "3dbed475",
-      "version": "5.13.26"
+      "content_hash": "c414e742",
+      "version": "5.13.47"
     },
     {
       "id": "io.github.chicohaager.kopia",
@@ -126,8 +126,8 @@
       "thumbnail": "",
       "compose_url": "/apps/io.github.chicohaager.mediacms/docker-compose.yml",
       "meta_url": "/apps/io.github.chicohaager.mediacms/meta.json",
-      "content_hash": "e3ba79b2",
-      "version": "8.3.4"
+      "content_hash": "b83a31c0",
+      "version": "9.2.1"
     },
     {
       "id": "io.github.chicohaager.nextexplorer",
@@ -147,8 +147,8 @@
       "thumbnail": "",
       "compose_url": "/apps/io.github.chicohaager.nextexplorer/docker-compose.yml",
       "meta_url": "/apps/io.github.chicohaager.nextexplorer/meta.json",
-      "content_hash": "0c8ce38f",
-      "version": "2.2.7"
+      "content_hash": "b68b3700",
+      "version": "3.1.0"
     },
     {
       "id": "io.github.chicohaager.onlyoffice",
@@ -231,8 +231,8 @@
       "thumbnail": "",
       "compose_url": "/apps/io.github.chicohaager.soulsync/docker-compose.yml",
       "meta_url": "/apps/io.github.chicohaager.soulsync/meta.json",
-      "content_hash": "48db3c38",
-      "version": "3.1.9"
+      "content_hash": "5162b635",
+      "version": "3.5.3"
     },
     {
       "id": "io.github.chicohaager.superfile",
@@ -272,7 +272,7 @@
       "thumbnail": "",
       "compose_url": "/apps/io.github.chicohaager.ubooquity/docker-compose.yml",
       "meta_url": "/apps/io.github.chicohaager.ubooquity/meta.json",
-      "content_hash": "ed068d71",
+      "content_hash": "26474035",
       "version": "3.1.0"
     }
   ]

@@ -469,7 +469,7 @@ networks:
 x-casaos:
   main: web
   id: io.github.chicohaager.mediacms
-  version: 8.3.4
+  version: 9.2.1
   icon: https://chicohaager.github.io/zima-appstore/apps/io.github.chicohaager.mediacms/assets/icon.png
   title:
     en_US: MediaCMS

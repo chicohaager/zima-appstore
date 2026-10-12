@@ -20,13 +20,13 @@
   "title": "Invoice Ninja",
   "base_url": "https://chicohaager.github.io/zima-appstore",
   "id": "io.github.chicohaager.invoiceninja",
-  "version": "5.13.26",
+  "version": "5.13.47",
   "categories": [
     "finance"
   ],
   "min_memory": 0,
   "min_image_size": {
-    "amd64": 1341089490,
-    "arm64": 1280200806
+    "amd64": 1387010228,
+    "arm64": 1336587236
   }
 }
