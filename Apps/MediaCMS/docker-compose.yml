@@ -482,7 +482,7 @@ x-casaos:
   - amd64
   main: web
   id: io.github.chicohaager.mediacms
-  version: 8.3.4
+  version: 9.2.1
   author: Lintuxer
   developer: MediaCMS
   category: Media
