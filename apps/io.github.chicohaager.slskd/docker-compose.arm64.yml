@@ -162,7 +162,7 @@
 name: slskd
 services:
   slskd:
-    image: slskd/slskd:0.26.0@sha256:e807d57eb9033e4a4578b9e2f7e1d4c23b19fe0d9a2e7f28cfcd0bc4c9eeb130
+    image: slskd/slskd:0.26.1@sha256:f07021d440974a6e3530323082b22a85d4c56f209ec926fbdf2bfa2715b06ae7
     container_name: slskd
     user: '1000:1000'
     environment:
@@ -211,7 +211,7 @@ x-casaos:
   main: slskd
   id: io.github.chicohaager.slskd
   scheme: http
-  version: 0.26.0
+  version: 0.26.1
   icon: https://chicohaager.github.io/zima-appstore/apps/io.github.chicohaager.slskd/assets/icon.png
   title:
     en_US: slskd

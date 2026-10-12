@@ -11,7 +11,7 @@ name: craftsuite
 
 services:
   craftsuite:
-    image: chicohaager/craftsuite:1.0.0
+    image: chicohaager/craftsuite:1.0.0@sha256:0e02cf2747acce0af8357e3d5e5407030bca577105907a522c6cf9de23e4496c
     container_name: craftsuite
     restart: unless-stopped
     read_only: true
