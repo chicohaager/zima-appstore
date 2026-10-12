@@ -11,7 +11,7 @@ name: craftsuite
 
 services:
   craftsuite:
-    image: chicohaager/craftsuite:1.0.0
+    image: chicohaager/craftsuite:1.0.1
     container_name: craftsuite
     restart: unless-stopped
     read_only: true
@@ -39,7 +39,7 @@ x-casaos:
     - arm64
   main: craftsuite
   id: io.github.chicohaager.craftsuite
-  version: 1.0.0
+  version: 1.0.1
   author: Lintuxer
   developer: storytold
   category: Productivity
