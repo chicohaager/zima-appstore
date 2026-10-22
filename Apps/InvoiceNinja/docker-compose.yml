@@ -44,7 +44,7 @@ services:
     networks:
     - invoiceninja-network
   app:
-    image: invoiceninja/invoiceninja-debian:5.13.47
+    image: invoiceninja/invoiceninja-debian:5.13.50
     restart: unless-stopped
     environment:
     - APP_URL=http://REPLACE-WITH-YOUR-ZIMAOS-IP:8012
@@ -178,7 +178,7 @@ x-casaos:
   index: /
   is_uncontrolled: false
   port_map: '8012'
-  version: 5.13.47
+  version: 5.13.50
   update_at: '2026-07-24'
   website: https://www.invoiceninja.com/
   repo: https://github.com/invoiceninja/dockerfiles/tree/debian/debian
