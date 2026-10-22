@@ -21,7 +21,20 @@ jobs:
   release:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.x"
+
+      - name: Store checks (tests + no tag may go down)
+        # ZimaOS 1.8 takes the store compose as image target of an installed app;
+        # an older tag here becomes a downgrade on the user's box (measured 2026-10-16).
+        # Deliberate rollback: set ALLOW_DOWNGRADE="<app-id>:<service>" for that run.
+        run: |
+          python -m pip install --quiet pyyaml
+          python scripts/test_store_checks.py
+          python scripts/check_no_downgrade.py Apps https://chicohaager.github.io/zima-appstore
 
       - name: Build v2 dist
         uses: IceWhaleTech/build-appstore-action@v1
@@ -31,6 +44,11 @@ jobs:
           base-url: https://chicohaager.github.io/zima-appstore
           cache-file: .cache/build_appstore/image-size-cache.json
           digest-cache-file: .cache/build_appstore/image-digest-cache.json
+
+      - name: Locale overlays for every supported language
+        # ZimaOS 1.8 requests store/index/meta.<locale>.json; without them each
+        # non-English client logs 404 "background repo resource refresh failed".
+        run: python scripts/add_locale_fallbacks.py dist supported-languages.json
 
       - name: Show what was built
         run: |
