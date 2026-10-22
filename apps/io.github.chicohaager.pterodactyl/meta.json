@@ -14,13 +14,13 @@
   "title": "Pterodactyl",
   "base_url": "https://chicohaager.github.io/zima-appstore",
   "id": "io.github.chicohaager.pterodactyl",
-  "version": "1.14.1",
+  "version": "1.15.2",
   "categories": [
     "others"
   ],
   "min_memory": 0,
   "min_image_size": {
-    "amd64": 265110011,
-    "arm64": 262020416
+    "amd64": 269070905,
+    "arm64": 266415963
   }
 }

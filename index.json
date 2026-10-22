@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updated_at": "2026-10-12T18:53:56Z",
+  "updated_at": "2026-10-22T07:05:47Z",
   "app_count": 13,
   "base_url": "https://chicohaager.github.io/zima-appstore",
   "apps": [
@@ -64,7 +64,7 @@
       "thumbnail": "",
       "compose_url": "/apps/io.github.chicohaager.gitea/docker-compose.yml",
       "meta_url": "/apps/io.github.chicohaager.gitea/meta.json",
-      "content_hash": "fd9f2ff8",
+      "content_hash": "562cf84a",
       "version": "1.27.3"
     },
     {
@@ -85,8 +85,8 @@
       "thumbnail": "",
       "compose_url": "/apps/io.github.chicohaager.invoiceninja/docker-compose.yml",
       "meta_url": "/apps/io.github.chicohaager.invoiceninja/meta.json",
-      "content_hash": "c414e742",
-      "version": "5.13.47"
+      "content_hash": "f5d97046",
+      "version": "5.13.50"
     },
     {
       "id": "io.github.chicohaager.kopia",
@@ -126,7 +126,7 @@
       "thumbnail": "",
       "compose_url": "/apps/io.github.chicohaager.mediacms/docker-compose.yml",
       "meta_url": "/apps/io.github.chicohaager.mediacms/meta.json",
-      "content_hash": "b83a31c0",
+      "content_hash": "b838a965",
       "version": "9.2.1"
     },
     {
@@ -189,8 +189,8 @@
       "thumbnail": "",
       "compose_url": "/apps/io.github.chicohaager.pterodactyl/docker-compose.yml",
       "meta_url": "/apps/io.github.chicohaager.pterodactyl/meta.json",
-      "content_hash": "2f6f839e",
-      "version": "1.14.1"
+      "content_hash": "c0e66033",
+      "version": "1.15.2"
     },
     {
       "id": "io.github.chicohaager.slskd",

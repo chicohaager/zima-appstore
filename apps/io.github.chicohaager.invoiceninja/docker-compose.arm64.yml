@@ -1,7 +1,7 @@
 name: invoiceninja
 services:
   mysql:
-    image: mysql:8@sha256:ca3f0494c0f1fc86eb45f5e4786a1bb9f64d2f85b562cc74a9595046f6519a42
+    image: mysql:8@sha256:b265fd63b9c8168801c1628b0b21e915846e81192f5a493682a1184cbd70d896
     restart: unless-stopped
     environment:
       - MYSQL_DATABASE=ninja
@@ -27,7 +27,7 @@ services:
     networks:
       - invoiceninja-network
   redis:
-    image: redis:alpine@sha256:41a10b18bd238fa7837b1615b2b5b113edff1654233238ac82d87e6fb5531f44
+    image: redis:alpine@sha256:0819246a2bb1979f7745a8bae2559a2ffa49071ef7a5e7213b3e347e162aeb26
     restart: unless-stopped
     volumes:
       - type: bind
@@ -44,7 +44,7 @@ services:
     networks:
       - invoiceninja-network
   app:
-    image: invoiceninja/invoiceninja-debian:5.13.47@sha256:4a65a6662232f321f16affcb54e4b09138ab94b092c05655bba25efc7c7d9a42
+    image: invoiceninja/invoiceninja-debian:5.13.50@sha256:f33ddd679f29564daa5e44c4a81b6e013d98a96c04f8b478ebe003662d268f58
     restart: unless-stopped
     environment:
       - APP_URL=http://REPLACE-WITH-YOUR-ZIMAOS-IP:8012
@@ -95,7 +95,7 @@ services:
     networks:
       - invoiceninja-network
   nginx:
-    image: nginx:alpine@sha256:84dd96a0337ae0f15be81afa8c6bd99d06a514a2ab71a1503aba91ce4392ecc2
+    image: nginx:alpine@sha256:41c8801e327f9c60c47aa700390ea5cf1862a6852bd27d103ba2cac41a7d6ec7
     restart: unless-stopped
     command:
       - /bin/sh
@@ -133,4 +133,4 @@ x-casaos:
     custom: Invoice Ninja
   index: /
   port_map: '8012'
-  version: 5.13.47
+  version: 5.13.50

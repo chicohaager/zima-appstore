@@ -73,7 +73,7 @@ name: pterodactyl
 services:
   # ── database ──────────────────────────────────────────────────────────────
   database:
-    image: mariadb:11@sha256:93fc3fe333b6cdfb061425869c2c3a5bb2851c0c74dbebc2c940f024e7482d76
+    image: mariadb:11@sha256:d689f65e09e887e96db5c40ca3957dd9f4e3fad3516baec96d7726c78a5fc2ee
     restart: unless-stopped
     command:
       - --default-authentication-plugin=mysql_native_password
@@ -97,7 +97,7 @@ services:
 
   # ── cache, queue and sessions ─────────────────────────────────────────────
   cache:
-    image: redis:alpine@sha256:2d3814be5e9b06a30a0be54770b7e12052e7e79ec85271aefd34875c1f393b23
+    image: redis:alpine@sha256:16b124a2d3eacd620d917ead6fd26cbf1f1d7117fa94122398971931cfe2d403
     restart: unless-stopped
     environment:
       - TZ=UTC
@@ -115,7 +115,7 @@ services:
 
   # ── the panel (nginx + php-fpm + cron + queue worker, all inside) ─────────
   panel:
-    image: ghcr.io/pterodactyl/panel:v1.14.1@sha256:6a576b07a34d442fd0f1dd98efccbc08330b81668b2a9f7eef4d5261fd8a32f6
+    image: ghcr.io/pterodactyl/panel:v1.15.2@sha256:824f3c056c1084c2c877eae8fa34691c5291ea352dffdc2400f8eda90d49e219
     restart: unless-stopped
     environment:
       # 1. CHANGE THIS — the address you type in the browser, with the port.
@@ -183,7 +183,7 @@ services:
   # Same image as the panel, but the panel's entrypoint (supervisord) is
   # replaced — this container does its work and exits.
   provision:
-    image: ghcr.io/pterodactyl/panel:v1.14.1@sha256:6a576b07a34d442fd0f1dd98efccbc08330b81668b2a9f7eef4d5261fd8a32f6
+    image: ghcr.io/pterodactyl/panel:v1.15.2@sha256:824f3c056c1084c2c877eae8fa34691c5291ea352dffdc2400f8eda90d49e219
     restart: on-failure
     environment:
       # 2. CHANGE THESE — the first administrator, created once.
@@ -372,7 +372,7 @@ networks:
 x-casaos:
   main: panel
   id: io.github.chicohaager.pterodactyl
-  version: 1.14.1
+  version: 1.15.2
   scheme: http
   icon: https://chicohaager.github.io/zima-appstore/apps/io.github.chicohaager.pterodactyl/assets/icon.png
   title:
