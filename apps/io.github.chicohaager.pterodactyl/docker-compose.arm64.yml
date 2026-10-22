@@ -310,7 +310,7 @@ services:
 
   # ── wings: the daemon that runs the game servers ──────────────────────────
   wings:
-    image: ghcr.io/pterodactyl/wings:v1.13.1@sha256:5528ce7a9a3b8f6a0d125c0cb80f19c144eb15357ca87ab3217242da6eb048d6
+    image: ghcr.io/pterodactyl/wings:v1.13.4@sha256:d4451a716240f0a06367d3e90b0176abebc348c78a2c886f1ec31d309f7f5d7f
     restart: unless-stopped
     tty: true
     environment:
