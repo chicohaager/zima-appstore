@@ -1,3 +1,4 @@
 dist/
 .cache/
 .env
+*/__pycache__/
