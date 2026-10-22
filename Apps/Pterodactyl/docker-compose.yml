@@ -115,7 +115,7 @@ services:
 
   # ── the panel (nginx + php-fpm + cron + queue worker, all inside) ─────────
   panel:
-    image: ghcr.io/pterodactyl/panel:v1.14.1
+    image: ghcr.io/pterodactyl/panel:v1.15.2
     restart: unless-stopped
     environment:
       # 1. CHANGE THIS — the address you type in the browser, with the port.
@@ -183,7 +183,7 @@ services:
   # Same image as the panel, but the panel's entrypoint (supervisord) is
   # replaced — this container does its work and exits.
   provision:
-    image: ghcr.io/pterodactyl/panel:v1.14.1
+    image: ghcr.io/pterodactyl/panel:v1.15.2
     restart: on-failure
     environment:
       # 2. CHANGE THESE — the first administrator, created once.
@@ -393,7 +393,7 @@ x-casaos:
     - arm64
   main: panel
   id: io.github.chicohaager.pterodactyl
-  version: 1.14.1
+  version: 1.15.2
   scheme: http
   author: Lintuxer
   developer: Pterodactyl
