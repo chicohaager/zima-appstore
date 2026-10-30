@@ -1,0 +1,57 @@
+# Movies-Cast — play IceWhale Movies on a DLNA TV, the phone is the remote.
+#
+# Needs IceWhale Movies (ZimaOS module zimaos-movies 0.3.0 or later, a beta)
+# on the same ZimaOS. Nothing is installed on the TV: it has to be a DLNA
+# media renderer and plays the original file itself.
+#
+# Source and guide: https://github.com/chicohaager/movies-cast
+
+name: movies-cast
+
+services:
+  movies-cast:
+    image: ghcr.io/chicohaager/movies-cast:0.25.4@sha256:9e180fb73f77c4d4f159f9444b1a9e3201280c33912c883bebad885bc67ec96f
+    container_name: movies-cast
+    restart: unless-stopped
+    # Host network: SSDP multicast must reach the TVs, and the TV must reach
+    # this server on the NAS's LAN address. Movies is behind the ZimaOS gateway
+    # on port 80 of the same host.
+    network_mode: host
+    read_only: true
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    environment:
+      - LISTEN=:8097
+      - MOVIES_URL=http://127.0.0.1/movies
+      # TVs by address (<tv-ip>,<tv-ip>): SSDP finds their current URL (the LG
+      # changes its port). A firewall must let SSDP answers in: ZimaOS ZFW
+      # (default-deny INPUT) needs UDP SSDP_PORT (1901) allowed from the LAN.
+      # A full description URL works too, without SSDP.
+      - RENDERERS=
+      # Sessions (with Movies tokens, 0600) survive restarts; without it every
+      # update sends the TV back to pairing.
+      - STATE_FILE=/state/sessions.json
+    volumes:
+      - type: bind
+        source: /DATA/AppData/movies-cast/state
+        target: /state
+      # The host's time zone, read-only. Not TZ=$TZ: ZimaOS fills $TZ in on the
+      # first import only; after an update in "Verwalten" the logs were UTC.
+      - type: bind
+        source: /etc/localtime
+        target: /etc/localtime
+        read_only: true
+x-casaos:
+  main: movies-cast
+  id: io.github.chicohaager.movies-cast
+  version: 0.25.4
+  icon: https://chicohaager.github.io/zima-appstore/apps/io.github.chicohaager.movies-cast/assets/icon.png
+  index: /
+  port_map: "8097"
+  scheme: http
+  title:
+    custom: Movies-Cast
+    en_US: Movies-Cast
+    de_DE: Movies-Cast

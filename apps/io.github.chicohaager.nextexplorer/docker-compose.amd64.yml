@@ -45,7 +45,7 @@ services:
     # Versionsstring sagt nichts darüber, was läuft — wer es wissen muss, fragt den
     # Digest (`docker image inspect --format '{{index .RepoDigests 0}}' nxzai/explorer:latest`)
     # oder liest die Version in der App unter Einstellungen → Info.
-    image: nxzai/explorer:latest@sha256:290fdaea52152aeaf4bc94505ae51faa2cd4960ad89549f1049f08832ec6cde7
+    image: nxzai/explorer:latest@sha256:ce6b6882cb94cf2bbfa0c471755c86750091d3f041039fcb4e49e5518388354a
     restart: unless-stopped
     environment:
       - NODE_ENV=production

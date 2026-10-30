@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "updated_at": "2026-10-22T07:12:49Z",
-  "app_count": 13,
+  "updated_at": "2026-10-30T12:18:26Z",
+  "app_count": 14,
   "base_url": "https://chicohaager.github.io/zima-appstore",
   "apps": [
     {
@@ -85,7 +85,7 @@
       "thumbnail": "",
       "compose_url": "/apps/io.github.chicohaager.invoiceninja/docker-compose.yml",
       "meta_url": "/apps/io.github.chicohaager.invoiceninja/meta.json",
-      "content_hash": "f5d97046",
+      "content_hash": "846d28ac",
       "version": "5.13.50"
     },
     {
@@ -126,8 +126,28 @@
       "thumbnail": "",
       "compose_url": "/apps/io.github.chicohaager.mediacms/docker-compose.yml",
       "meta_url": "/apps/io.github.chicohaager.mediacms/meta.json",
-      "content_hash": "b838a965",
+      "content_hash": "7b514755",
       "version": "9.2.1"
+    },
+    {
+      "id": "io.github.chicohaager.movies-cast",
+      "title": "Movies-Cast",
+      "tagline": "Needs IceWhale Movies (beta) — play its films on a DLNA TV, the phone is the remote",
+      "category": "Media",
+      "categories": [
+        "media"
+      ],
+      "author": "Lintuxer",
+      "developer": "chicohaager",
+      "architectures": [
+        "amd64"
+      ],
+      "icon": "/apps/io.github.chicohaager.movies-cast/assets/icon.png",
+      "thumbnail": "",
+      "compose_url": "/apps/io.github.chicohaager.movies-cast/docker-compose.yml",
+      "meta_url": "/apps/io.github.chicohaager.movies-cast/meta.json",
+      "content_hash": "96bd6852",
+      "version": "0.25.4"
     },
     {
       "id": "io.github.chicohaager.nextexplorer",
@@ -147,7 +167,7 @@
       "thumbnail": "",
       "compose_url": "/apps/io.github.chicohaager.nextexplorer/docker-compose.yml",
       "meta_url": "/apps/io.github.chicohaager.nextexplorer/meta.json",
-      "content_hash": "b68b3700",
+      "content_hash": "2e56de0d",
       "version": "3.1.0"
     },
     {
@@ -189,7 +209,7 @@
       "thumbnail": "",
       "compose_url": "/apps/io.github.chicohaager.pterodactyl/docker-compose.yml",
       "meta_url": "/apps/io.github.chicohaager.pterodactyl/meta.json",
-      "content_hash": "75e53197",
+      "content_hash": "da151694",
       "version": "1.15.2"
     },
     {
