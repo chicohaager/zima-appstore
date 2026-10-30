@@ -101,6 +101,11 @@ x-casaos:
       if it shows up in the TV list on the phone, it is. Tested with an LG
       OLED55B9. The LG webOS TV app from the video is not part of this app.
 
+      **Android TV** (e.g. Nvidia Shield): Kodi works as a DLNA TV once
+      "Allow remote control via UPnP" is on (a tester's Shield TV Pro). A
+      Movies-Cast app for Android TV is a test build, `movies-cast-tv-<version>.apk`
+      on the release page; in the emulator, AC3 and E-AC3 sound stayed silent.
+
       Guide and source: https://github.com/chicohaager/movies-cast
     de_DE: |
       **Movies-Cast** spielt die Filme aus IceWhale **Movies** auf einem Fernseher
@@ -119,6 +124,12 @@ x-casaos:
       hat Movies-Cast nichts anzuzeigen. Der Fernseher muss ein DLNA-Media-Renderer
       sein: erscheint er am Handy in der Fernseher-Liste, ist er es. Getestet mit
       einem LG OLED55B9. Die LG-webOS-TV-App aus dem Video gehört nicht dazu.
+
+      **Android TV** (z. B. Nvidia Shield): Kodi arbeitet als DLNA-Fernseher,
+      sobald „Allow remote control via UPnP“ an ist (die Shield TV Pro eines
+      Testers). Eine Movies-Cast-App für Android TV gibt es als Testversion,
+      `movies-cast-tv-<version>.apk` auf der Release-Seite; im Emulator blieb
+      AC3- und E-AC3-Ton stumm.
 
       Anleitung und Quelle: https://github.com/chicohaager/movies-cast
   tips:
