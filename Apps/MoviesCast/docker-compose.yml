@@ -1,0 +1,143 @@
+# Movies-Cast — play IceWhale Movies on a DLNA TV, the phone is the remote.
+#
+# Needs IceWhale Movies (ZimaOS module zimaos-movies 0.3.0 or later, a beta)
+# on the same ZimaOS. Nothing is installed on the TV: it has to be a DLNA
+# media renderer and plays the original file itself.
+#
+# Source and guide: https://github.com/chicohaager/movies-cast
+
+name: movies-cast
+
+services:
+  movies-cast:
+    image: ghcr.io/chicohaager/movies-cast:0.25.4
+    container_name: movies-cast
+    restart: unless-stopped
+    # Host network: SSDP multicast must reach the TVs, and the TV must reach
+    # this server on the NAS's LAN address. Movies is behind the ZimaOS gateway
+    # on port 80 of the same host.
+    network_mode: host
+    read_only: true
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    environment:
+      - LISTEN=:8097
+      - MOVIES_URL=http://127.0.0.1/movies
+      # TVs by address (<tv-ip>,<tv-ip>): SSDP finds their current URL (the LG
+      # changes its port). A firewall must let SSDP answers in: ZimaOS ZFW
+      # (default-deny INPUT) needs UDP SSDP_PORT (1901) allowed from the LAN.
+      # A full description URL works too, without SSDP.
+      - RENDERERS=
+      # Sessions (with Movies tokens, 0600) survive restarts; without it every
+      # update sends the TV back to pairing.
+      - STATE_FILE=/state/sessions.json
+    volumes:
+      - type: bind
+        source: /DATA/AppData/movies-cast/state
+        target: /state
+      # The host's time zone, read-only. Not TZ=$TZ: ZimaOS fills $TZ in on the
+      # first import only; after an update in "Verwalten" the logs were UTC.
+      - type: bind
+        source: /etc/localtime
+        target: /etc/localtime
+        read_only: true
+    labels:
+      icon: https://raw.githubusercontent.com/chicohaager/movies-cast/master/deploy/webos/logo/logo-512.png
+    x-casaos:
+      volumes:
+        - container: /state
+          description:
+            en_us: Login sessions of phones and the TV app (contains Movies tokens)
+            de_de: Anmeldungen von Handys und der TV-App (enthält Movies-Tokens)
+      envs:
+        - container: RENDERERS
+          description:
+            en_us: Comma-separated TV addresses (IP, URL found by SSDP) or DLNA description URLs; allow UDP 1901 from the LAN in the firewall
+            de_de: Kommagetrennte Fernseher-Adressen (IP, die URL findet SSDP) oder DLNA-Beschreibungs-URLs; in der Firewall UDP 1901 aus dem LAN erlauben
+        - container: MOVIES_URL
+          description:
+            en_us: Movies' Jellyfin-compatible API behind the ZimaOS gateway
+            de_de: Jellyfin-kompatible Schnittstelle von Movies hinter dem ZimaOS-Gateway
+
+x-casaos:
+  architectures:
+    - amd64
+  main: movies-cast
+  id: io.github.chicohaager.movies-cast
+  version: 0.25.4
+  author: Lintuxer
+  developer: chicohaager
+  category: Media
+  icon: https://raw.githubusercontent.com/chicohaager/movies-cast/master/deploy/webos/logo/logo-512.png
+  thumbnail: ""
+  index: /
+  port_map: "8097"
+  scheme: http
+  store_app_id: movies-cast
+  title:
+    custom: Movies-Cast
+    en_US: Movies-Cast
+    de_DE: Movies-Cast
+  tagline:
+    en_US: Needs IceWhale Movies (beta) — play its films on a DLNA TV, the phone is the remote
+    de_DE: Braucht IceWhale Movies (Beta) — Filme auf dem DLNA-Fernseher, das Handy ist die Fernbedienung
+  description:
+    en_US: |
+      **Movies-Cast** plays the films of IceWhale **Movies** on a TV in your home
+      network. Your phone is the remote; nothing is installed on the TV.
+
+      - Open the tile (or `http://<your-zimaos>:8097` on the phone), log in with
+        your ZimaOS account, pick the TV at the top, then a film
+      - The TV gets the original file and plays it itself — no transcoding on the box
+      - Pause, ±30 s, seek bar, stop; "Continue watching" is shared with Movies
+      - "No sound?" restarts the film with converted sound, remembered per TV
+      - Name, hide or add TVs by IP; Wake-on-LAN for a TV that is off
+
+      **Requirements.** IceWhale Movies (module `zimaos-movies` 0.3.0 or later)
+      on the same ZimaOS — it is a beta and not in the App Store yet; without
+      it Movies-Cast has nothing to show. The TV must be a DLNA media renderer:
+      if it shows up in the TV list on the phone, it is. Tested with an LG
+      OLED55B9. The LG webOS TV app from the video is not part of this app.
+
+      Guide and source: https://github.com/chicohaager/movies-cast
+    de_DE: |
+      **Movies-Cast** spielt die Filme aus IceWhale **Movies** auf einem Fernseher
+      im Heimnetz ab. Das Handy ist die Fernbedienung; auf dem Fernseher wird
+      nichts installiert.
+
+      - Kachel öffnen (oder am Handy `http://<dein-zimaos>:8097`), mit dem
+        ZimaOS-Konto anmelden, oben den Fernseher wählen, dann einen Film
+      - Der Fernseher bekommt die Originaldatei und spielt sie selbst — kein Umwandeln auf der Box
+      - Pause, ±30 s, Zeitleiste, Stopp; „Weiterschauen“ teilt es mit Movies
+      - „Kein Ton?“ startet den Film mit umgewandeltem Ton neu, je Fernseher gemerkt
+      - Fernseher benennen, ausblenden oder per IP hinzufügen; Wake-on-LAN
+
+      **Voraussetzungen.** IceWhale Movies (Modul `zimaos-movies` 0.3.0 oder neuer)
+      auf demselben ZimaOS — eine Beta, noch nicht im App Store; ohne Movies
+      hat Movies-Cast nichts anzuzeigen. Der Fernseher muss ein DLNA-Media-Renderer
+      sein: erscheint er am Handy in der Fernseher-Liste, ist er es. Getestet mit
+      einem LG OLED55B9. Die LG-webOS-TV-App aus dem Video gehört nicht dazu.
+
+      Anleitung und Quelle: https://github.com/chicohaager/movies-cast
+  tips:
+    before_install:
+      en_US: |
+        **Needs IceWhale Movies** (module `zimaos-movies` 0.3.0 or later, a beta)
+        on this ZimaOS. Movies-Cast logs in to it with your ZimaOS account.
+
+        **Firewall.** If ZFW runs, it asks about 8097/tcp and 1901/udp — answer
+        *LAN only*. UDP 1901 carries the TVs' answers to the search.
+
+        The program runs on the host network (DLNA discovery) and keeps its
+        logins and settings in `/DATA/AppData/movies-cast/state`.
+      de_DE: |
+        **Braucht IceWhale Movies** (Modul `zimaos-movies` 0.3.0 oder neuer, eine Beta)
+        auf diesem ZimaOS. Movies-Cast meldet sich dort mit deinem ZimaOS-Konto an.
+
+        **Firewall.** Läuft ZFW, fragt sie nach 8097/tcp und 1901/udp — *nur LAN*
+        genügt. Über UDP 1901 kommen die Antworten der Fernseher auf die Suche.
+
+        Das Programm läuft im Host-Netz (DLNA-Suche) und hält Anmeldungen und
+        Einstellungen in `/DATA/AppData/movies-cast/state`.
