@@ -1,0 +1,25 @@
+{
+  "architectures": [
+    "amd64"
+  ],
+  "author": "Lintuxer",
+  "developer": "chicohaager",
+  "category": "Media",
+  "thumbnail": "",
+  "tagline": "Needs IceWhale Movies (beta) — play its films on a DLNA TV, the phone is the remote",
+  "description": "**Movies-Cast** plays the films of IceWhale **Movies** on a TV in your home\nnetwork. Your phone is the remote; nothing is installed on the TV.\n\n- Open the tile (or `http://<your-zimaos>:8097` on the phone), log in with\n  your ZimaOS account, pick the TV at the top, then a film\n- The TV gets the original file and plays it itself — no transcoding on the box\n- Pause, ±30 s, seek bar, stop; \"Continue watching\" is shared with Movies\n- \"No sound?\" restarts the film with converted sound, remembered per TV\n- Name, hide or add TVs by IP; Wake-on-LAN for a TV that is off\n\n**Requirements.** IceWhale Movies (module `zimaos-movies` 0.3.0 or later)\non the same ZimaOS — it is a beta and not in the App Store yet; without\nit Movies-Cast has nothing to show. The TV must be a DLNA media renderer:\nif it shows up in the TV list on the phone, it is. Tested with an LG\nOLED55B9. The LG webOS TV app from the video is not part of this app.\n\nGuide and source: https://github.com/chicohaager/movies-cast\n",
+  "tips": {
+    "before_install": "**Needs IceWhale Movies** (module `zimaos-movies` 0.3.0 or later, a beta)\non this ZimaOS. Movies-Cast logs in to it with your ZimaOS account.\n\n**Firewall.** If ZFW runs, it asks about 8097/tcp and 1901/udp — answer\n*LAN only*. UDP 1901 carries the TVs' answers to the search.\n\nThe program runs on the host network (DLNA discovery) and keeps its\nlogins and settings in `/DATA/AppData/movies-cast/state`.\n"
+  },
+  "title": "Movies-Cast",
+  "base_url": "https://chicohaager.github.io/zima-appstore",
+  "id": "io.github.chicohaager.movies-cast",
+  "version": "0.25.4",
+  "categories": [
+    "media"
+  ],
+  "min_memory": 0,
+  "min_image_size": {
+    "amd64": 3810314
+  }
+}
