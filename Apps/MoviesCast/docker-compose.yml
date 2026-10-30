@@ -10,7 +10,7 @@ name: movies-cast
 
 services:
   movies-cast:
-    image: ghcr.io/chicohaager/movies-cast:0.25.4
+    image: ghcr.io/chicohaager/movies-cast:0.26.0
     container_name: movies-cast
     restart: unless-stopped
     # Host network: SSDP multicast must reach the TVs, and the TV must reach
@@ -66,7 +66,7 @@ x-casaos:
     - amd64
   main: movies-cast
   id: io.github.chicohaager.movies-cast
-  version: 0.25.4
+  version: 0.26.0
   author: Lintuxer
   developer: chicohaager
   category: Media
