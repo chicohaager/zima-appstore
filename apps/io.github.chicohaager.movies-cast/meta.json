@@ -14,12 +14,12 @@
   "title": "Movies-Cast",
   "base_url": "https://chicohaager.github.io/zima-appstore",
   "id": "io.github.chicohaager.movies-cast",
-  "version": "0.25.4",
+  "version": "0.26.0",
   "categories": [
     "media"
   ],
   "min_memory": 0,
   "min_image_size": {
-    "amd64": 3810314
+    "amd64": 3810602
   }
 }
