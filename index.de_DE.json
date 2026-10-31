@@ -2,8 +2,8 @@
   "apps": [
     {
       "id": "io.github.chicohaager.movies-cast",
-      "tagline": "Braucht IceWhale Movies (Beta) — Filme auf dem DLNA-Fernseher, das Handy ist die Fernbedienung",
-      "title": "Movies-Cast"
+      "title": "Movies-Cast",
+      "tagline": "Braucht IceWhale Movies (Beta) — Filme auf dem DLNA-Fernseher, das Handy ist die Fernbedienung"
     }
   ]
 }
