@@ -104,10 +104,16 @@ fetch_remote_file() {
 fetch_remote_file "scripts/build_appstore.py" "$REMOTE_BUILD_DIR/build_appstore.py"
 fetch_remote_file "requirements.txt" "$REMOTE_BUILD_DIR/requirements.txt"
 
-python3 -m pip install -r "$REMOTE_BUILD_DIR/requirements.txt"
+# Own venv under .cache (git-ignored): Debian/Ubuntu refuse pip into the
+# system Python ("externally-managed-environment", PEP 668), which stopped
+# the local build on 2026-10-31. CI runs the same lines.
+VENV_DIR="${VENV_DIR:-$ROOT_DIR/.cache/venv}"
+[[ -x "$VENV_DIR/bin/python" ]] || python3 -m venv "$VENV_DIR"
+PY="$VENV_DIR/bin/python"
+"$PY" -m pip install --quiet -r "$REMOTE_BUILD_DIR/requirements.txt"
 
 CMD=(
-  python3
+  "$PY"
   "$REMOTE_BUILD_DIR/build_appstore.py"
   --source "$SOURCE_DIR"
   --output "$OUTPUT_DIR"
