@@ -262,7 +262,7 @@
 name: mediacms
 services:
   db:
-    image: postgres:17.2-alpine@sha256:5d706d5aa3ad311722f373fdc09e6a22b454bec70d34d9786383983fd83c5e46
+    image: postgres:17.11-alpine@sha256:e4cb93687b062cd25a0e8f672d85a7708235009d70d31f8a7698d9370092a9c4
     container_name: mediacms-db
     environment:
       - POSTGRES_USER=mediacms
@@ -469,7 +469,7 @@ networks:
 x-casaos:
   main: web
   id: io.github.chicohaager.mediacms
-  version: 9.2.1
+  version: 9.4.0
   icon: https://chicohaager.github.io/zima-appstore/apps/io.github.chicohaager.mediacms/assets/icon.png
   title:
     en_US: MediaCMS

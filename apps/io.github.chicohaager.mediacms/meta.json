@@ -14,12 +14,12 @@
   "title": "MediaCMS",
   "base_url": "https://chicohaager.github.io/zima-appstore",
   "id": "io.github.chicohaager.mediacms",
-  "version": "9.2.1",
+  "version": "9.4.0",
   "categories": [
     "media"
   ],
   "min_memory": 0,
   "min_image_size": {
-    "amd64": 674337963
+    "amd64": 680949470
   }
 }
