@@ -12,13 +12,13 @@
   "title": "slskd",
   "base_url": "https://chicohaager.github.io/zima-appstore",
   "id": "io.github.chicohaager.slskd",
-  "version": "0.26.1",
+  "version": "0.26.2",
   "categories": [
     "media"
   ],
   "min_memory": 0,
   "min_image_size": {
-    "amd64": 110342833,
-    "arm64": 107049760
+    "amd64": 105364544,
+    "arm64": 102038571
   }
 }
