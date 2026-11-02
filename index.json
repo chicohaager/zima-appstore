@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updated_at": "2026-11-02T08:18:34Z",
+  "updated_at": "2026-11-02T08:21:49Z",
   "app_count": 14,
   "base_url": "https://chicohaager.github.io/zima-appstore",
   "apps": [
@@ -85,8 +85,8 @@
       "thumbnail": "",
       "compose_url": "/apps/io.github.chicohaager.invoiceninja/docker-compose.yml",
       "meta_url": "/apps/io.github.chicohaager.invoiceninja/meta.json",
-      "content_hash": "846d28ac",
-      "version": "5.13.50"
+      "content_hash": "bd06b13d",
+      "version": "5.13.53"
     },
     {
       "id": "io.github.chicohaager.kopia",
