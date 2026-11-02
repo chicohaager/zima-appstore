@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updated_at": "2026-11-02T08:24:47Z",
+  "updated_at": "2026-11-02T08:26:13Z",
   "app_count": 14,
   "base_url": "https://chicohaager.github.io/zima-appstore",
   "apps": [
@@ -167,8 +167,8 @@
       "thumbnail": "",
       "compose_url": "/apps/io.github.chicohaager.nextexplorer/docker-compose.yml",
       "meta_url": "/apps/io.github.chicohaager.nextexplorer/meta.json",
-      "content_hash": "2e56de0d",
-      "version": "3.1.0"
+      "content_hash": "d6599402",
+      "version": "4.0.1"
     },
     {
       "id": "io.github.chicohaager.onlyoffice",
