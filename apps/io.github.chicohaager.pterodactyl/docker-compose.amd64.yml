@@ -97,7 +97,7 @@ services:
 
   # ── cache, queue and sessions ─────────────────────────────────────────────
   cache:
-    image: redis:alpine@sha256:be7c1cada5a6eb1656adfa2635b99296af725881301b21f84f35a71fac072c7f
+    image: redis:alpine@sha256:41ed50f5c0d9cf8b2151ad63df24ba96d018ccc84804d0688e9b9f1ed3d9f558
     restart: unless-stopped
     environment:
       - TZ=UTC

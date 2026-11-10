@@ -11,7 +11,7 @@ name: craftsuite
 
 services:
   craftsuite:
-    image: chicohaager/craftsuite:1.0.2@sha256:812c0e1ba8dd1127816deb4482b39ad334b531b2c42c7cba8a8e19e0caa67f03
+    image: chicohaager/craftsuite:1.0.3@sha256:d119875549b54f4def3bf34b1ff733eca1a9dfda8433c65f8b211b53ed7cef92
     container_name: craftsuite
     restart: unless-stopped
     read_only: true
@@ -28,7 +28,7 @@ services:
 x-casaos:
   main: craftsuite
   id: io.github.chicohaager.craftsuite
-  version: 1.0.2
+  version: 1.0.3
   icon: https://chicohaager.github.io/zima-appstore/apps/io.github.chicohaager.craftsuite/assets/icon.png
   index: /
   port_map: "8088"

@@ -262,7 +262,7 @@
 name: mediacms
 services:
   db:
-    image: postgres:17.11-alpine@sha256:e4cb93687b062cd25a0e8f672d85a7708235009d70d31f8a7698d9370092a9c4
+    image: postgres:17.11-alpine@sha256:4717f90960a225c2d1c5dac50508c401230f693ff626e06e84e6db0a68ded508
     container_name: mediacms-db
     environment:
       - POSTGRES_USER=mediacms
@@ -287,7 +287,7 @@ services:
           memory: 2GB
           cpus: '2.00'
   redis:
-    image: redis:alpine@sha256:be7c1cada5a6eb1656adfa2635b99296af725881301b21f84f35a71fac072c7f
+    image: redis:alpine@sha256:41ed50f5c0d9cf8b2151ad63df24ba96d018ccc84804d0688e9b9f1ed3d9f558
     container_name: mediacms-redis
     restart: unless-stopped
     healthcheck:
