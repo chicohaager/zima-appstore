@@ -14,6 +14,23 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Fixed secrets: gitleaks over Apps/, against the list of known findings
+      # (scripts/known_secrets.json). A new key, a new app or a changed value fails.
+      # Only here, on pull requests -- not in release-store.yml, so store updates that only
+      # bump image tags are never held up by it.
+      - name: Install gitleaks 8.30.1 (checksum-pinned)
+        run: |
+          curl -fsSLo /tmp/gl.tgz https://github.com/gitleaks/gitleaks/releases/download/v8.30.1/gitleaks_8.30.1_linux_x64.tar.gz
+          echo "551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb  /tmp/gl.tgz" | sha256sum -c -
+          sudo tar -xzf /tmp/gl.tgz -C /usr/local/bin gitleaks
+          gitleaks version
+
+      - name: Test the secrets check
+        run: python3 scripts/test_check_secrets.py
+
+      - name: No new fixed secrets
+        run: python3 scripts/check_secrets.py .
+
       - name: Build v2 dist
         uses: IceWhaleTech/build-appstore-action@v1
         with:
