@@ -333,6 +333,9 @@ services:
     - type: bind
       source: /DATA/AppData/mediacms/media_files
       target: /home/mediacms.io/mediacms/media_files
+    # Session secret, drawn once by the image's entrypoint and shared by all four
+    # Django services. Not under media_files: nginx serves that folder publicly.
+    - /DATA/AppData/mediacms/secret:/run/mediacms-secret
     environment:
     - ENABLE_UWSGI=no
     - ENABLE_NGINX=no
@@ -342,7 +345,7 @@ services:
     - ADMIN_USER=admin
     - ADMIN_EMAIL=admin@localhost
     - ADMIN_PASSWORD=CpbBv0Ttxlt4Uu9eq2
-    - SECRET_KEY=QUsH9JRpH7pjnPUkAnY2htiXoAtH5VGAoceiYMLCIPiNXx3vLr
+    - SECRET_KEY_FILE=/run/mediacms-secret/secret_key
     - POSTGRES_PASSWORD=L4mU0dJ9bBKWWbjDFxyx5UWz
     - FRONTEND_HOST=http://localhost:8010
     - TZ=Europe/Berlin
@@ -387,7 +390,7 @@ services:
     - ENABLE_CELERY_SHORT=no
     - ENABLE_CELERY_LONG=no
     - ENABLE_MIGRATIONS=no
-    - SECRET_KEY=QUsH9JRpH7pjnPUkAnY2htiXoAtH5VGAoceiYMLCIPiNXx3vLr
+    - SECRET_KEY_FILE=/run/mediacms-secret/secret_key
     - POSTGRES_PASSWORD=L4mU0dJ9bBKWWbjDFxyx5UWz
     - FRONTEND_HOST=http://localhost:8010
     - PORTAL_NAME=MediaCMS
@@ -405,6 +408,9 @@ services:
     - type: bind
       source: /DATA/AppData/mediacms/media_files
       target: /home/mediacms.io/mediacms/media_files
+    # Session secret, drawn once by the image's entrypoint and shared by all four
+    # Django services. Not under media_files: nginx serves that folder publicly.
+    - /DATA/AppData/mediacms/secret:/run/mediacms-secret
     networks:
     - mediacms-network
     labels:
@@ -432,11 +438,13 @@ services:
     - ENABLE_CELERY_SHORT=no
     - ENABLE_CELERY_LONG=no
     - ENABLE_MIGRATIONS=no
-    - SECRET_KEY=QUsH9JRpH7pjnPUkAnY2htiXoAtH5VGAoceiYMLCIPiNXx3vLr
+    - SECRET_KEY_FILE=/run/mediacms-secret/secret_key
     - POSTGRES_PASSWORD=L4mU0dJ9bBKWWbjDFxyx5UWz
     - FRONTEND_HOST=http://localhost:8010
     - TZ=Europe/Berlin
     restart: unless-stopped
+    volumes:
+    - /DATA/AppData/mediacms/secret:/run/mediacms-secret
     depends_on:
       migrations:
         condition: service_completed_successfully
@@ -455,7 +463,7 @@ services:
     - ENABLE_NGINX=no
     - ENABLE_CELERY_BEAT=no
     - ENABLE_MIGRATIONS=no
-    - SECRET_KEY=QUsH9JRpH7pjnPUkAnY2htiXoAtH5VGAoceiYMLCIPiNXx3vLr
+    - SECRET_KEY_FILE=/run/mediacms-secret/secret_key
     - POSTGRES_PASSWORD=L4mU0dJ9bBKWWbjDFxyx5UWz
     - FRONTEND_HOST=http://localhost:8010
     - TZ=Europe/Berlin
@@ -467,6 +475,9 @@ services:
     - type: bind
       source: /DATA/AppData/mediacms/media_files
       target: /home/mediacms.io/mediacms/media_files
+    # Session secret, drawn once by the image's entrypoint and shared by all four
+    # Django services. Not under media_files: nginx serves that folder publicly.
+    - /DATA/AppData/mediacms/secret:/run/mediacms-secret
     networks:
     - mediacms-network
     deploy:
