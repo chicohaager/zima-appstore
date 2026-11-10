@@ -15,9 +15,12 @@
 #      wrong value the page loads and the LOGIN fails, which looks like a
 #      broken password rather than a broken setting. Leaving the placeholder in
 #      is the worst case: everything reports healthy and nothing works.
-#   2. SESSION_SECRET (32+ characters) — if it changes, everyone is logged out.
-#      AUTH_ADMIN_EMAIL / AUTH_ADMIN_PASSWORD create the first administrator and
-#      skip the setup wizard; change them, this file is public.
+#   2. No administrator and no session secret are preset (this file is public):
+#      the first visit opens the setup page, where you create the administrator,
+#      and the app draws its own session secret and keeps it in /config.
+#      Optional: AUTH_ADMIN_EMAIL / AUTH_ADMIN_PASSWORD skip the setup page, but
+#      the app sets that password again on EVERY start (a password changed in
+#      the UI does not survive a restart).
 #   3. The /mnt/<Label> mounts below are ZimaOS' own shares. Add or remove as you
 #      like — the label after /mnt/ is what the UI shows.
 #
@@ -56,11 +59,9 @@ services:
       - VOLUME_ROOT=/mnt
       - CONFIG_DIR=/config
       - CACHE_DIR=/cache
-      # 2. CHANGE THESE.
-      - SESSION_SECRET=VNQLW08Lfxyiduv4a8eK10auYstbH4ZrHSPnTReiD7UqFifw
+      # 2. No preset administrator or session secret: the setup page creates the
+      #    first administrator, the app keeps its own secret in /config.
       - AUTH_MODE=local
-      - AUTH_ADMIN_EMAIL=admin@example.com
-      - AUTH_ADMIN_PASSWORD=hxPh4REwEy4fRd1M
       # Owner of newly created files: ZimaOS user (999) and the samba group (1000).
       - PUID=999
       - PGID=1000
@@ -160,14 +161,11 @@ x-casaos:
       - `PUBLIC_URL` — this machine's address including the port. A wrong value
         lets the page load and breaks the login, which looks like a password
         problem and is not one.
-      - `AUTH_ADMIN_EMAIL` and `AUTH_ADMIN_PASSWORD` — the first administrator,
-        created once on the first start. Both are public in this file.
-      - `SESSION_SECRET` — change it; sessions are signed with it.
       - `PUID`/`PGID` decide who owns files the app creates on the host.
 
-      **After installing, open the tile and sign in** with the
-      `AUTH_ADMIN_EMAIL` and `AUTH_ADMIN_PASSWORD` you set — that account is
-      created once, on the first start. The shares you see inside are exactly
+      **After installing, open the tile right away** — the first visit shows the
+      setup page, where you create the administrator account. The app draws its
+      own session secret and keeps it in /config. The shares you see inside are exactly
       the folders mounted under /mnt; add or remove them in the same install
       dialog, under the service's volumes.
   tips:
@@ -175,7 +173,8 @@ x-casaos:
       en_US: >-
         Set PUBLIC_URL to this machine's address including the port before
         installing — a wrong value lets the page load but breaks the login.
-        Change SESSION_SECRET and the admin password as well. The mounts under
+        Open the tile right after installing and create the administrator on the
+        setup page. The mounts under
         /mnt are the shares you will see in the app; PUID/PGID decide who owns
         newly created files.
   index: /
