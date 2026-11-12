@@ -73,7 +73,7 @@ name: pterodactyl
 services:
   # ── database ──────────────────────────────────────────────────────────────
   database:
-    image: mariadb:11@sha256:51d5a3273562df11f0642bf1815ae64922f1657b0ee0edff35b65a4f489c3925
+    image: mariadb:11@sha256:5578b77f7f2cbfad1ba71619b080dcfb5cf84e99b5293059afbe6cbca9a7ad0d
     restart: unless-stopped
     command:
       - --default-authentication-plugin=mysql_native_password

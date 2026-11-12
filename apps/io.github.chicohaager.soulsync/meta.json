@@ -12,13 +12,13 @@
   "title": "SoulSync",
   "base_url": "https://chicohaager.github.io/zima-appstore",
   "id": "io.github.chicohaager.soulsync",
-  "version": "3.6.1",
+  "version": "3.6.4",
   "categories": [
     "media"
   ],
   "min_memory": 0,
   "min_image_size": {
-    "amd64": 557299628,
-    "arm64": 543567712
+    "amd64": 559443441,
+    "arm64": 545705011
   }
 }

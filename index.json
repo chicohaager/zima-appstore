@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updated_at": "2026-11-10T10:55:38Z",
+  "updated_at": "2026-11-12T09:36:20Z",
   "app_count": 14,
   "base_url": "https://chicohaager.github.io/zima-appstore",
   "apps": [
@@ -22,8 +22,8 @@
       "thumbnail": "",
       "compose_url": "/apps/io.github.chicohaager.casadrop/docker-compose.yml",
       "meta_url": "/apps/io.github.chicohaager.casadrop/meta.json",
-      "content_hash": "f7f93838",
-      "version": "2.5.3"
+      "content_hash": "89a97d83",
+      "version": "2.5.4"
     },
     {
       "id": "io.github.chicohaager.craftsuite",
@@ -43,8 +43,8 @@
       "thumbnail": "/apps/io.github.chicohaager.craftsuite/assets/photocraft-demo.webp",
       "compose_url": "/apps/io.github.chicohaager.craftsuite/docker-compose.yml",
       "meta_url": "/apps/io.github.chicohaager.craftsuite/meta.json",
-      "content_hash": "2eb7f338",
-      "version": "1.0.3"
+      "content_hash": "e9b21f61",
+      "version": "1.0.4"
     },
     {
       "id": "io.github.chicohaager.gitea",
@@ -209,7 +209,7 @@
       "thumbnail": "",
       "compose_url": "/apps/io.github.chicohaager.pterodactyl/docker-compose.yml",
       "meta_url": "/apps/io.github.chicohaager.pterodactyl/meta.json",
-      "content_hash": "af73a7b7",
+      "content_hash": "e9ca574c",
       "version": "1.15.2"
     },
     {
@@ -251,8 +251,8 @@
       "thumbnail": "",
       "compose_url": "/apps/io.github.chicohaager.soulsync/docker-compose.yml",
       "meta_url": "/apps/io.github.chicohaager.soulsync/meta.json",
-      "content_hash": "d30f4242",
-      "version": "3.6.1"
+      "content_hash": "3b82827a",
+      "version": "3.6.4"
     },
     {
       "id": "io.github.chicohaager.superfile",
@@ -292,7 +292,7 @@
       "thumbnail": "",
       "compose_url": "/apps/io.github.chicohaager.ubooquity/docker-compose.yml",
       "meta_url": "/apps/io.github.chicohaager.ubooquity/meta.json",
-      "content_hash": "c2323156",
+      "content_hash": "ed14129f",
       "version": "3.1.0"
     }
   ]

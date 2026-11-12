@@ -18,13 +18,13 @@
   "title": "Craft Suite",
   "base_url": "https://chicohaager.github.io/zima-appstore",
   "id": "io.github.chicohaager.craftsuite",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "categories": [
     "productivity"
   ],
   "min_memory": 0,
   "min_image_size": {
-    "amd64": 348674708,
-    "arm64": 348567631
+    "amd64": 351959830,
+    "arm64": 351853103
   }
 }
