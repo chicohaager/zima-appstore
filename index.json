@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updated_at": "2026-11-13T06:28:11Z",
+  "updated_at": "2026-11-15T06:05:20Z",
   "app_count": 14,
   "base_url": "https://chicohaager.github.io/zima-appstore",
   "apps": [
@@ -126,7 +126,7 @@
       "thumbnail": "",
       "compose_url": "/apps/io.github.chicohaager.mediacms/docker-compose.yml",
       "meta_url": "/apps/io.github.chicohaager.mediacms/meta.json",
-      "content_hash": "4c9100c9",
+      "content_hash": "b5d2d7b1",
       "version": "9.4.0"
     },
     {
@@ -146,7 +146,7 @@
       "thumbnail": "",
       "compose_url": "/apps/io.github.chicohaager.movies-cast/docker-compose.yml",
       "meta_url": "/apps/io.github.chicohaager.movies-cast/meta.json",
-      "content_hash": "8c0bbcd6",
+      "content_hash": "21ee3787",
       "version": "0.27.0"
     },
     {
@@ -251,8 +251,8 @@
       "thumbnail": "",
       "compose_url": "/apps/io.github.chicohaager.soulsync/docker-compose.yml",
       "meta_url": "/apps/io.github.chicohaager.soulsync/meta.json",
-      "content_hash": "340ca0f8",
-      "version": "3.6.5"
+      "content_hash": "fbfb41a4",
+      "version": "3.6.6"
     },
     {
       "id": "io.github.chicohaager.superfile",
