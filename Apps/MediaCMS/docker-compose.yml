@@ -262,7 +262,7 @@
 name: mediacms
 services:
   db:
-    image: postgres:17.11-alpine
+    image: postgres:17.12-alpine
     container_name: mediacms-db
     environment:
     - POSTGRES_USER=mediacms
@@ -482,7 +482,7 @@ x-casaos:
   - amd64
   main: web
   id: io.github.chicohaager.mediacms
-  version: 9.4.0
+  version: 9.5.1
   author: Lintuxer
   developer: MediaCMS
   category: Media
