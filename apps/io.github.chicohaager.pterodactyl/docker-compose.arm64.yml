@@ -115,7 +115,7 @@ services:
 
   # ── the panel (nginx + php-fpm + cron + queue worker, all inside) ─────────
   panel:
-    image: ghcr.io/pterodactyl/panel:v1.15.2@sha256:1f9501d3175719153de0985611beb8aebf125cf0e9b07e59b86ec580cd457a0e
+    image: ghcr.io/pterodactyl/panel:v1.15.2@sha256:158134397d4e6a4da3b4d7d302437d2b6c29f805f7d3a40beb9d215daa83eae9
     restart: unless-stopped
     environment:
       # 1. CHANGE THIS — the address you type in the browser, with the port.
@@ -183,7 +183,7 @@ services:
   # Same image as the panel, but the panel's entrypoint (supervisord) is
   # replaced — this container does its work and exits.
   provision:
-    image: ghcr.io/pterodactyl/panel:v1.15.2@sha256:1f9501d3175719153de0985611beb8aebf125cf0e9b07e59b86ec580cd457a0e
+    image: ghcr.io/pterodactyl/panel:v1.15.2@sha256:158134397d4e6a4da3b4d7d302437d2b6c29f805f7d3a40beb9d215daa83eae9
     restart: on-failure
     environment:
       # 2. CHANGE THESE — the first administrator, created once.
