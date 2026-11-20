@@ -73,7 +73,7 @@ name: pterodactyl
 services:
   # ── database ──────────────────────────────────────────────────────────────
   database:
-    image: mariadb:11@sha256:75b300c790eec33cd4386d80fc1a938e27604ba70f3eeda25e52874be2aae424
+    image: mariadb:11@sha256:6e562000e74ce36a9c7cc1302e462c271e3e3a5e0e7ae0ec2ab5f71f0f586f02
     restart: unless-stopped
     command:
       - --default-authentication-plugin=mysql_native_password
@@ -115,7 +115,7 @@ services:
 
   # ── the panel (nginx + php-fpm + cron + queue worker, all inside) ─────────
   panel:
-    image: ghcr.io/pterodactyl/panel:v1.15.2@sha256:5e1b111c55772281df56341a28f8fc00ca5867b624348dcb10d667e66a02aea7
+    image: ghcr.io/pterodactyl/panel:v1.15.2@sha256:6db3d64d04a24e70f0a8201f21d1bee6d0034dd5d6f0dda2bc858bce17d79f6f
     restart: unless-stopped
     environment:
       # 1. CHANGE THIS — the address you type in the browser, with the port.
@@ -183,7 +183,7 @@ services:
   # Same image as the panel, but the panel's entrypoint (supervisord) is
   # replaced — this container does its work and exits.
   provision:
-    image: ghcr.io/pterodactyl/panel:v1.15.2@sha256:5e1b111c55772281df56341a28f8fc00ca5867b624348dcb10d667e66a02aea7
+    image: ghcr.io/pterodactyl/panel:v1.15.2@sha256:6db3d64d04a24e70f0a8201f21d1bee6d0034dd5d6f0dda2bc858bce17d79f6f
     restart: on-failure
     environment:
       # 2. CHANGE THESE — the first administrator, created once.
