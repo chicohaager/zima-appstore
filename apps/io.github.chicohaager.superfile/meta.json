@@ -13,12 +13,12 @@
   "title": "Superfile",
   "base_url": "https://chicohaager.github.io/zima-appstore",
   "id": "io.github.chicohaager.superfile",
-  "version": "1.6.0",
+  "version": "1.6.1",
   "categories": [
     "productivity"
   ],
   "min_memory": 0,
   "min_image_size": {
-    "amd64": 103388391
+    "amd64": 105299853
   }
 }

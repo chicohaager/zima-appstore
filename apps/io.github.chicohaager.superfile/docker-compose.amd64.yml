@@ -57,7 +57,7 @@ services:
     # Pinned to an immutable tag. 1.6.0 is superfile's version; -rN counts the
     # packaging revisions on top of it, so the tag cannot quietly change under
     # an installed app the way `1.6.0` or `latest` can.
-    image: chicohaager/superfile-web:1.6.0-r6@sha256:c625e3c593c68665b9c602fce7e1141b3c080bfb4bee83b70dbb80eb66733783
+    image: chicohaager/superfile-web:1.6.1-r1@sha256:09f341b4cb923881c500900fbf6916cae1d941cbb0ad98ac35941be0ca01f833
     container_name: superfile
     restart: unless-stopped
     ports:
@@ -99,7 +99,7 @@ networks:
 x-casaos:
   main: app
   id: io.github.chicohaager.superfile
-  version: 1.6.0
+  version: 1.6.1
   scheme: http
   icon: https://chicohaager.github.io/zima-appstore/apps/io.github.chicohaager.superfile/assets/icon.png
   title:

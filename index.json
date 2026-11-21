@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updated_at": "2026-11-20T08:18:51Z",
+  "updated_at": "2026-11-21T06:22:16Z",
   "app_count": 14,
   "base_url": "https://chicohaager.github.io/zima-appstore",
   "apps": [
@@ -271,8 +271,8 @@
       "thumbnail": "",
       "compose_url": "/apps/io.github.chicohaager.superfile/docker-compose.yml",
       "meta_url": "/apps/io.github.chicohaager.superfile/meta.json",
-      "content_hash": "d284614b",
-      "version": "1.6.0"
+      "content_hash": "9b83c61d",
+      "version": "1.6.1"
     },
     {
       "id": "io.github.chicohaager.ubooquity",
