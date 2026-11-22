@@ -165,7 +165,7 @@
 name: soulsync
 services:
   soulsync:
-    image: boulderbadgedad/soulsync:3.6.8@sha256:70927b33588e33dbdaedd5e6eaceac7660a103eebdeb666f50aa77ce561b7e51
+    image: boulderbadgedad/soulsync:3.6.9@sha256:e61d36c6b6534234b957af1442747a2c923ea79107fc43842006174639e07547
     container_name: soulsync-webui
     environment:
       - PUID=1000
@@ -250,7 +250,7 @@ x-casaos:
   main: soulsync
   id: io.github.chicohaager.soulsync
   scheme: http
-  version: 3.6.8
+  version: 3.6.9
   icon: https://chicohaager.github.io/zima-appstore/apps/io.github.chicohaager.soulsync/assets/icon.png
   title:
     en_US: SoulSync
