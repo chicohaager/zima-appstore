@@ -1,5 +1,5 @@
 boulderbadgedad/soulsync:3.6.9 sha256:e61d36c6b6534234b957af1442747a2c923ea79107fc43842006174639e07547
-chicohaager/casadrop:2.5.4 sha256:a32ba669d71320dab97f73bb28053d1f1276279f4b5ce3568cacbcdb5755dabf
+chicohaager/casadrop:2.5.5 sha256:ecf4fe6b4096c817ada3961210343acff31d7ddc9bf2f39d07d8f2cd94d967bb
 chicohaager/craftsuite:1.0.7 sha256:f0153dd2a5f36278ca9c94cec75fb064e75acdbf23abf458af8d0aab0afd1019
 chicohaager/superfile-web:1.6.1-r1 sha256:09f341b4cb923881c500900fbf6916cae1d941cbb0ad98ac35941be0ca01f833
 ghcr.io/chicohaager/movies-cast:0.27.0 sha256:12b5190af66134e4c8ae837276e82de5a916dacecc0cea36912d8bb97d75d0b9
