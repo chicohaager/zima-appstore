@@ -287,7 +287,7 @@ services:
           memory: 2GB
           cpus: '2.00'
   redis:
-    image: redis:alpine@sha256:41ed50f5c0d9cf8b2151ad63df24ba96d018ccc84804d0688e9b9f1ed3d9f558
+    image: redis:alpine@sha256:bf33e63600ae8240c9f8b553c8fae427550dae17042bc24b06bbe06d3057c9bc
     container_name: mediacms-redis
     restart: unless-stopped
     healthcheck:
