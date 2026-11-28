@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updated_at": "2026-11-26T06:14:57Z",
+  "updated_at": "2026-11-28T06:07:41Z",
   "app_count": 14,
   "base_url": "https://chicohaager.github.io/zima-appstore",
   "apps": [
@@ -85,8 +85,8 @@
       "thumbnail": "",
       "compose_url": "/apps/io.github.chicohaager.invoiceninja/docker-compose.yml",
       "meta_url": "/apps/io.github.chicohaager.invoiceninja/meta.json",
-      "content_hash": "40f8a942",
-      "version": "5.14.0"
+      "content_hash": "590d0f54",
+      "version": "5.14.1"
     },
     {
       "id": "io.github.chicohaager.kopia",
@@ -146,7 +146,7 @@
       "thumbnail": "",
       "compose_url": "/apps/io.github.chicohaager.movies-cast/docker-compose.yml",
       "meta_url": "/apps/io.github.chicohaager.movies-cast/meta.json",
-      "content_hash": "7244b061",
+      "content_hash": "21ee3787",
       "version": "0.27.0"
     },
     {
