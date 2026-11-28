@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updated_at": "2026-11-28T06:07:41Z",
+  "updated_at": "2026-11-28T06:37:34Z",
   "app_count": 14,
   "base_url": "https://chicohaager.github.io/zima-appstore",
   "apps": [
@@ -146,8 +146,8 @@
       "thumbnail": "",
       "compose_url": "/apps/io.github.chicohaager.movies-cast/docker-compose.yml",
       "meta_url": "/apps/io.github.chicohaager.movies-cast/meta.json",
-      "content_hash": "21ee3787",
-      "version": "0.27.0"
+      "content_hash": "49f9341c",
+      "version": "0.28.0"
     },
     {
       "id": "io.github.chicohaager.nextexplorer",

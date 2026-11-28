@@ -10,7 +10,7 @@ name: movies-cast
 
 services:
   movies-cast:
-    image: ghcr.io/chicohaager/movies-cast:0.27.0@sha256:12b5190af66134e4c8ae837276e82de5a916dacecc0cea36912d8bb97d75d0b9
+    image: ghcr.io/chicohaager/movies-cast:0.28.0@sha256:b1a55549503917d8ec22a0b905baecd0ba764c5f34e6613cb7ff1e8254168fcd
     container_name: movies-cast
     restart: unless-stopped
     # Host network: SSDP multicast must reach the TVs, and the TV must reach
@@ -46,7 +46,7 @@ services:
 x-casaos:
   main: movies-cast
   id: io.github.chicohaager.movies-cast
-  version: 0.27.0
+  version: 0.28.0
   icon: https://chicohaager.github.io/zima-appstore/apps/io.github.chicohaager.movies-cast/assets/icon.png
   index: /
   port_map: "8097"

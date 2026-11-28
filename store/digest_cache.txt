@@ -2,7 +2,7 @@ boulderbadgedad/soulsync:3.6.9 sha256:e61d36c6b6534234b957af1442747a2c923ea79107
 chicohaager/casadrop:2.5.5 sha256:ecf4fe6b4096c817ada3961210343acff31d7ddc9bf2f39d07d8f2cd94d967bb
 chicohaager/craftsuite:1.0.8 sha256:5db4b724169fb7655aa897356f96b33c29fe2336ba0331675f51382cfd6d68b1
 chicohaager/superfile-web:1.6.1-r1 sha256:09f341b4cb923881c500900fbf6916cae1d941cbb0ad98ac35941be0ca01f833
-ghcr.io/chicohaager/movies-cast:0.27.0 sha256:12b5190af66134e4c8ae837276e82de5a916dacecc0cea36912d8bb97d75d0b9
+ghcr.io/chicohaager/movies-cast:0.28.0 sha256:b1a55549503917d8ec22a0b905baecd0ba764c5f34e6613cb7ff1e8254168fcd
 ghcr.io/pterodactyl/panel:v1.15.2 sha256:6db3d64d04a24e70f0a8201f21d1bee6d0034dd5d6f0dda2bc858bce17d79f6f
 ghcr.io/pterodactyl/wings:v1.13.5 sha256:4fff0bd4f91dd8e240360048f5562242af8be32c7130724fcb6931f04fd96094
 gitea/act_runner:0.6.1-dind-rootless sha256:e3917b4c56f02d67e098bfb013a7a26684ef54a7da73302be520e82505ee69a3
